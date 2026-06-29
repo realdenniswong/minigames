@@ -416,6 +416,13 @@ label {
     margin: 0;
   }
 
+  .board-wrap {
+    --mine-phone-window: min(calc(100vw - 56px), 330px);
+    width: min(100%, var(--mine-phone-window), var(--mine-board-width, 330px));
+    height: min(var(--mine-phone-window), var(--mine-board-height, 330px));
+    max-height: var(--mine-phone-window);
+  }
+
   .mine-cell {
     border-radius: 5px;
     font-size: 0.95rem;
