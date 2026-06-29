@@ -8,6 +8,7 @@
     />
     <title>Flappy Bird Style</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../shared/shell.css" />
   </head>
   <body>
     <main class="game-shell">
@@ -19,25 +20,27 @@
         </div>
         <div class="control-row">
           <button class="primary-button" type="button" id="startFlappy">Start</button>
-          <button type="button" id="resetFlappy">Reset</button>
         </div>
       </header>
 
       <section class="game-layout">
-        <canvas id="flappyCanvas" width="432" height="576" aria-label="Flappy game canvas"></canvas>
-        <aside class="side-panel">
-          <div class="stat-grid">
-            <div>
-              <span>Score</span>
-              <strong id="flappyScore">0</strong>
+        <div class="game-screen flappy-screen">
+          <canvas id="flappyCanvas" width="432" height="576" aria-label="Flappy game canvas"></canvas>
+          <aside class="side-panel screen-panel">
+            <button type="button" id="resetFlappy">Reset</button>
+            <div class="stat-grid">
+              <div>
+                <span>Score</span>
+                <strong id="flappyScore">0</strong>
+              </div>
+              <div>
+                <span>Best</span>
+                <strong id="flappyBest">0</strong>
+              </div>
             </div>
-            <div>
-              <span>Best</span>
-              <strong id="flappyBest">0</strong>
-            </div>
-          </div>
-          <p class="game-message" id="flappyMessage">Press Start, then tap the game to flap.</p>
-        </aside>
+            <p class="game-message" id="flappyMessage">Press Start, then tap the game to flap.</p>
+          </aside>
+        </div>
       </section>
     </main>
     <script src="game.js"></script>

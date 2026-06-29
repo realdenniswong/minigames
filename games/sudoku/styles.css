@@ -170,11 +170,17 @@ label {
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(540px, calc(100dvh - 148px)) minmax(280px, 360px);
+  width: min(100%, calc(100dvh - 212px + 380px));
+  margin: 20px auto 0;
+  gap: 12px;
+}
+
+.play-layout {
+  display: grid;
+  grid-template-columns: minmax(540px, calc(100dvh - 212px)) minmax(280px, 360px);
   align-items: start;
   justify-content: center;
   gap: 20px;
-  padding-top: 20px;
 }
 
 .side-panel {
@@ -225,7 +231,7 @@ label {
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
   width: 100%;
-  max-width: calc(100dvh - 148px);
+  max-width: calc(100dvh - 212px);
   aspect-ratio: 1;
   border: 3px solid var(--coal);
   background: var(--coal);
@@ -335,9 +341,13 @@ label {
 }
 
 @media (max-width: 760px) {
-  .game-layout {
+  .play-layout {
     grid-template-columns: 1fr;
     justify-content: stretch;
+  }
+
+  .game-layout {
+    width: 100%;
   }
 
   .panel-heading {

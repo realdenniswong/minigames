@@ -8,6 +8,7 @@
     />
     <title>Sudoku</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../shared/shell.css" />
   </head>
   <body>
     <main class="game-shell">
@@ -17,7 +18,10 @@
           <p class="eyebrow">quiet numbers</p>
           <h1>Sudoku</h1>
         </div>
-        <div class="control-row">
+      </header>
+
+      <section class="game-layout game-screen">
+        <div class="screen-controls">
           <label class="select-control">
             <span>Puzzle</span>
             <select id="sudokuDifficulty">
@@ -28,26 +32,25 @@
           </label>
           <button class="primary-button" type="button" id="newSudoku">New puzzle</button>
         </div>
-      </header>
-
-      <section class="game-layout">
-        <div class="board-panel">
-          <div class="stat-grid">
-            <div>
-              <span>Time</span>
-              <strong id="sudokuTimer">0</strong>
+        <div class="play-layout">
+          <div class="board-panel">
+            <div class="stat-grid">
+              <div>
+                <span>Time</span>
+                <strong id="sudokuTimer">0</strong>
+              </div>
             </div>
+            <div class="sudoku-board" id="sudokuBoard" aria-label="Sudoku board"></div>
           </div>
-          <div class="sudoku-board" id="sudokuBoard" aria-label="Sudoku board"></div>
+          <aside class="side-panel">
+            <div class="number-pad" id="numberPad" aria-label="Number pad"></div>
+            <div class="control-row compact">
+              <button type="button" id="noteSudoku" aria-pressed="false">Notes</button>
+              <button type="button" id="eraseSudoku">Erase</button>
+            </div>
+            <p class="game-message" id="sudokuMessage">Select a blank cell, then choose a number.</p>
+          </aside>
         </div>
-        <aside class="side-panel">
-          <div class="number-pad" id="numberPad" aria-label="Number pad"></div>
-          <div class="control-row compact">
-            <button type="button" id="noteSudoku" aria-pressed="false">Notes</button>
-            <button type="button" id="eraseSudoku">Erase</button>
-          </div>
-          <p class="game-message" id="sudokuMessage">Select a blank cell, then choose a number.</p>
-        </aside>
       </section>
     </main>
     <script src="game.js"></script>
