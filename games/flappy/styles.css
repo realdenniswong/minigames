@@ -226,6 +226,17 @@ h1 {
     min-height: 0;
   }
 
+  .game-screen.flappy-screen {
+    place-items: stretch;
+    gap: 12px;
+    overflow: visible;
+    background: transparent;
+  }
+
+  #flappyCanvas {
+    width: min(100%, 432px);
+  }
+
   .panel-heading {
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
@@ -256,9 +267,10 @@ h1 {
   }
 
   .side-panel {
-    top: 8px;
-    right: 8px;
-    width: min(280px, calc(100% - 16px));
+    position: static;
+    width: min(100%, 432px);
+    justify-self: center;
+    z-index: auto;
   }
 
   .game-message {
