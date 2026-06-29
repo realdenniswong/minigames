@@ -112,7 +112,7 @@ h1 {
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(360px, 70dvh) minmax(280px, 360px);
+  grid-template-columns: minmax(360px, 75dvh) minmax(280px, 360px);
   align-items: start;
   justify-content: center;
   gap: 20px;
@@ -123,7 +123,7 @@ h1 {
 #flappyCanvas {
   width: auto;
   height: calc(100dvh - 150px);
-  max-width: 100%;
+  max-width: none;
   aspect-ratio: 3 / 4;
   border: 1px solid var(--line);
   border-radius: 8px;
