@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="panel-heading">
+        <div>
+          <p class="eyebrow">logic and luck</p>
+          <h1>Minesweeper</h1>
+        </div>
+        <div class="control-row">
+          <label>
+            Size
+            <select id="mineDifficulty">
+              <option value="easy">Easy 9x9</option>
+              <option value="medium">Medium 12x12</option>
+              <option value="hard">Hard 16x16</option>
+            </select>
+          </label>
+          <button class="primary-button" type="button" id="newMineGame">New game</button>
+        </div>
+      </header>
+
+      <section class="game-layout">
+        <aside class="side-panel">
+          <div class="stat-grid">
+            <div>
+              <span>Mines</span>
+              <strong id="mineCount">10</strong>
+            </div>
+            <div>
+              <span>Flags</span>
+              <strong id="flagCount">0</strong>
+            </div>
+            <div>
+              <span>Time</span>
+              <strong id="mineTimer">0</strong>
+            </div>
+          </div>
+          <div class="mode-toggle" role="group" aria-label="Mine action mode">
+            <button class="mode-button active" type="button" data-mine-mode="reveal">Reveal</button>
+            <button class="mode-button" type="button" data-mine-mode="flag">Flag</button>
+          </div>
+          <p class="game-message" id="mineMessage">Pick a tile. First move is safe.</p>
+        </aside>
+        <div class="board-wrap">
+          <div class="mine-board" id="mineBoard" aria-label="Minesweeper board"></div>
+        </div>
+      </section>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>

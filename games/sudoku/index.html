@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Sudoku</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="panel-heading">
+        <div>
+          <p class="eyebrow">quiet numbers</p>
+          <h1>Sudoku</h1>
+        </div>
+        <div class="control-row">
+          <label>
+            Puzzle
+            <select id="sudokuDifficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </label>
+          <button class="primary-button" type="button" id="newSudoku">New puzzle</button>
+        </div>
+      </header>
+
+      <section class="game-layout">
+        <div class="sudoku-board" id="sudokuBoard" aria-label="Sudoku board"></div>
+        <aside class="side-panel">
+          <div class="stat-grid">
+            <div>
+              <span>Time</span>
+              <strong id="sudokuTimer">0</strong>
+            </div>
+          </div>
+          <div class="number-pad" id="numberPad" aria-label="Number pad"></div>
+          <div class="control-row compact">
+            <button type="button" id="eraseSudoku">Erase</button>
+            <button type="button" id="checkSudoku">Check</button>
+            <button type="button" id="solveSudoku">Solve</button>
+          </div>
+          <p class="game-message" id="sudokuMessage">Select a blank cell, then choose a number.</p>
+        </aside>
+      </section>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>

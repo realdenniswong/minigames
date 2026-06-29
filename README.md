@@ -1,13 +1,18 @@
-# Offline Mini Games
+# Dennis Mini Games
 
-Open `index.html` in a browser to play. No server, install step, or internet connection is required.
+Open `index.html` to launch the arcade library.
 
-For iPhone sharing, try `minigames-single.html`. It contains the HTML, CSS, and JavaScript in one file.
+The project is now organized like an old Flash-game portal:
 
-Included games:
+- `index.html`, `styles.css`, `app.js`: the arcade shell and game selector
+- `games/minesweeper/`: Minesweeper bundle
+- `games/sudoku/`: Sudoku bundle
+- `games/flappy/`: Flappy Bird style bundle
 
-- Minesweeper
-- Sudoku
-- Flappy Bird style tap game
+Each game bundle contains its own:
 
-Everything is plain HTML, CSS, and JavaScript, so the folder can be copied to another computer and still run locally.
+- `index.html`
+- `styles.css`
+- `game.js`
+
+That means a future game can be added by creating a new folder under `games/` and adding it to the game list in the root `app.js`.
