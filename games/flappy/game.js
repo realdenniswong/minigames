@@ -6,6 +6,14 @@ const flappyMessage = document.getElementById("flappyMessage");
 let flappyState;
 let flappyFrame;
 
+const groundHeight = 54;
+const pipeWidth = 62;
+const pipeSpeed = 3.25;
+const pipeInterval = 84;
+const pipeGap = 124;
+const gravity = 0.46;
+const flapPower = -7.8;
+
 function resetFlappy() {
   cancelAnimationFrame(flappyFrame);
   flappyState = {
@@ -37,7 +45,7 @@ function startFlappy() {
 
 function flap() {
   if (!flappyState.running) return;
-  flappyState.bird.vy = -7.2;
+  flappyState.bird.vy = flapPower;
 }
 
 function handleFlappyTap(event) {
@@ -61,18 +69,19 @@ function loopFlappy() {
 function updateFlappy() {
   const state = flappyState;
   state.tick += 1;
-  state.bird.vy += 0.38;
+  state.bird.vy += gravity;
   state.bird.y += state.bird.vy;
 
-  if (state.tick % 92 === 0) {
-    const gap = 150;
-    const top = 80 + Math.random() * 230;
-    state.pipes.push({ x: canvas.width, top, bottom: top + gap, scored: false });
+  if (state.tick % pipeInterval === 0) {
+    const minTop = 72;
+    const maxTop = canvas.height - groundHeight - pipeGap - 78;
+    const top = minTop + Math.random() * (maxTop - minTop);
+    state.pipes.push({ x: canvas.width, top, bottom: top + pipeGap, scored: false });
   }
 
   state.pipes.forEach((pipe) => {
-    pipe.x -= 2.7;
-    if (!pipe.scored && pipe.x + 58 < state.bird.x) {
+    pipe.x -= pipeSpeed;
+    if (!pipe.scored && pipe.x + pipeWidth < state.bird.x) {
       pipe.scored = true;
       state.score += 1;
       flappyScoreEl.textContent = state.score;
@@ -80,14 +89,17 @@ function updateFlappy() {
   });
   state.pipes = state.pipes.filter((pipe) => pipe.x > -70);
 
-  if (state.bird.y - state.bird.radius < 0 || state.bird.y + state.bird.radius > canvas.height - 54) {
+  if (
+    state.bird.y - state.bird.radius < 0 ||
+    state.bird.y + state.bird.radius > canvas.height - groundHeight
+  ) {
     endFlappy();
   }
 
   state.pipes.forEach((pipe) => {
     const inPipeX =
       state.bird.x + state.bird.radius > pipe.x &&
-      state.bird.x - state.bird.radius < pipe.x + 58;
+      state.bird.x - state.bird.radius < pipe.x + pipeWidth;
     const inPipeY =
       state.bird.y - state.bird.radius < pipe.top ||
       state.bird.y + state.bird.radius > pipe.bottom;
@@ -132,18 +144,18 @@ function drawFlappy() {
 
   pipes.forEach((pipe) => {
     ctx.fillStyle = "#1c8f78";
-    ctx.fillRect(pipe.x, 0, 58, pipe.top);
-    ctx.fillRect(pipe.x, pipe.bottom, 58, canvas.height - pipe.bottom - 54);
+    ctx.fillRect(pipe.x, 0, pipeWidth, pipe.top);
+    ctx.fillRect(pipe.x, pipe.bottom, pipeWidth, canvas.height - pipe.bottom - groundHeight);
     ctx.fillStyle = "#126653";
-    ctx.fillRect(pipe.x - 5, pipe.top - 16, 68, 16);
-    ctx.fillRect(pipe.x - 5, pipe.bottom, 68, 16);
+    ctx.fillRect(pipe.x - 5, pipe.top - 16, pipeWidth + 10, 16);
+    ctx.fillRect(pipe.x - 5, pipe.bottom, pipeWidth + 10, 16);
   });
 
   ctx.fillStyle = "#5aa05a";
-  ctx.fillRect(0, canvas.height - 54, canvas.width, 54);
+  ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
   ctx.fillStyle = "#3f783f";
   for (let x = 0; x < canvas.width; x += 24) {
-    ctx.fillRect(x, canvas.height - 54, 14, 8);
+    ctx.fillRect(x, canvas.height - groundHeight, 14, 8);
   }
 
   ctx.save();
