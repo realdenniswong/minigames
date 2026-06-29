@@ -321,11 +321,17 @@ label {
   }
 
   .title-block {
-    display: grid;
-    align-content: center;
-    justify-items: end;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2px;
     min-height: 0;
     text-align: right;
+  }
+
+  .title-block .eyebrow {
+    margin: 0;
   }
 
   .panel-heading > .control-row {
