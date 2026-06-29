@@ -21,17 +21,6 @@
       </header>
 
       <section class="game-layout game-screen">
-        <div class="screen-controls">
-          <label class="select-control">
-            <span>Puzzle</span>
-            <select id="sudokuDifficulty">
-              <option value="easy">Easy</option>
-              <option value="medium" selected>Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-          </label>
-          <button class="primary-button" type="button" id="newSudoku">New puzzle</button>
-        </div>
         <div class="play-layout">
           <div class="board-panel">
             <div class="stat-grid">
@@ -43,6 +32,17 @@
             <div class="sudoku-board" id="sudokuBoard" aria-label="Sudoku board"></div>
           </div>
           <aside class="side-panel">
+            <div class="screen-controls">
+              <label class="select-control">
+                <span>Puzzle</span>
+                <select id="sudokuDifficulty">
+                  <option value="easy">Easy</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </label>
+              <button class="primary-button" type="button" id="newSudoku">New puzzle</button>
+            </div>
             <div class="number-pad" id="numberPad" aria-label="Number pad"></div>
             <div class="control-row compact">
               <button type="button" id="noteSudoku" aria-pressed="false">Notes</button>
