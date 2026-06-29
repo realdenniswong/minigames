@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline Mini Games</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">HTML5 offline arcade</p>
+          <h1>Mini Games</h1>
+        </div>
+        <div class="status-pill" id="offlineStatus">Ready offline</div>
+      </header>
+
+      <section class="game-menu" id="gameMenu" aria-labelledby="library-title">
+        <div class="library-heading">
+          <p class="eyebrow">choose a game</p>
+          <h2 id="library-title">Game Library</h2>
+        </div>
+        <div class="game-list">
+          <button class="game-card" type="button" data-open-game="mines">
+            <span class="game-card-icon" aria-hidden="true">M</span>
+            <span>
+              <strong>Minesweeper</strong>
+              <small>Easy, medium, hard</small>
+            </span>
+          </button>
+          <button class="game-card" type="button" data-open-game="sudoku">
+            <span class="game-card-icon" aria-hidden="true">S</span>
+            <span>
+              <strong>Sudoku</strong>
+              <small>Timed number puzzle</small>
+            </span>
+          </button>
+          <button class="game-card" type="button" data-open-game="flappy">
+            <span class="game-card-icon" aria-hidden="true">F</span>
+            <span>
+              <strong>Flappy Bird Style</strong>
+              <small>Tap timing challenge</small>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="game-stage" id="gameStage" hidden>
+        <div class="stage-toolbar">
+          <button type="button" id="backToMenu">Back</button>
+          <strong id="stageTitle">Game</strong>
+          <button type="button" id="fullscreenGame">Fullscreen</button>
+        </div>
+
+      <section class="game-panel" id="mines-panel" aria-labelledby="mines-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">logic and luck</p>
+            <h2 id="mines-title">Minesweeper</h2>
+          </div>
+          <div class="control-row">
+            <label>
+              Size
+              <select id="mineDifficulty">
+                <option value="easy">Easy 9x9</option>
+                <option value="medium">Medium 12x12</option>
+                <option value="hard">Hard 16x16</option>
+              </select>
+            </label>
+            <button class="primary-button" type="button" id="newMineGame">New game</button>
+          </div>
+        </div>
+
+        <div class="game-layout two-column">
+          <aside class="side-panel">
+            <div class="stat-grid">
+              <div>
+                <span>Mines</span>
+                <strong id="mineCount">10</strong>
+              </div>
+              <div>
+                <span>Flags</span>
+                <strong id="flagCount">0</strong>
+              </div>
+              <div>
+                <span>Time</span>
+                <strong id="mineTimer">0</strong>
+              </div>
+            </div>
+            <div class="mode-toggle" role="group" aria-label="Mine action mode">
+              <button class="mode-button active" type="button" data-mine-mode="reveal">Reveal</button>
+              <button class="mode-button" type="button" data-mine-mode="flag">Flag</button>
+            </div>
+            <p class="game-message" id="mineMessage">Pick a tile. First move is safe.</p>
+          </aside>
+          <div class="board-wrap">
+            <div class="mine-board" id="mineBoard" aria-label="Minesweeper board"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="game-panel" id="sudoku-panel" aria-labelledby="sudoku-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">quiet numbers</p>
+            <h2 id="sudoku-title">Sudoku</h2>
+          </div>
+          <div class="control-row">
+            <label>
+              Puzzle
+              <select id="sudokuDifficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+            <button class="primary-button" type="button" id="newSudoku">New puzzle</button>
+          </div>
+        </div>
+
+        <div class="game-layout sudoku-layout">
+          <div class="sudoku-board" id="sudokuBoard" aria-label="Sudoku board"></div>
+          <aside class="side-panel sudoku-tools">
+            <div class="stat-grid sudoku-stat-grid">
+              <div>
+                <span>Time</span>
+                <strong id="sudokuTimer">0</strong>
+              </div>
+            </div>
+            <div class="number-pad" id="numberPad" aria-label="Number pad"></div>
+            <div class="control-row compact">
+              <button type="button" id="eraseSudoku">Erase</button>
+              <button type="button" id="checkSudoku">Check</button>
+              <button type="button" id="solveSudoku">Solve</button>
+            </div>
+            <p class="game-message" id="sudokuMessage">Select a blank cell, then choose a number.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="game-panel" id="flappy-panel" aria-labelledby="flappy-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">tap timing</p>
+            <h2 id="flappy-title">Flappy Bird Style</h2>
+          </div>
+          <div class="control-row">
+            <button class="primary-button" type="button" id="startFlappy">Start</button>
+            <button type="button" id="resetFlappy">Reset</button>
+          </div>
+        </div>
+
+        <div class="game-layout flappy-layout">
+          <canvas id="flappyCanvas" width="432" height="576" aria-label="Flappy game canvas"></canvas>
+          <aside class="side-panel">
+            <div class="stat-grid">
+              <div>
+                <span>Score</span>
+                <strong id="flappyScore">0</strong>
+              </div>
+              <div>
+                <span>Best</span>
+                <strong id="flappyBest">0</strong>
+              </div>
+            </div>
+            <p class="game-message" id="flappyMessage">Press Start, Space, or tap the game to flap.</p>
+          </aside>
+        </div>
+      </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
