@@ -45,11 +45,8 @@ function renderMineBoard() {
   const gapSize = 3;
   const boardWidth = mineState.cols * cellSize + (mineState.cols - 1) * gapSize;
   const boardHeight = mineState.rows * cellSize + (mineState.rows - 1) * gapSize;
-  const visibleCells = 9;
-  const visibleSize = visibleCells * cellSize + (visibleCells - 1) * gapSize;
   mineBoardEl.style.setProperty("--mine-board-width", `${boardWidth}px`);
   mineBoardEl.style.setProperty("--mine-board-height", `${boardHeight}px`);
-  mineBoardEl.style.setProperty("--mine-board-view", `${visibleSize}px`);
   mineBoardEl.style.gridTemplateColumns = `repeat(${mineState.cols}, 1fr)`;
   mineBoardEl.style.gridTemplateRows = `repeat(${mineState.rows}, 1fr)`;
   mineState.cells.forEach((cell) => {
