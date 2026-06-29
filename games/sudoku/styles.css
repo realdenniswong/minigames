@@ -170,18 +170,25 @@ label {
 
 .game-layout {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   width: 100%;
+  height: calc(100dvh - 146px);
   margin: 20px auto 0;
   gap: 12px;
+  overflow: hidden;
+}
+
+.game-layout.game-screen {
+  min-height: 0;
 }
 
 .play-layout {
   display: grid;
-  grid-template-columns: minmax(0, calc(100dvh - 250px)) minmax(280px, 360px);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
   align-items: start;
   justify-content: center;
   gap: 20px;
-  min-height: calc(100dvh - 238px);
+  min-height: 0;
 }
 
 .side-panel {
@@ -193,7 +200,9 @@ label {
 
 .board-panel {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 10px;
+  min-height: 0;
 }
 
 .stat-grid {
@@ -209,7 +218,7 @@ label {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
-  padding: 12px;
+  padding: 8px 10px;
 }
 
 .stat-grid span {
@@ -231,8 +240,8 @@ label {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
-  width: 100%;
-  max-width: calc(100dvh - 250px);
+  width: min(100%, calc(100dvh - 314px));
+  max-width: 100%;
   aspect-ratio: 1;
   border: 3px solid var(--coal);
   background: var(--coal);
@@ -350,6 +359,8 @@ label {
 
   .game-layout {
     width: 100%;
+    height: auto;
+    overflow: visible;
   }
 
   .panel-heading {
