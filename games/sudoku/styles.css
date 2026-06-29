@@ -75,9 +75,9 @@ h1 {
 }
 
 .panel-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
   gap: 18px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
@@ -119,9 +119,14 @@ label {
 }
 
 .nav-button {
-  margin-right: auto;
-  min-width: 86px;
-  font-weight: 800;
+  justify-self: start;
+  min-width: 120px;
+  font-weight: 900;
+}
+
+.primary-button,
+.nav-button {
+  min-width: 120px;
 }
 
 .primary-button {
@@ -301,8 +306,7 @@ label {
   }
 
   .panel-heading {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: start;
   }
 
   .side-panel {
