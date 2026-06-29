@@ -221,9 +221,14 @@ h1 {
 
   .panel-heading > .control-row {
     display: grid;
-    grid-template-columns: 136px 136px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-column: 1 / -1;
-    justify-content: end;
+    justify-content: stretch;
+  }
+
+  .panel-heading > .control-row > * {
+    width: 100%;
+    min-width: 0;
   }
 
   .side-panel {
@@ -249,7 +254,7 @@ h1 {
 
 @media (max-width: 560px) {
   .panel-heading > .control-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: stretch;
   }
 
