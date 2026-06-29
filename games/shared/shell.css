@@ -150,6 +150,8 @@ label {
 }
 
 .game-screen {
+  width: 100%;
+  min-height: calc(100dvh - 126px);
   border: 1px solid rgba(217, 222, 231, 0.9);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.68);
@@ -165,6 +167,10 @@ label {
 }
 
 @media (max-width: 760px) {
+  .game-screen {
+    min-height: 0;
+  }
+
   .panel-heading {
     grid-template-columns: auto minmax(0, 1fr);
     gap: 12px;

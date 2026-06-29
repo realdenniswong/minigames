@@ -116,19 +116,24 @@ h1 {
   align-items: start;
   justify-items: center;
   margin-top: 20px;
+  min-height: calc(100dvh - 126px);
   overscroll-behavior: contain;
 }
 
 .game-screen.flappy-screen {
   position: relative;
-  width: min(100%, 66dvh);
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: calc(100dvh - 126px);
   padding: 0;
   overflow: hidden;
+  background: #8fc8df;
 }
 
 #flappyCanvas {
   display: block;
-  width: 100%;
+  width: min(100%, calc(75dvh - 95px));
   height: auto;
   aspect-ratio: 3 / 4;
   border: 0;
@@ -199,13 +204,17 @@ h1 {
     justify-content: center;
   }
 
-  .flappy-screen {
-    width: min(66dvh, calc(100vw - 440px));
-    max-width: none;
+  #flappyCanvas {
+    width: min(calc(75dvh - 95px), 100%);
   }
 }
 
 @media (max-width: 760px) {
+  .game-layout,
+  .game-screen.flappy-screen {
+    min-height: 0;
+  }
+
   .panel-heading {
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
