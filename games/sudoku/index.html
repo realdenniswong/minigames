@@ -18,8 +18,8 @@
         </div>
         <div class="control-row">
           <a class="nav-button" href="../../index.html">Library</a>
-          <label>
-            Puzzle
+          <label class="select-control">
+            <span>Puzzle</span>
             <select id="sudokuDifficulty">
               <option value="easy">Easy</option>
               <option value="medium" selected>Medium</option>
@@ -43,9 +43,8 @@
         <aside class="side-panel">
           <div class="number-pad" id="numberPad" aria-label="Number pad"></div>
           <div class="control-row compact">
+            <button type="button" id="noteSudoku" aria-pressed="false">Notes</button>
             <button type="button" id="eraseSudoku">Erase</button>
-            <button type="button" id="checkSudoku">Check</button>
-            <button type="button" id="solveSudoku">Solve</button>
           </div>
           <p class="game-message" id="sudokuMessage">Select a blank cell, then choose a number.</p>
         </aside>

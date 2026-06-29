@@ -28,6 +28,7 @@ body {
 button,
 select,
 .nav-button {
+  height: 44px;
   min-height: 44px;
   font: inherit;
   touch-action: manipulation;
@@ -51,7 +52,8 @@ select {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
-  padding: 0 34px 0 12px;
+  color: var(--ink);
+  padding: 0 42px 0 12px;
 }
 
 .game-shell {
@@ -84,19 +86,35 @@ h1 {
 
 .control-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 10px;
 }
 
 label {
-  display: grid;
-  gap: 6px;
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.select-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.select-control select {
+  min-width: 168px;
+}
+
+.nav-button {
+  margin-right: auto;
+  min-width: 86px;
+  font-weight: 800;
 }
 
 .primary-button {
@@ -261,17 +279,27 @@ label {
 }
 
 @media (max-width: 560px) {
-  .control-row {
+  .panel-heading > .control-row {
     justify-content: stretch;
   }
 
-  .control-row > * {
+  .panel-heading > .control-row > * {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .select-control {
+    width: 100%;
+  }
+
+  .select-control select {
     flex: 1;
     min-width: 0;
   }
 
-  .control-row select,
-  .control-row button {
+  .panel-heading .control-row select,
+  .panel-heading .control-row button,
+  .panel-heading .control-row .nav-button {
     width: 100%;
   }
 

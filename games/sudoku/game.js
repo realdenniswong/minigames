@@ -28,6 +28,7 @@ const numberPad = document.getElementById("numberPad");
 const sudokuDifficulty = document.getElementById("sudokuDifficulty");
 const sudokuMessage = document.getElementById("sudokuMessage");
 const sudokuTimerEl = document.getElementById("sudokuTimer");
+const noteSudokuButton = document.getElementById("noteSudoku");
 let sudokuState;
 
 function newSudoku() {
@@ -38,13 +39,17 @@ function newSudoku() {
     puzzle: puzzle.puzzle,
     solution: puzzle.solution,
     values: puzzle.puzzle.split(""),
+    notes: Array.from({ length: 81 }, () => new Set()),
     selected: null,
+    noteMode: false,
     seconds: 0,
     started: false,
     finished: false,
     timer: null,
   };
   sudokuTimerEl.textContent = "0";
+  noteSudokuButton.classList.remove("active");
+  noteSudokuButton.setAttribute("aria-pressed", "false");
   sudokuMessage.textContent = "Select a blank cell, then choose a number.";
   renderSudoku();
 }
@@ -55,7 +60,11 @@ function renderSudoku() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "sudoku-cell";
-    button.textContent = value === "0" ? "" : value;
+    if (value === "0") {
+      renderSudokuNotes(button, index);
+    } else {
+      button.textContent = value;
+    }
     if (sudokuState.puzzle[index] !== "0") button.classList.add("given");
     if (sudokuState.selected === index) button.classList.add("selected");
     if (
@@ -74,6 +83,19 @@ function renderSudoku() {
   });
 }
 
+function renderSudokuNotes(cell, index) {
+  const notes = sudokuState.notes[index];
+  if (!notes.size) return;
+  const noteGrid = document.createElement("span");
+  noteGrid.className = "sudoku-notes";
+  for (let value = 1; value <= 9; value += 1) {
+    const note = document.createElement("span");
+    note.textContent = notes.has(String(value)) ? String(value) : "";
+    noteGrid.appendChild(note);
+  }
+  cell.appendChild(noteGrid);
+}
+
 function setSudokuValue(value) {
   const selected = sudokuState.selected;
   if (selected === null) {
@@ -84,8 +106,13 @@ function setSudokuValue(value) {
     sudokuMessage.textContent = "That number is part of the puzzle.";
     return;
   }
+  if (sudokuState.noteMode && value !== "0") {
+    toggleSudokuNote(value);
+    return;
+  }
   if (!sudokuState.started && value !== "0") startSudokuTimer();
   sudokuState.values[selected] = value;
+  sudokuState.notes[selected].clear();
   renderSudoku();
   if (sudokuState.values.join("") === sudokuState.solution) {
     finishSudokuTimer();
@@ -97,6 +124,49 @@ function setSudokuValue(value) {
   }
 }
 
+function toggleSudokuNote(value) {
+  const selected = sudokuState.selected;
+  if (sudokuState.values[selected] !== "0") {
+    sudokuMessage.textContent = "Erase the cell before adding notes.";
+    return;
+  }
+  if (!sudokuState.started) startSudokuTimer();
+  const notes = sudokuState.notes[selected];
+  if (notes.has(value)) {
+    notes.delete(value);
+    sudokuMessage.textContent = `Removed ${value} from notes.`;
+  } else {
+    notes.add(value);
+    sudokuMessage.textContent = `Added ${value} to notes.`;
+  }
+  renderSudoku();
+}
+
+function toggleSudokuNoteMode() {
+  sudokuState.noteMode = !sudokuState.noteMode;
+  noteSudokuButton.classList.toggle("active", sudokuState.noteMode);
+  noteSudokuButton.setAttribute("aria-pressed", String(sudokuState.noteMode));
+  sudokuMessage.textContent = sudokuState.noteMode
+    ? "Notes on. Add possible numbers inside a cell."
+    : "Notes off. Numbers will fill the cell.";
+}
+
+function eraseSudokuCell() {
+  const selected = sudokuState.selected;
+  if (selected === null) {
+    sudokuMessage.textContent = "Choose a blank cell first.";
+    return;
+  }
+  if (sudokuState.puzzle[selected] !== "0") {
+    sudokuMessage.textContent = "That number is part of the puzzle.";
+    return;
+  }
+  sudokuState.values[selected] = "0";
+  sudokuState.notes[selected].clear();
+  sudokuMessage.textContent = "Cell cleared.";
+  renderSudoku();
+}
+
 function buildNumberPad() {
   numberPad.innerHTML = "";
   for (let value = 1; value <= 9; value += 1) {
@@ -106,22 +176,6 @@ function buildNumberPad() {
     button.addEventListener("click", () => setSudokuValue(String(value)));
     numberPad.appendChild(button);
   }
-}
-
-function checkSudoku() {
-  const filled = sudokuState.values.every((value) => value !== "0");
-  const wrong = sudokuState.values.some(
-    (value, index) => value !== "0" && value !== sudokuState.solution[index],
-  );
-  if (wrong) {
-    sudokuMessage.textContent = "Some entries are not correct yet.";
-  } else if (filled) {
-    finishSudokuTimer();
-    sudokuMessage.textContent = "Solved cleanly. Excellent.";
-  } else {
-    sudokuMessage.textContent = "Everything entered so far is valid.";
-  }
-  renderSudoku();
 }
 
 function startSudokuTimer() {
@@ -149,17 +203,12 @@ function finishSudokuTimer() {
 
 document.getElementById("newSudoku").addEventListener("click", newSudoku);
 sudokuDifficulty.addEventListener("change", newSudoku);
-document.getElementById("eraseSudoku").addEventListener("click", () => setSudokuValue("0"));
-document.getElementById("checkSudoku").addEventListener("click", checkSudoku);
-document.getElementById("solveSudoku").addEventListener("click", () => {
-  sudokuState.values = sudokuState.solution.split("");
-  finishSudokuTimer();
-  sudokuMessage.textContent = "Solved puzzle shown.";
-  renderSudoku();
-});
+noteSudokuButton.addEventListener("click", toggleSudokuNoteMode);
+document.getElementById("eraseSudoku").addEventListener("click", eraseSudokuCell);
 window.addEventListener("keydown", (event) => {
   if (/^[1-9]$/.test(event.key)) setSudokuValue(event.key);
-  if (event.key === "Backspace" || event.key === "Delete") setSudokuValue("0");
+  if (event.key === "Backspace" || event.key === "Delete") eraseSudokuCell();
+  if (event.key.toLowerCase() === "n") toggleSudokuNoteMode();
 });
 window.addEventListener("pagehide", pauseSudokuTimer);
 buildNumberPad();
