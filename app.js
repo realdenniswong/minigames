@@ -19,7 +19,6 @@ let activeGame = null;
 function openGame(game) {
   pauseActiveGame();
   activeGame = game;
-  setFlappyScrollLock(false);
   gameMenu.hidden = true;
   gameStage.hidden = false;
   stageTitle.textContent = gameNames[game];
@@ -32,7 +31,6 @@ function openGame(game) {
 function showGameMenu() {
   pauseActiveGame();
   activeGame = null;
-  setFlappyScrollLock(false);
   Object.values(panels).forEach((panel) => panel.classList.remove("active"));
   gameStage.hidden = true;
   gameMenu.hidden = false;
@@ -489,7 +487,6 @@ function startFlappy() {
   if (!flappyState.running) {
     flappyState.running = true;
     flappyState.paused = false;
-    setFlappyScrollLock(true);
     flappyMessage.textContent = "Tap, click, or press Space to flap.";
     loopFlappy();
   }
@@ -514,10 +511,9 @@ function stopFlappyPageGesture(event) {
 }
 
 function stopFlappyDocumentGesture(event) {
-  if (activeGame !== "flappy") return;
+  if (activeGame !== "flappy" || !flappyState?.running) return;
   const target = event.target;
-  if (target.closest("button, select, input, textarea, a")) return;
-  if (target.closest("#flappy-panel")) event.preventDefault();
+  if (target.closest("#flappyCanvas")) event.preventDefault();
 }
 
 function loopFlappy() {
@@ -567,7 +563,6 @@ function endFlappy() {
   if (flappyState.over) return;
   flappyState.running = false;
   flappyState.over = true;
-  setFlappyScrollLock(false);
   flappyState.best = Math.max(flappyState.best, flappyState.score);
   localStorage.setItem("offlineMiniGames.flappyBest", String(flappyState.best));
   flappyBestEl.textContent = flappyState.best;
@@ -580,13 +575,8 @@ function pauseFlappy() {
   if (flappyState.running) {
     flappyState.running = false;
     flappyState.paused = true;
-    setFlappyScrollLock(false);
     flappyMessage.textContent = "Paused. Press Start to continue.";
   }
-}
-
-function setFlappyScrollLock(locked) {
-  document.body.classList.toggle("flappy-scroll-lock", locked);
 }
 
 function drawFlappy() {
