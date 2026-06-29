@@ -199,15 +199,39 @@ h1 {
   }
 
   .game-layout {
+    --flappy-info-height: 132px;
     height: calc(100dvh - 178px);
     overflow: hidden;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+  }
+
+  #flappyCanvas {
+    width: min(100%, calc((100dvh - 178px - var(--flappy-info-height) - 20px) * 0.75));
+    max-height: calc(100dvh - 178px - var(--flappy-info-height) - 20px);
+    justify-self: center;
   }
 
   .side-panel {
     width: min(100%, 590px);
     justify-self: center;
-    max-height: 100%;
-    overflow: auto;
+    max-height: var(--flappy-info-height);
+    overflow: hidden;
+    gap: 8px;
+  }
+
+  .stat-grid div {
+    padding: 8px 10px;
+  }
+
+  .stat-grid strong {
+    font-size: 1.18rem;
+  }
+
+  .game-message {
+    min-height: 44px;
+    padding: 9px 12px;
+    font-size: 0.92rem;
   }
 }
 
@@ -219,5 +243,15 @@ h1 {
   .control-row > * {
     flex: 1;
     min-width: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .game-layout {
+    --flappy-info-height: 126px;
+  }
+
+  .game-message {
+    font-size: 0.86rem;
   }
 }
