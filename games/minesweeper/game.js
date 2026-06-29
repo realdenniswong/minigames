@@ -5,6 +5,7 @@ const minePresets = {
 };
 
 const mineBoardEl = document.getElementById("mineBoard");
+const mineBoardWrapEl = mineBoardEl.parentElement;
 const mineDifficulty = document.getElementById("mineDifficulty");
 const mineCountEl = document.getElementById("mineCount");
 const flagCountEl = document.getElementById("flagCount");
@@ -45,6 +46,8 @@ function renderMineBoard() {
   const gapSize = 3;
   const boardWidth = mineState.cols * cellSize + (mineState.cols - 1) * gapSize;
   const boardHeight = mineState.rows * cellSize + (mineState.rows - 1) * gapSize;
+  mineBoardWrapEl.style.setProperty("--mine-board-width", `${boardWidth}px`);
+  mineBoardWrapEl.style.setProperty("--mine-board-height", `${boardHeight}px`);
   mineBoardEl.style.setProperty("--mine-board-width", `${boardWidth}px`);
   mineBoardEl.style.setProperty("--mine-board-height", `${boardHeight}px`);
   mineBoardEl.style.gridTemplateColumns = `repeat(${mineState.cols}, 1fr)`;

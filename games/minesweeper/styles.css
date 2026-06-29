@@ -164,8 +164,13 @@ label {
 .game-layout {
   display: grid;
   width: 100%;
+  height: calc(100dvh - 126px);
   margin: 20px auto 0;
   gap: 12px;
+}
+
+.game-layout.game-screen {
+  min-height: 0;
 }
 
 .play-layout {
@@ -175,7 +180,7 @@ label {
   justify-content: center;
   gap: 20px;
   height: 100%;
-  min-height: calc(100dvh - 170px);
+  min-height: 0;
 }
 
 .side-panel {
@@ -257,8 +262,8 @@ label {
   display: grid;
   place-items: start;
   width: min(100%, var(--mine-board-width, 330px));
-  height: min(calc(100dvh - 170px), var(--mine-board-height, 330px));
-  max-height: calc(100dvh - 170px);
+  height: min(100%, var(--mine-board-height, 330px));
+  max-height: 100%;
   overflow: auto;
   overscroll-behavior: contain;
   overscroll-behavior-inline: contain;
@@ -341,6 +346,7 @@ label {
 
   .game-layout {
     width: 100%;
+    height: auto;
     justify-content: stretch;
   }
 
