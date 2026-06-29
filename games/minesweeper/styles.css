@@ -16,7 +16,8 @@
 
 body {
   margin: 0;
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--paper);
   color: var(--ink);
   font-family:
@@ -49,7 +50,8 @@ select {
 }
 
 .game-shell {
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   padding: clamp(14px, 2.5vw, 22px);
 }
 
@@ -105,6 +107,8 @@ label {
   grid-template-columns: minmax(220px, 270px) minmax(0, 1fr);
   gap: 20px;
   padding-top: 20px;
+  height: calc(100dvh - 116px);
+  min-height: 0;
 }
 
 .side-panel {
@@ -172,6 +176,7 @@ label {
   overscroll-behavior-inline: contain;
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 .mine-board {
@@ -179,6 +184,7 @@ label {
   --mine-gap: 3px;
   display: grid;
   width: min(100%, 648px);
+  max-height: 100%;
   min-width: min(648px, var(--mine-board-min));
   aspect-ratio: 1;
   gap: var(--mine-gap);
@@ -287,6 +293,11 @@ label {
   .panel-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .game-layout {
+    height: calc(100dvh - 178px);
+    overflow: hidden;
   }
 }
 

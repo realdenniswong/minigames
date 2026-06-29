@@ -30,6 +30,14 @@ const stageTitle = document.getElementById("stageTitle");
 const fullscreenButton = document.getElementById("fullscreenGame");
 let fullscreenActive = false;
 
+function sizeGameFrame() {
+  if (gameStage.hidden || fullscreenActive) return;
+  const frameTop = gameFrame.getBoundingClientRect().top;
+  const bottomSpace = 16;
+  const height = Math.max(360, window.innerHeight - frameTop - bottomSpace);
+  gameFrame.style.height = `${height}px`;
+}
+
 function renderGameList() {
   gameList.innerHTML = "";
   games.forEach((game) => {
@@ -53,6 +61,7 @@ function openGame(game) {
   gameFrame.src = game.url;
   gameMenu.hidden = true;
   gameStage.hidden = false;
+  requestAnimationFrame(sizeGameFrame);
 }
 
 function showGameMenu() {
@@ -67,6 +76,8 @@ function toggleFullscreenMode() {
   fullscreenActive = nextState;
   document.body.classList.toggle("fullscreen-mode", nextState);
   fullscreenButton.textContent = nextState ? "Exit Fullscreen" : "Fullscreen";
+  gameFrame.style.height = nextState ? "100dvh" : "";
+  if (!nextState) requestAnimationFrame(sizeGameFrame);
   sendFullscreenState();
   if (nextState && gameStage.requestFullscreen) {
     gameStage.requestFullscreen().catch(() => {});
@@ -79,6 +90,8 @@ function exitFullscreenMode() {
   fullscreenActive = false;
   document.body.classList.remove("fullscreen-mode");
   fullscreenButton.textContent = "Fullscreen";
+  gameFrame.style.height = "";
+  requestAnimationFrame(sizeGameFrame);
   sendFullscreenState();
   if (document.fullscreenElement && document.exitFullscreen) {
     document.exitFullscreen().catch(() => {});
@@ -88,6 +101,8 @@ function exitFullscreenMode() {
 document.getElementById("backToMenu").addEventListener("click", showGameMenu);
 fullscreenButton.addEventListener("click", toggleFullscreenMode);
 gameFrame.addEventListener("load", sendFullscreenState);
+window.addEventListener("resize", sizeGameFrame);
+window.addEventListener("orientationchange", () => setTimeout(sizeGameFrame, 250));
 document.addEventListener("fullscreenchange", () => {
   if (!document.fullscreenElement) {
     fullscreenActive = false;
