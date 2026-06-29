@@ -12,7 +12,7 @@ const games = [
     url: "games/sudoku/index.html",
   },
   {
-    title: "Flappy Bird Style",
+    title: "Flappy Bird",
     meta: "Tap timing challenge",
     icon: "F",
     url: "games/flappy/index.html",
