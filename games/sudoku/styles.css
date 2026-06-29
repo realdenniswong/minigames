@@ -15,8 +15,7 @@
 
 body {
   margin: 0;
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100dvh;
   background: var(--paper);
   color: var(--ink);
   font-family:
@@ -49,8 +48,7 @@ select {
 }
 
 .game-shell {
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100dvh;
   padding: clamp(14px, 2.5vw, 22px);
 }
 
@@ -115,8 +113,6 @@ label {
   align-items: start;
   gap: 20px;
   padding-top: 20px;
-  height: calc(100dvh - 116px);
-  min-height: 0;
 }
 
 .side-panel {
@@ -159,7 +155,6 @@ label {
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
   width: min(100%, 590px);
-  max-height: 100%;
   aspect-ratio: 1;
   border: 3px solid var(--coal);
   background: var(--coal);
@@ -284,16 +279,9 @@ label {
     flex-direction: column;
   }
 
-  .game-layout {
-    height: calc(100dvh - 178px);
-    overflow: hidden;
-  }
-
   .side-panel {
     width: min(100%, 590px);
     justify-self: center;
-    max-height: 100%;
-    overflow: auto;
   }
 }
 

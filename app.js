@@ -29,12 +29,14 @@ const gameFrame = document.getElementById("gameFrame");
 const stageTitle = document.getElementById("stageTitle");
 const fullscreenButton = document.getElementById("fullscreenGame");
 let fullscreenActive = false;
+let requestedFrameHeight = 0;
 
 function sizeGameFrame() {
   if (gameStage.hidden || fullscreenActive) return;
   const frameTop = gameFrame.getBoundingClientRect().top;
   const bottomSpace = 16;
-  const height = Math.max(360, window.innerHeight - frameTop - bottomSpace);
+  const availableHeight = window.innerHeight - frameTop - bottomSpace;
+  const height = Math.max(360, availableHeight, requestedFrameHeight);
   gameFrame.style.height = `${height}px`;
 }
 
@@ -58,6 +60,7 @@ function renderGameList() {
 
 function openGame(game) {
   stageTitle.textContent = game.title;
+  requestedFrameHeight = 0;
   gameFrame.src = game.url;
   gameMenu.hidden = true;
   gameStage.hidden = false;
@@ -110,6 +113,11 @@ document.addEventListener("fullscreenchange", () => {
     fullscreenButton.textContent = "Fullscreen";
     sendFullscreenState();
   }
+});
+window.addEventListener("message", (event) => {
+  if (event.data?.type !== "arcade-resize") return;
+  requestedFrameHeight = Math.ceil(Number(event.data.height) || 0);
+  sizeGameFrame();
 });
 window.addEventListener("keydown", (event) => {
   if (event.code === "Escape" && !gameStage.hidden) showGameMenu();

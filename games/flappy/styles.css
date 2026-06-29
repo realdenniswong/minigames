@@ -14,8 +14,7 @@
 
 body {
   margin: 0;
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100dvh;
   background: var(--paper);
   color: var(--ink);
   font-family:
@@ -37,8 +36,7 @@ button {
 }
 
 .game-shell {
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100dvh;
   padding: clamp(14px, 2.5vw, 22px);
 }
 
@@ -86,14 +84,11 @@ h1 {
   align-items: start;
   gap: 20px;
   padding-top: 20px;
-  height: calc(100dvh - 116px);
-  min-height: 0;
   overscroll-behavior: contain;
 }
 
 #flappyCanvas {
   width: min(100%, 432px);
-  max-height: 100%;
   aspect-ratio: 3 / 4;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -199,24 +194,12 @@ h1 {
   }
 
   .game-layout {
-    --flappy-info-height: 132px;
-    height: calc(100dvh - 178px);
-    overflow: hidden;
-    grid-template-rows: minmax(0, 1fr) auto;
-    align-items: stretch;
-  }
-
-  #flappyCanvas {
-    width: min(100%, calc((100dvh - 178px - var(--flappy-info-height) - 20px) * 0.75));
-    max-height: calc(100dvh - 178px - var(--flappy-info-height) - 20px);
-    justify-self: center;
+    align-items: start;
   }
 
   .side-panel {
     width: min(100%, 590px);
     justify-self: center;
-    max-height: var(--flappy-info-height);
-    overflow: hidden;
     gap: 8px;
   }
 
@@ -247,10 +230,6 @@ h1 {
 }
 
 @media (max-width: 390px) {
-  .game-layout {
-    --flappy-info-height: 126px;
-  }
-
   .game-message {
     font-size: 0.86rem;
   }
