@@ -83,6 +83,10 @@ h1 {
   border-bottom: 1px solid var(--line);
 }
 
+.title-block {
+  min-width: 0;
+}
+
 .control-row {
   display: flex;
   align-items: center;
@@ -300,13 +304,32 @@ label {
 }
 
 @media (max-width: 760px) {
-  .panel-heading,
   .game-layout {
     grid-template-columns: 1fr;
   }
 
   .panel-heading {
-    align-items: start;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .panel-heading > .nav-button {
+    align-self: stretch;
+    height: auto;
+    min-height: 64px;
+  }
+
+  .title-block {
+    display: grid;
+    align-content: center;
+    justify-items: end;
+    min-height: 64px;
+    text-align: right;
+  }
+
+  .panel-heading > .control-row {
+    grid-column: 1 / -1;
   }
 
   .side-panel {
