@@ -10,6 +10,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -234,7 +235,7 @@ h1 {
   }
 
   #flappyCanvas {
-    width: min(100%, 432px);
+    width: min(100%, calc(75dvh - 95px), 432px);
   }
 
   .panel-heading {
@@ -275,6 +276,12 @@ h1 {
 
   .game-message {
     font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 760px) and (hover: none) and (pointer: coarse) {
+  #flappyCanvas {
+    width: min(100%, 432px);
   }
 }
 

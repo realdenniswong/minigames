@@ -192,8 +192,23 @@ function drawCloud(x, y, size) {
   ctx.fill();
 }
 
-document.getElementById("startFlappy").addEventListener("click", startFlappy);
-document.getElementById("resetFlappy").addEventListener("click", resetFlappy);
+function bindImmediateButton(id, action) {
+  const button = document.getElementById(id);
+  let lastTouchAt = 0;
+  button.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse") return;
+    lastTouchAt = Date.now();
+    event.preventDefault();
+    action();
+  });
+  button.addEventListener("click", () => {
+    if (Date.now() - lastTouchAt < 700) return;
+    action();
+  });
+}
+
+bindImmediateButton("startFlappy", startFlappy);
+bindImmediateButton("resetFlappy", resetFlappy);
 canvas.addEventListener("pointerdown", handleFlappyTap);
 canvas.addEventListener("pointermove", stopFlappyPageGesture);
 canvas.addEventListener("touchstart", stopFlappyPageGesture, { passive: false });
