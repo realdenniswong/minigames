@@ -49,11 +49,13 @@ button,
 }
 
 select {
+  appearance: none;
+  -webkit-appearance: none;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   color: var(--ink);
-  padding: 0 42px 0 12px;
+  padding: 0 48px 0 12px;
 }
 
 .game-shell {
@@ -71,21 +73,31 @@ select {
 
 h1 {
   margin: 0;
-  font-size: clamp(1.55rem, 3.2vw, 2.7rem);
+  font-size: clamp(1.4rem, 2.1vw, 1.9rem);
   line-height: 1.02;
 }
 
 .panel-heading {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: end;
+  align-items: center;
   gap: 18px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
 }
 
 .title-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 44px;
   min-width: 0;
+}
+
+.title-block .eyebrow {
+  margin: 0 0 2px;
+  font-size: 0.64rem;
+  line-height: 1;
 }
 
 .control-row {
@@ -112,11 +124,25 @@ label {
 }
 
 .select-control {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 44px;
   white-space: nowrap;
+}
+
+.select-control::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-right: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  pointer-events: none;
+  transform: translateY(-65%) rotate(45deg);
 }
 
 .select-control select {
@@ -312,28 +338,19 @@ label {
 
   .panel-heading {
     grid-template-columns: auto minmax(0, 1fr);
-    align-items: stretch;
+    align-items: center;
     gap: 12px;
   }
 
   .panel-heading > .nav-button {
-    align-self: stretch;
-    height: auto;
-    min-height: 0;
+    align-self: center;
+    height: 44px;
+    min-height: 44px;
   }
 
   .title-block {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: flex-end;
-    gap: 2px;
-    min-height: 0;
     text-align: right;
-  }
-
-  .title-block .eyebrow {
-    margin: 0;
   }
 
   .panel-heading > .control-row {
