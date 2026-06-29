@@ -195,9 +195,4 @@ window.addEventListener("keydown", (event) => {
   }
 });
 window.addEventListener("pagehide", pauseFlappy);
-window.addEventListener("message", (event) => {
-  if (event.data?.type !== "arcade-fullscreen") return;
-  document.body.classList.toggle("fullscreen-game", event.data.fullscreen);
-  requestAnimationFrame(drawFlappy);
-});
 resetFlappy();

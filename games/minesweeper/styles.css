@@ -26,19 +26,25 @@ body {
 }
 
 button,
-select {
+select,
+.nav-button {
   min-height: 44px;
   font: inherit;
   touch-action: manipulation;
 }
 
-button {
+button,
+.nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
   padding: 0 14px;
+  text-decoration: none;
 }
 
 select {
@@ -241,43 +247,6 @@ label {
   color: #6b4fc4;
 }
 
-.fullscreen-game {
-  overflow: hidden;
-  background: #111820;
-}
-
-.fullscreen-game .game-shell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100dvh;
-  padding: 12px;
-}
-
-.fullscreen-game .panel-heading,
-.fullscreen-game .side-panel {
-  display: none;
-}
-
-.fullscreen-game .game-layout {
-  display: block;
-  width: 100%;
-  padding: 0;
-}
-
-.fullscreen-game .board-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100dvh - 24px);
-  padding: 0;
-}
-
-.fullscreen-game .mine-board {
-  width: min(calc(100vmin - 24px), 720px);
-  max-width: none;
-}
-
 @media (max-width: 760px) {
   .panel-heading,
   .game-layout {
@@ -309,10 +278,6 @@ label {
   .mine-board {
     justify-self: start;
     margin: 0;
-  }
-
-  .fullscreen-game .board-wrap {
-    justify-content: flex-start;
   }
 
   .mine-cell {

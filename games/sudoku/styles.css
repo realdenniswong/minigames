@@ -25,19 +25,25 @@ body {
 }
 
 button,
-select {
+select,
+.nav-button {
   min-height: 44px;
   font: inherit;
   touch-action: manipulation;
 }
 
-button {
+button,
+.nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
   padding: 0 14px;
+  text-decoration: none;
 }
 
 select {
@@ -234,38 +240,6 @@ label {
   color: #5e4310;
   font-weight: 700;
   line-height: 1.35;
-}
-
-.fullscreen-game {
-  overflow: hidden;
-  background: #111820;
-}
-
-.fullscreen-game .game-shell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100dvh;
-  padding: 12px;
-}
-
-.fullscreen-game .panel-heading,
-.fullscreen-game .side-panel {
-  display: none;
-}
-
-.fullscreen-game .game-layout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: calc(100dvh - 24px);
-  padding: 0;
-}
-
-.fullscreen-game .sudoku-board {
-  width: min(calc(100vmin - 24px), 720px);
-  max-width: none;
 }
 
 @media (max-width: 760px) {

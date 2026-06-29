@@ -195,8 +195,4 @@ document.querySelectorAll("[data-mine-mode]").forEach((button) => {
   });
 });
 window.addEventListener("pagehide", pauseMineTimer);
-window.addEventListener("message", (event) => {
-  if (event.data?.type !== "arcade-fullscreen") return;
-  document.body.classList.toggle("fullscreen-game", event.data.fullscreen);
-});
 newMineGame();

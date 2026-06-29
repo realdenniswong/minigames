@@ -162,9 +162,5 @@ window.addEventListener("keydown", (event) => {
   if (event.key === "Backspace" || event.key === "Delete") setSudokuValue("0");
 });
 window.addEventListener("pagehide", pauseSudokuTimer);
-window.addEventListener("message", (event) => {
-  if (event.data?.type !== "arcade-fullscreen") return;
-  document.body.classList.toggle("fullscreen-game", event.data.fullscreen);
-});
 buildNumberPad();
 newSudoku();

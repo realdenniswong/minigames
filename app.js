@@ -1,20 +1,17 @@
 const games = [
   {
-    id: "minesweeper",
     title: "Minesweeper",
     meta: "Easy, medium, hard",
     icon: "M",
     url: "games/minesweeper/index.html",
   },
   {
-    id: "sudoku",
     title: "Sudoku",
     meta: "Timed number puzzle",
     icon: "S",
     url: "games/sudoku/index.html",
   },
   {
-    id: "flappy",
     title: "Flappy Bird Style",
     meta: "Tap timing challenge",
     icon: "F",
@@ -22,87 +19,23 @@ const games = [
   },
 ];
 
-const gameMenu = document.getElementById("gameMenu");
 const gameList = document.getElementById("gameList");
-const gameStage = document.getElementById("gameStage");
-const gameFrame = document.getElementById("gameFrame");
-const stageTitle = document.getElementById("stageTitle");
-const fullscreenButton = document.getElementById("fullscreenGame");
-let fullscreenActive = false;
 
 function renderGameList() {
   gameList.innerHTML = "";
   games.forEach((game) => {
-    const button = document.createElement("button");
-    button.className = "game-card";
-    button.type = "button";
-    button.innerHTML = `
+    const link = document.createElement("a");
+    link.className = "game-card";
+    link.href = game.url;
+    link.innerHTML = `
       <span class="game-card-icon" aria-hidden="true">${game.icon}</span>
       <span>
         <strong>${game.title}</strong>
         <small>${game.meta}</small>
       </span>
     `;
-    button.addEventListener("click", () => openGame(game));
-    gameList.appendChild(button);
+    gameList.appendChild(link);
   });
 }
 
-function openGame(game) {
-  stageTitle.textContent = game.title;
-  gameFrame.src = game.url;
-  gameMenu.hidden = true;
-  gameStage.hidden = false;
-}
-
-function showGameMenu() {
-  exitFullscreenMode();
-  gameFrame.src = "about:blank";
-  gameStage.hidden = true;
-  gameMenu.hidden = false;
-}
-
-function toggleFullscreenMode() {
-  const nextState = !document.body.classList.contains("fullscreen-mode");
-  fullscreenActive = nextState;
-  document.body.classList.toggle("fullscreen-mode", nextState);
-  fullscreenButton.textContent = nextState ? "Exit Fullscreen" : "Fullscreen";
-  sendFullscreenState();
-  if (nextState && gameStage.requestFullscreen) {
-    gameStage.requestFullscreen().catch(() => {});
-  } else if (!nextState && document.fullscreenElement && document.exitFullscreen) {
-    document.exitFullscreen().catch(() => {});
-  }
-}
-
-function exitFullscreenMode() {
-  fullscreenActive = false;
-  document.body.classList.remove("fullscreen-mode");
-  fullscreenButton.textContent = "Fullscreen";
-  sendFullscreenState();
-  if (document.fullscreenElement && document.exitFullscreen) {
-    document.exitFullscreen().catch(() => {});
-  }
-}
-
-document.getElementById("backToMenu").addEventListener("click", showGameMenu);
-fullscreenButton.addEventListener("click", toggleFullscreenMode);
-gameFrame.addEventListener("load", sendFullscreenState);
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement) {
-    fullscreenActive = false;
-    document.body.classList.remove("fullscreen-mode");
-    fullscreenButton.textContent = "Fullscreen";
-    sendFullscreenState();
-  }
-});
-window.addEventListener("keydown", (event) => {
-  if (event.code === "Escape" && !gameStage.hidden) showGameMenu();
-});
-
 renderGameList();
-
-function sendFullscreenState() {
-  if (!gameFrame.contentWindow) return;
-  gameFrame.contentWindow.postMessage({ type: "arcade-fullscreen", fullscreen: fullscreenActive }, "*");
-}

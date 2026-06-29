@@ -1,6 +1,6 @@
 # Dennis Mini Games
 
-Open `index.html` to launch the arcade library.
+Open `index.html` to launch the arcade library. Selecting a game opens that game's own page.
 
 The project is now organized like an old Flash-game portal:
 

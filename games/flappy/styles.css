@@ -23,7 +23,11 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-button {
+button,
+.nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -32,6 +36,7 @@ button {
   font: inherit;
   cursor: pointer;
   padding: 0 14px;
+  text-decoration: none;
   touch-action: manipulation;
 }
 
@@ -146,40 +151,6 @@ h1 {
   color: #5e4310;
   font-weight: 700;
   line-height: 1.35;
-}
-
-.fullscreen-game {
-  overflow: hidden;
-  background: #111820;
-}
-
-.fullscreen-game .game-shell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100dvh;
-  padding: 12px;
-}
-
-.fullscreen-game .panel-heading,
-.fullscreen-game .side-panel {
-  display: none;
-}
-
-.fullscreen-game .game-layout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: calc(100dvh - 24px);
-  padding: 0;
-}
-
-.fullscreen-game #flappyCanvas {
-  width: auto;
-  height: min(calc(100dvh - 24px), 720px);
-  max-width: calc(100vw - 24px);
-  max-height: calc(100dvh - 24px);
 }
 
 @media (max-width: 760px) {
