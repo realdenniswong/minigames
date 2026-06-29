@@ -24,12 +24,16 @@
 
 html {
   min-height: 100%;
+  touch-action: manipulation;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
   background:
     linear-gradient(135deg, rgba(79, 140, 201, 0.14), transparent 34%),
     linear-gradient(315deg, rgba(28, 143, 120, 0.13), transparent 32%),
@@ -290,17 +294,80 @@ h2 {
   inset: 0;
   z-index: 20;
   overflow: auto;
-  background: var(--paper);
-  padding: clamp(8px, 2vw, 18px);
+  display: block;
+  background: #111820;
+  padding: 0;
 }
 
-.fullscreen-mode .stage-toolbar,
-.fullscreen-mode .game-panel {
+.fullscreen-mode .stage-toolbar {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  right: max(10px, env(safe-area-inset-right));
+  z-index: 40;
+  display: block;
+  border: 0;
+  background: transparent;
   box-shadow: none;
+  padding: 0;
+}
+
+.fullscreen-mode #backToMenu,
+.fullscreen-mode #stageTitle {
+  display: none;
+}
+
+.fullscreen-mode #fullscreenGame {
+  min-height: 40px;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(17, 24, 32, 0.82);
+  color: #fff;
+  backdrop-filter: blur(10px);
 }
 
 .fullscreen-mode .game-panel {
-  min-height: calc(100vh - 86px);
+  min-height: 100dvh;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.fullscreen-mode .panel-heading,
+.fullscreen-mode .side-panel {
+  display: none;
+}
+
+.fullscreen-mode .game-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 0;
+}
+
+.fullscreen-mode .board-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: auto;
+  padding: 12px;
+}
+
+.fullscreen-mode .mine-board,
+.fullscreen-mode .sudoku-board {
+  width: min(calc(100vmin - 24px), 720px);
+  max-width: none;
+}
+
+.fullscreen-mode #flappyCanvas {
+  width: auto;
+  height: min(calc(100dvh - 24px), 720px);
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  touch-action: none;
 }
 
 .panel-heading {
@@ -586,7 +653,9 @@ label {
   border-radius: 8px;
   background: #8fc8df;
   box-shadow: inset 0 -34px 0 rgba(28, 143, 120, 0.16);
-  touch-action: manipulation;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
   margin: 0 auto;
 }
 
@@ -694,6 +763,10 @@ label {
   .mine-board {
     justify-self: start;
     margin: 0;
+  }
+
+  .fullscreen-mode .board-wrap {
+    justify-content: flex-start;
   }
 
   .mine-cell {
