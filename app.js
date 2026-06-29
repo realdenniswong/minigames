@@ -19,6 +19,7 @@ let activeGame = null;
 function openGame(game) {
   pauseActiveGame();
   activeGame = game;
+  document.body.classList.toggle("flappy-scroll-lock", game === "flappy");
   gameMenu.hidden = true;
   gameStage.hidden = false;
   stageTitle.textContent = gameNames[game];
@@ -31,6 +32,7 @@ function openGame(game) {
 function showGameMenu() {
   pauseActiveGame();
   activeGame = null;
+  document.body.classList.remove("flappy-scroll-lock");
   Object.values(panels).forEach((panel) => panel.classList.remove("active"));
   gameStage.hidden = true;
   gameMenu.hidden = false;
@@ -510,6 +512,13 @@ function stopFlappyPageGesture(event) {
   event.preventDefault();
 }
 
+function stopFlappyDocumentGesture(event) {
+  if (activeGame !== "flappy") return;
+  const target = event.target;
+  if (target.closest("button, select, input, textarea, a")) return;
+  if (target.closest("#flappy-panel")) event.preventDefault();
+}
+
 function loopFlappy() {
   updateFlappy();
   drawFlappy();
@@ -646,6 +655,10 @@ canvas.addEventListener("touchstart", stopFlappyPageGesture, { passive: false })
 canvas.addEventListener("touchmove", stopFlappyPageGesture, { passive: false });
 canvas.addEventListener("touchend", stopFlappyPageGesture, { passive: false });
 canvas.addEventListener("contextmenu", stopFlappyPageGesture);
+document.addEventListener("touchstart", stopFlappyDocumentGesture, { passive: false, capture: true });
+document.addEventListener("touchmove", stopFlappyDocumentGesture, { passive: false, capture: true });
+document.addEventListener("touchend", stopFlappyDocumentGesture, { passive: false, capture: true });
+document.addEventListener("touchcancel", stopFlappyDocumentGesture, { passive: false, capture: true });
 window.addEventListener("keydown", (event) => {
   if (event.code === "Escape" && activeGame) {
     showGameMenu();

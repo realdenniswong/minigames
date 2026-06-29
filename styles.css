@@ -44,6 +44,15 @@ body {
     sans-serif;
 }
 
+body.flappy-scroll-lock {
+  overscroll-behavior: none;
+}
+
+body.flappy-scroll-lock #flappy-panel,
+body.flappy-scroll-lock .flappy-layout {
+  touch-action: none;
+}
+
 button,
 select {
   font: inherit;
