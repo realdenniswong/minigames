@@ -127,10 +127,17 @@ label {
   gap: 16px;
 }
 
+.board-panel {
+  display: grid;
+  gap: 10px;
+}
+
 .stat-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
+  width: min(100%, 590px);
+  margin: 0 auto;
 }
 
 .stat-grid div {
