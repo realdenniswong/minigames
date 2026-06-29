@@ -163,7 +163,7 @@ label {
 
 .game-layout {
   display: grid;
-  grid-template-columns: 270px minmax(0, min(760px, calc(100dvh - 128px)));
+  grid-template-columns: 270px minmax(0, calc(100dvh - 128px));
   align-items: start;
   justify-content: center;
   gap: 20px;
@@ -242,8 +242,8 @@ label {
   --mine-board-min: 333px;
   --mine-gap: 3px;
   display: grid;
-  width: min(100%, 760px, calc(100dvh - 128px));
-  min-width: min(760px, var(--mine-board-min));
+  width: min(100%, calc(100dvh - 128px));
+  min-width: min(calc(100dvh - 128px), var(--mine-board-min));
   aspect-ratio: 1;
   gap: var(--mine-gap);
   margin: 0 auto;
