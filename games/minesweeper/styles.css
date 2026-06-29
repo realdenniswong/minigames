@@ -255,25 +255,27 @@ label {
 .board-wrap {
   justify-self: center;
   display: grid;
-  place-items: start center;
-  width: 100%;
-  height: 100%;
+  place-items: start;
+  width: min(100%, var(--mine-board-view, 330px));
+  height: min(100%, var(--mine-board-view, 330px));
+  max-height: calc(100dvh - 238px);
   overflow: auto;
   overscroll-behavior: contain;
   overscroll-behavior-inline: contain;
-  padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
 }
 
 .mine-board {
-  --mine-board-min: 333px;
+  --mine-board-width: 330px;
+  --mine-board-height: 330px;
+  --mine-board-view: 330px;
   --mine-gap: 3px;
   display: grid;
-  width: max(min(100%, calc(100dvh - 238px)), var(--mine-board-min));
-  min-width: var(--mine-board-min);
-  aspect-ratio: 1;
+  width: var(--mine-board-width);
+  height: var(--mine-board-height);
+  min-width: var(--mine-board-width);
+  min-height: var(--mine-board-height);
   gap: var(--mine-gap);
-  margin: 0 auto;
   grid-auto-rows: 1fr;
 }
 
