@@ -165,18 +165,6 @@ window.addEventListener("pagehide", pauseSudokuTimer);
 window.addEventListener("message", (event) => {
   if (event.data?.type !== "arcade-fullscreen") return;
   document.body.classList.toggle("fullscreen-game", event.data.fullscreen);
-  requestAnimationFrame(reportArcadeSize);
 });
-window.addEventListener("resize", reportArcadeSize);
-new ResizeObserver(reportArcadeSize).observe(document.body);
 buildNumberPad();
 newSudoku();
-
-function reportArcadeSize() {
-  const height = Math.max(
-    document.body.scrollHeight,
-    document.documentElement.scrollHeight,
-    document.body.offsetHeight,
-  );
-  window.parent.postMessage({ type: "arcade-resize", height }, "*");
-}
