@@ -372,6 +372,30 @@ label {
     min-height: 0;
   }
 
+  .side-panel {
+    display: contents;
+  }
+
+  .side-panel .screen-controls {
+    order: 1;
+  }
+
+  .board-panel {
+    order: 2;
+  }
+
+  .number-pad {
+    order: 3;
+  }
+
+  .control-row.compact {
+    order: 4;
+  }
+
+  .game-message {
+    order: 5;
+  }
+
   .game-layout {
     width: 100%;
     height: auto;
@@ -411,10 +435,6 @@ label {
     min-width: 0;
   }
 
-  .side-panel {
-    width: min(100%, 590px);
-    justify-self: center;
-  }
 }
 
 @media (max-width: 560px) {
