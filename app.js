@@ -500,7 +500,14 @@ function flap() {
 
 function handleFlappyTap(event) {
   event.preventDefault();
+  if (event.pointerId !== undefined && canvas.setPointerCapture) {
+    canvas.setPointerCapture(event.pointerId);
+  }
   if (flappyState.running) flap();
+}
+
+function stopFlappyPageGesture(event) {
+  event.preventDefault();
 }
 
 function loopFlappy() {
@@ -634,6 +641,11 @@ function drawCloud(x, y, size) {
 document.getElementById("startFlappy").addEventListener("click", startFlappy);
 document.getElementById("resetFlappy").addEventListener("click", resetFlappy);
 canvas.addEventListener("pointerdown", handleFlappyTap);
+canvas.addEventListener("pointermove", stopFlappyPageGesture);
+canvas.addEventListener("touchstart", stopFlappyPageGesture, { passive: false });
+canvas.addEventListener("touchmove", stopFlappyPageGesture, { passive: false });
+canvas.addEventListener("touchend", stopFlappyPageGesture, { passive: false });
+canvas.addEventListener("contextmenu", stopFlappyPageGesture);
 window.addEventListener("keydown", (event) => {
   if (event.code === "Escape" && activeGame) {
     showGameMenu();
