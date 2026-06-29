@@ -38,6 +38,7 @@ button,
   cursor: pointer;
   padding: 0 14px;
   text-decoration: none;
+  white-space: nowrap;
   touch-action: manipulation;
 }
 
@@ -56,22 +57,36 @@ button,
 
 h1 {
   margin: 0;
-  font-size: clamp(1.55rem, 3.2vw, 2.7rem);
+  font-size: clamp(1.18rem, 1.45vw, 1.5rem);
   line-height: 1.02;
 }
 
 .panel-heading {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: end;
+  align-items: center;
   gap: 18px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
 }
 
+.title-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 44px;
+  min-width: 0;
+}
+
+.title-block .eyebrow {
+  margin: 0 0 2px;
+  font-size: 0.58rem;
+  line-height: 1;
+}
+
 .control-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 10px;
@@ -86,7 +101,8 @@ h1 {
 
 .primary-button,
 .nav-button {
-  min-width: 120px;
+  width: 136px;
+  min-width: 136px;
 }
 
 .nav-button {
@@ -169,13 +185,32 @@ h1 {
 }
 
 @media (max-width: 760px) {
-  .panel-heading,
   .game-layout {
     grid-template-columns: 1fr;
   }
 
   .panel-heading {
-    align-items: start;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+  }
+
+  .panel-heading > .nav-button {
+    align-self: center;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .title-block {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .panel-heading > .control-row {
+    display: grid;
+    grid-template-columns: 136px 136px;
+    grid-column: 1 / -1;
+    justify-content: end;
   }
 
   .game-layout {
@@ -210,13 +245,15 @@ h1 {
 }
 
 @media (max-width: 560px) {
-  .control-row {
+  .panel-heading > .control-row {
+    grid-template-columns: 1fr;
     justify-content: stretch;
   }
 
-  .control-row > * {
-    flex: 1;
+  .panel-heading > .control-row > * {
+    flex: 1 1 100%;
     min-width: 0;
+    width: 100%;
   }
 }
 

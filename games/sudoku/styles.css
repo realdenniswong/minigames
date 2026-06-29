@@ -73,7 +73,7 @@ select {
 
 h1 {
   margin: 0;
-  font-size: clamp(1.4rem, 2.1vw, 1.9rem);
+  font-size: clamp(1.18rem, 1.45vw, 1.5rem);
   line-height: 1.02;
 }
 
@@ -96,7 +96,7 @@ h1 {
 
 .title-block .eyebrow {
   margin: 0 0 2px;
-  font-size: 0.64rem;
+  font-size: 0.58rem;
   line-height: 1;
 }
 
