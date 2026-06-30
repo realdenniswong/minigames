@@ -301,8 +301,12 @@ body {
   }
 
   .game-screen.snake-screen {
-    grid-template-columns: minmax(0, 1fr) minmax(176px, min(35vw, 260px));
-    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(82px, 18vw) minmax(104px, 18vw) minmax(0, 1fr) minmax(82px, 18vw);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "leftpad board board rightpad"
+      "leftpad actions stats rightpad"
+      "leftpad message message rightpad";
     align-items: center;
     justify-items: center;
     gap: 8px;
@@ -317,25 +321,18 @@ body {
   }
 
   #snakeCanvas {
-    width: min(100%, calc(65vw - 16px), calc((100dvh - 82px) * 2));
+    grid-area: board;
+    width: min(100%, calc((100dvh - 140px) * 2));
     max-height: 100%;
   }
 
   .side-panel {
-    align-self: start;
-    justify-self: stretch;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas:
-      "actions actions"
-      "stats stats"
-      "leftpad rightpad"
-      "message message";
-    width: 100%;
-    gap: 5px;
+    display: contents;
   }
 
   .screen-actions,
   .stat-grid {
+    width: 100%;
     gap: 5px;
   }
 
@@ -363,9 +360,12 @@ body {
 
   .d-pad {
     grid-template-columns: minmax(34px, 1fr) minmax(48px, 1.35fr);
-    grid-template-rows: repeat(2, minmax(40px, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    align-self: stretch;
+    width: 100%;
+    height: 100%;
     gap: 5px;
-    min-height: 92px;
+    min-height: 0;
     padding: 5px;
   }
 
