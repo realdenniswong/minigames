@@ -119,6 +119,7 @@ function toggleModePicker() {
 function resetBrain() {
   clearTimers();
   state = { running: false, score: 0, round: 0 };
+  setDuelScene("idle");
   if (mathOptions) mathOptions.hidden = currentMode !== "math";
   if (reactionOptions) reactionOptions.hidden = currentMode !== "reaction";
   if (currentMode === "math") {
@@ -552,6 +553,7 @@ function nextReactionRound() {
   state.countdownIndex = 0;
   brainPrompt.textContent = "Ready...";
   brainMessage.textContent = "Wait for 3, 2, 1, DRAW. Shoot only on DRAW.";
+  setDuelScene("ready");
   renderReactionButton("Wait", "waiting", false);
   updateStats(5);
   reactionTimer = setTimeout(showReactionCountdown, countdownDelay());
@@ -582,6 +584,7 @@ function showReactionCountdown() {
   }
   brainPrompt.textContent = countdown[state.countdownIndex];
   brainMessage.textContent = "Still wait. Shoot only on DRAW.";
+  setDuelScene("ready");
   playDuelSound("countdown");
   state.countdownIndex += 1;
   reactionTimer = setTimeout(showReactionCountdown, countdownDelay());
@@ -595,6 +598,7 @@ function startReactionDraw() {
   state.computerDelay = reactionComputerDelay();
   brainPrompt.textContent = "DRAW!";
   brainMessage.textContent = "Shoot now. The computer gets faster on harder difficulty.";
+  setDuelScene("draw");
   playDuelSound("draw");
   renderReactionButton("Shoot", "ready", false);
   reactionTimer = setTimeout(handleComputerShot, state.computerDelay);
@@ -613,6 +617,7 @@ function endReactionRound(message, prompt, className) {
 function handleComputerShot() {
   if (!state.running || !state.ready) return;
   state.last = state.computerDelay;
+  setDuelScene("computer-shot");
   endReactionRound(`Computer shot in ${state.computerDelay}ms.`, "Too slow", "lost");
 }
 
@@ -622,6 +627,7 @@ function handleReactionTap() {
     playDuelSound("shot");
     clearTimeout(reactionTimer);
     state.last = 0;
+    setDuelScene("player-shot");
     endReactionRound("Too early. Point goes to the computer.", "False start", "lost");
     return;
   }
@@ -630,6 +636,7 @@ function handleReactionTap() {
   clearTimeout(reactionTimer);
   state.last = Math.max(1, Math.round(performance.now() - state.readyAt));
   state.score += 1;
+  setDuelScene("player-shot");
   endReactionRound(`You shot in ${state.last}ms.`, "You win", "won");
 }
 
@@ -725,6 +732,41 @@ function playBrainTone(frequency, duration) {
   gain.connect(context.destination);
   oscillator.start();
   oscillator.stop(context.currentTime + duration);
+}
+
+function setDuelScene(phase) {
+  if (!promptCard) return;
+  let scene = promptCard.querySelector(".duel-scene");
+  if (currentMode !== "reaction") {
+    if (scene) scene.remove();
+    return;
+  }
+  if (!scene) {
+    scene = document.createElement("div");
+    scene.className = "duel-scene";
+    scene.setAttribute("aria-hidden", "true");
+    scene.innerHTML = `
+      <div class="duel-ground"></div>
+      <div class="duel-sun"></div>
+      <div class="gunman">
+        <span class="hat-brim"></span>
+        <span class="hat-crown"></span>
+        <span class="head"></span>
+        <span class="body"></span>
+        <span class="neckwear"></span>
+        <span class="arm arm-left"></span>
+        <span class="arm arm-right"></span>
+        <span class="hand"></span>
+        <span class="gun"></span>
+        <span class="muzzle-flash"></span>
+        <span class="leg leg-left"></span>
+        <span class="leg leg-right"></span>
+      </div>
+      <div class="duel-shadow"></div>
+    `;
+    promptCard.insertBefore(scene, promptKicker);
+  }
+  scene.dataset.phase = phase;
 }
 
 function unlockBrainAudio() {

@@ -231,6 +231,7 @@ body[data-fixed-mode] .side-panel {
 }
 
 .prompt-card {
+  position: relative;
   display: grid;
   align-content: center;
   justify-items: center;
@@ -243,6 +244,299 @@ body[data-fixed-mode] .side-panel {
     #fff;
   padding: clamp(18px, 4vw, 34px);
   text-align: center;
+}
+
+.duel-scene {
+  position: relative;
+  width: min(360px, 92%);
+  height: clamp(120px, 24dvh, 210px);
+  margin: 0 auto 12px;
+  overflow: hidden;
+  border: 1px solid rgba(217, 222, 231, 0.9);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, #9ed5e6 0 58%, #e7bf72 58% 100%);
+}
+
+.duel-ground {
+  position: absolute;
+  inset: 58% 0 0;
+  background:
+    linear-gradient(90deg, rgba(120, 83, 42, 0.18) 0 14px, transparent 14px 30px),
+    #d2a056;
+}
+
+.duel-sun {
+  position: absolute;
+  top: 14%;
+  right: 16%;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f4cd53;
+  box-shadow: 0 0 0 8px rgba(244, 205, 83, 0.18);
+}
+
+.gunman {
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  width: 108px;
+  height: 128px;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+}
+
+.duel-scene[data-phase="ready"] .gunman {
+  animation: gunman-ready 0.42s ease-in-out infinite alternate;
+}
+
+.duel-scene[data-phase="computer-shot"] .gunman,
+.duel-scene[data-phase="player-shot"] .gunman {
+  animation: gunman-recoil 0.28s ease-out 1;
+}
+
+.hat-brim,
+.hat-crown,
+.head,
+.body,
+.neckwear,
+.arm,
+.hand,
+.gun,
+.muzzle-flash,
+.leg,
+.duel-shadow {
+  position: absolute;
+  display: block;
+}
+
+.hat-brim {
+  left: 24px;
+  top: 15px;
+  z-index: 5;
+  width: 60px;
+  height: 10px;
+  border-radius: 999px;
+  background: #5b3a21;
+}
+
+.hat-crown {
+  left: 36px;
+  top: 0;
+  z-index: 4;
+  width: 36px;
+  height: 24px;
+  border-radius: 8px 8px 5px 5px;
+  background: #714624;
+}
+
+.head {
+  left: 38px;
+  top: 20px;
+  width: 32px;
+  height: 34px;
+  border-radius: 46% 46% 44% 44%;
+  background: #c9834b;
+}
+
+.head::before,
+.head::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #20242c;
+}
+
+.head::before {
+  left: 8px;
+}
+
+.head::after {
+  right: 8px;
+}
+
+.body {
+  left: 31px;
+  top: 55px;
+  width: 46px;
+  height: 48px;
+  border-radius: 12px 12px 8px 8px;
+  background: #2f5f89;
+}
+
+.neckwear {
+  left: 46px;
+  top: 55px;
+  z-index: 4;
+  width: 16px;
+  height: 17px;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  background: #d95e4f;
+}
+
+.arm-left {
+  left: 21px;
+  top: 62px;
+  width: 16px;
+  height: 42px;
+  border-radius: 999px;
+  background: #274e70;
+  transform: rotate(14deg);
+}
+
+.arm-right {
+  left: 69px;
+  top: 62px;
+  z-index: 5;
+  width: 15px;
+  height: 46px;
+  border-radius: 999px;
+  background: #274e70;
+  transform-origin: 8px 5px;
+  transform: rotate(-10deg);
+}
+
+.duel-scene[data-phase="ready"] .arm-right {
+  animation: hand-hover 0.42s ease-in-out infinite alternate;
+}
+
+.duel-scene[data-phase="draw"] .arm-right,
+.duel-scene[data-phase="computer-shot"] .arm-right,
+.duel-scene[data-phase="player-shot"] .arm-right {
+  transform: rotate(-78deg);
+}
+
+.hand {
+  left: 80px;
+  top: 99px;
+  z-index: 7;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #c9834b;
+}
+
+.duel-scene[data-phase="draw"] .hand,
+.duel-scene[data-phase="computer-shot"] .hand,
+.duel-scene[data-phase="player-shot"] .hand {
+  left: 91px;
+  top: 70px;
+}
+
+.gun {
+  left: 84px;
+  top: 102px;
+  z-index: 8;
+  width: 28px;
+  height: 7px;
+  border-radius: 4px;
+  background: #20242c;
+  opacity: 0;
+  transform-origin: 0 50%;
+}
+
+.duel-scene[data-phase="draw"] .gun,
+.duel-scene[data-phase="computer-shot"] .gun,
+.duel-scene[data-phase="player-shot"] .gun {
+  left: 94px;
+  top: 73px;
+  opacity: 1;
+  transform: rotate(-8deg);
+}
+
+.muzzle-flash {
+  left: 121px;
+  top: 66px;
+  z-index: 9;
+  width: 26px;
+  height: 20px;
+  clip-path: polygon(0 50%, 34% 36%, 48% 0, 62% 34%, 100% 16%, 76% 52%, 100% 86%, 58% 70%, 42% 100%, 34% 66%);
+  background: #f1c13b;
+  opacity: 0;
+}
+
+.duel-scene[data-phase="computer-shot"] .muzzle-flash,
+.duel-scene[data-phase="player-shot"] .muzzle-flash {
+  animation: muzzle-pop 0.18s steps(1, end) 1;
+}
+
+.leg {
+  top: 98px;
+  width: 15px;
+  height: 32px;
+  border-radius: 999px;
+  background: #263247;
+}
+
+.leg-left {
+  left: 36px;
+  transform: rotate(8deg);
+}
+
+.leg-right {
+  left: 58px;
+  transform: rotate(-8deg);
+}
+
+.duel-shadow {
+  left: 50%;
+  bottom: 13%;
+  width: 96px;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(32, 36, 44, 0.22);
+  transform: translateX(-50%);
+}
+
+@keyframes gunman-ready {
+  from {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  to {
+    transform: translateX(-50%) translateY(2px);
+  }
+}
+
+@keyframes hand-hover {
+  from {
+    transform: rotate(-6deg) translateY(0);
+  }
+
+  to {
+    transform: rotate(-18deg) translateY(3px);
+  }
+}
+
+@keyframes gunman-recoil {
+  0% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+
+  35% {
+    transform: translateX(-50%) rotate(-4deg) translateX(-5px);
+  }
+
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+}
+
+@keyframes muzzle-pop {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  35% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .prompt-kicker {
