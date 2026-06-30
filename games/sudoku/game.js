@@ -66,7 +66,11 @@ function renderSudoku() {
       button.textContent = value;
     }
     if (sudokuState.puzzle[index] !== "0") button.classList.add("given");
-    if (sudokuState.selected === index) button.classList.add("selected");
+    if (sudokuState.selected === index) {
+      button.classList.add("selected");
+    } else if (isSudokuAxisMatch(index)) {
+      button.classList.add("axis");
+    }
     if (
       sudokuState.selected !== null &&
       value !== "0" &&
@@ -81,6 +85,15 @@ function renderSudoku() {
     });
     sudokuBoardEl.appendChild(button);
   });
+}
+
+function isSudokuAxisMatch(index) {
+  if (sudokuState.selected === null) return false;
+  const selectedRow = Math.floor(sudokuState.selected / 9);
+  const selectedCol = sudokuState.selected % 9;
+  const row = Math.floor(index / 9);
+  const col = index % 9;
+  return row === selectedRow || col === selectedCol;
 }
 
 function renderSudokuNotes(cell, index) {
