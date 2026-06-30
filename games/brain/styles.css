@@ -810,6 +810,106 @@ body[data-fixed-mode] .side-panel {
     padding: 10px;
   }
 
+  body[data-fixed-mode="math"] .game-layout.brain-screen {
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px;
+  }
+
+  body[data-fixed-mode="math"] .side-panel {
+    gap: 6px;
+  }
+
+  body[data-fixed-mode="math"] .math-options .select-control {
+    min-height: 36px;
+  }
+
+  body[data-fixed-mode="math"] .math-options select {
+    height: 36px;
+    min-height: 36px;
+    font-size: 0.86rem;
+  }
+
+  body[data-fixed-mode="math"] .stat-grid {
+    gap: 5px;
+  }
+
+  body[data-fixed-mode="math"] .stat-grid div {
+    padding: 6px 7px;
+  }
+
+  body[data-fixed-mode="math"] .stat-grid span {
+    font-size: 0.56rem;
+  }
+
+  body[data-fixed-mode="math"] .stat-grid strong {
+    margin-top: 2px;
+    font-size: 0.9rem;
+  }
+
+  body[data-fixed-mode="math"] .game-message {
+    height: calc(2.7em + 12px);
+    padding: 6px 8px;
+    font-size: 0.76rem;
+  }
+
+  body[data-fixed-mode="math"] .brain-stage {
+    gap: 8px;
+  }
+
+  body[data-fixed-mode="math"] .prompt-card {
+    min-height: 176px;
+    padding: 8px;
+  }
+
+  body[data-fixed-mode="math"] .prompt-kicker {
+    margin-bottom: 5px;
+    font-size: 0.6rem;
+  }
+
+  body[data-fixed-mode="math"] .math-question-list {
+    gap: 4px;
+  }
+
+  body[data-fixed-mode="math"] .math-question-row {
+    grid-template-columns: 46px minmax(0, 1fr);
+    min-height: 25px;
+    gap: 5px;
+    padding: 3px 6px;
+  }
+
+  body[data-fixed-mode="math"] .math-question-row span {
+    font-size: 0.48rem;
+  }
+
+  body[data-fixed-mode="math"] .math-question-row strong {
+    font-size: 0.88rem;
+  }
+
+  body[data-fixed-mode="math"] .math-question-row.active strong {
+    font-size: 1rem;
+  }
+
+  body[data-fixed-mode="math"] .math-answer {
+    gap: 5px;
+  }
+
+  body[data-fixed-mode="math"] .math-entry {
+    min-height: 34px;
+    padding: 5px 8px;
+    font-size: 1.1rem;
+  }
+
+  body[data-fixed-mode="math"] .math-numpad {
+    gap: 5px;
+  }
+
+  body[data-fixed-mode="math"] .math-numpad button {
+    min-height: 38px;
+    padding: 0 6px;
+    font-size: 0.94rem;
+  }
+
   .screen-actions,
   .answer-grid {
     grid-template-columns: 1fr;
@@ -834,6 +934,20 @@ body[data-fixed-mode] .side-panel {
 
   .simon-grid {
     gap: 8px;
+  }
+}
+
+@media (max-width: 390px) {
+  body[data-fixed-mode="math"] .prompt-card {
+    min-height: 164px;
+  }
+
+  body[data-fixed-mode="math"] .math-question-row {
+    min-height: 23px;
+  }
+
+  body[data-fixed-mode="math"] .math-numpad button {
+    min-height: 34px;
   }
 }
 
