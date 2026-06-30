@@ -11,6 +11,12 @@ const mathCustomCountWrap = document.getElementById("mathCustomCountWrap");
 const mathCustomCountInput = document.getElementById("mathCustomCount");
 const mathCustomCountDown = document.getElementById("mathCustomCountDown");
 const mathCustomCountUp = document.getElementById("mathCustomCountUp");
+const colorOptions = document.getElementById("colorOptions");
+const colorQuestionCountSelect = document.getElementById("colorQuestionCount");
+const colorCustomCountWrap = document.getElementById("colorCustomCountWrap");
+const colorCustomCountInput = document.getElementById("colorCustomCount");
+const colorCustomCountDown = document.getElementById("colorCustomCountDown");
+const colorCustomCountUp = document.getElementById("colorCustomCountUp");
 const reactionOptions = document.getElementById("reactionOptions");
 const reactionDifficultySelect = document.getElementById("reactionDifficulty");
 const startBrainButton = document.getElementById("startBrain");
@@ -70,6 +76,14 @@ const savedMathCustomCount = Number(localStorage.getItem("offlineMiniGames.brain
 if (mathCustomCountInput && Number.isFinite(savedMathCustomCount)) {
   mathCustomCountInput.value = String(Math.min(999, Math.max(1, Math.round(savedMathCustomCount))));
 }
+const savedColorQuestionCount = localStorage.getItem("offlineMiniGames.brain.color.questionCount");
+if (colorQuestionCountSelect && ["10", "20", "50", "100", "custom"].includes(savedColorQuestionCount)) {
+  colorQuestionCountSelect.value = savedColorQuestionCount;
+}
+const savedColorCustomCount = Number(localStorage.getItem("offlineMiniGames.brain.color.customQuestionCount") || 10);
+if (colorCustomCountInput && Number.isFinite(savedColorCustomCount)) {
+  colorCustomCountInput.value = String(Math.min(999, Math.max(1, Math.round(savedColorCustomCount))));
+}
 const savedReactionDifficulty = localStorage.getItem("offlineMiniGames.brain.reaction.difficulty");
 if (reactionDifficultySelect && difficultyTitles[savedReactionDifficulty]) reactionDifficultySelect.value = savedReactionDifficulty;
 
@@ -83,6 +97,7 @@ function setBest(mode, value) {
 
 function currentBestKey() {
   if (currentMode === "math") return `math.${mathDifficultySelect?.value || "easy"}.${getMathQuestionTotal()}`;
+  if (currentMode === "color") return `color.${getColorQuestionTotal()}`;
   if (currentMode === "reaction") return `reaction.${reactionDifficultySelect?.value || "easy"}`;
   return currentMode;
 }
@@ -133,8 +148,10 @@ function resetBrain() {
   clearTimers();
   state = { running: false, score: 0, round: 0 };
   updateMathQuestionControls();
+  updateColorQuestionControls();
   setDuelScene("idle");
   if (mathOptions) mathOptions.hidden = currentMode !== "math";
+  if (colorOptions) colorOptions.hidden = currentMode !== "color";
   if (reactionOptions) reactionOptions.hidden = currentMode !== "reaction";
   if (currentMode === "math") {
     promptKicker.textContent = `${modeTitles[currentMode]} - ${difficultyTitles[mathDifficultySelect.value]}`;
@@ -163,7 +180,7 @@ function resetBrain() {
   timeLabel.textContent = statFourLabel();
   brainScoreEl.textContent = "0";
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
-  brainRoundEl.textContent = currentMode === "reaction" ? "0/5" : `0/${currentMode === "math" ? getMathQuestionTotal() : 10}`;
+  brainRoundEl.textContent = idleRoundText();
   brainTimeEl.textContent = timeStatText();
   if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
   renderIdleControls();
@@ -186,8 +203,16 @@ function formatBest(mode, value) {
 function updateStats(roundTotal = 10) {
   brainScoreEl.textContent = state.score;
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
-  brainRoundEl.textContent = `${state.round}/${roundTotal}`;
+  brainRoundEl.textContent = currentMode === "simon" ? String(state.round || 0) : `${state.round}/${roundTotal}`;
   brainTimeEl.textContent = timeStatText();
+}
+
+function idleRoundText() {
+  if (currentMode === "reaction") return "0/5";
+  if (currentMode === "math") return `0/${getMathQuestionTotal()}`;
+  if (currentMode === "color") return `0/${getColorQuestionTotal()}`;
+  if (currentMode === "simon") return "0";
+  return "0/10";
 }
 
 function saveHighScore() {
@@ -360,6 +385,45 @@ function stepMathCustomCount(delta) {
   if (!mathCustomCountInput) return;
   mathCustomCountInput.value = String(clampMathQuestionCount(getMathQuestionTotal() + delta));
   refreshIdleMathCount();
+}
+
+function getColorQuestionTotal() {
+  if (colorQuestionCountSelect?.value === "custom") {
+    return clampMathQuestionCount(colorCustomCountInput?.value);
+  }
+  return clampMathQuestionCount(colorQuestionCountSelect?.value || 10);
+}
+
+function saveColorQuestionSettings() {
+  if (colorQuestionCountSelect) {
+    localStorage.setItem("offlineMiniGames.brain.color.questionCount", colorQuestionCountSelect.value);
+  }
+  if (colorCustomCountInput) {
+    localStorage.setItem("offlineMiniGames.brain.color.customQuestionCount", String(getColorQuestionTotal()));
+  }
+}
+
+function updateColorQuestionControls() {
+  if (!colorQuestionCountSelect || !colorCustomCountWrap) return;
+  const isCustom = colorQuestionCountSelect.value === "custom";
+  colorCustomCountWrap.hidden = !isCustom;
+  if (isCustom && colorCustomCountInput) {
+    colorCustomCountInput.value = String(getColorQuestionTotal());
+  }
+}
+
+function refreshIdleColorCount() {
+  saveColorQuestionSettings();
+  if (currentMode === "color" && !state.running) {
+    brainRoundEl.textContent = `0/${getColorQuestionTotal()}`;
+    brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
+  }
+}
+
+function stepColorCustomCount(delta) {
+  if (!colorCustomCountInput) return;
+  colorCustomCountInput.value = String(clampMathQuestionCount(getColorQuestionTotal() + delta));
+  refreshIdleColorCount();
 }
 
 function fillMathQueue() {
@@ -571,7 +635,9 @@ function submitMathAnswer() {
 }
 
 function startColor() {
-  state = { running: true, score: 0, round: 0, total: 10 };
+  const total = getColorQuestionTotal();
+  state = { running: true, score: 0, round: 0, total };
+  saveColorQuestionSettings();
   startBrainTimer();
   startBrainButton.textContent = "Restart";
   brainMessage.textContent = "Pick ink color.";
@@ -580,7 +646,7 @@ function startColor() {
 
 function nextColorQuestion() {
   if (state.round >= state.total) {
-    finishGame(`Finished. Score: ${state.score}/${state.total}.`);
+    finishGame(`Finished. Score: ${state.score}/${state.total}.`, state.total);
     return;
   }
   state.round += 1;
@@ -595,7 +661,7 @@ function nextColorQuestion() {
     brainPrompt.style.color = "";
     nextColorQuestion();
   });
-  updateStats();
+  updateStats(state.total);
 }
 
 function renderAnswerButtons(choices, answer, nextQuestion) {
@@ -783,7 +849,7 @@ function nextSimonRound() {
   state.sequence.push(Math.floor(Math.random() * 4));
   brainPrompt.textContent = `Level ${state.sequence.length}`;
   renderSimonGrid(false);
-  updateStats(12);
+  updateStats();
   showSimonStep(0);
 }
 
@@ -826,7 +892,7 @@ function handleSimonPad(index, button) {
   button.classList.add("lit");
   setTimeout(() => button.classList.remove("lit"), 140);
   if (index !== state.sequence[state.inputIndex]) {
-    finishGame(`Sequence missed. Level reached: ${state.sequence.length}.`, 12);
+    finishGame(`Sequence missed. Level reached: ${state.sequence.length}.`, state.sequence.length);
     return;
   }
   state.inputIndex += 1;
@@ -835,7 +901,7 @@ function handleSimonPad(index, button) {
     state.round = state.sequence.length + 1;
     brainMessage.textContent = "Nice. Next level.";
     saveHighScore();
-    updateStats(12);
+    updateStats();
     sequenceTimer = setTimeout(nextSimonRound, 650);
   }
 }
@@ -972,6 +1038,21 @@ mathCustomCountInput?.addEventListener("change", () => {
 });
 mathCustomCountDown?.addEventListener("click", () => stepMathCustomCount(-1));
 mathCustomCountUp?.addEventListener("click", () => stepMathCustomCount(1));
+colorQuestionCountSelect?.addEventListener("change", () => {
+  saveColorQuestionSettings();
+  updateColorQuestionControls();
+  if (currentMode === "color") resetBrain();
+});
+colorCustomCountInput?.addEventListener("input", () => {
+  refreshIdleColorCount();
+});
+colorCustomCountInput?.addEventListener("change", () => {
+  if (colorCustomCountInput) colorCustomCountInput.value = String(getColorQuestionTotal());
+  saveColorQuestionSettings();
+  if (currentMode === "color" && !state.running) resetBrain();
+});
+colorCustomCountDown?.addEventListener("click", () => stepColorCustomCount(-1));
+colorCustomCountUp?.addEventListener("click", () => stepColorCustomCount(1));
 reactionDifficultySelect?.addEventListener("change", () => {
   localStorage.setItem("offlineMiniGames.brain.reaction.difficulty", reactionDifficultySelect.value);
   if (currentMode === "reaction") resetBrain();

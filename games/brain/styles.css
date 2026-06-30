@@ -141,16 +141,19 @@
 }
 
 .math-options[hidden],
+.count-options[hidden],
 .reaction-options[hidden] {
   display: none;
 }
 
-.math-options {
+.math-options,
+.count-options {
   display: grid;
   gap: 8px;
 }
 
 .math-options .select-control,
+.count-options .select-control,
 .reaction-options .select-control,
 .custom-count-control {
   display: flex;
@@ -170,6 +173,7 @@
 }
 
 .math-options select,
+.count-options select,
 .reaction-options select,
 .custom-count-control input {
   flex: 1;
@@ -937,14 +941,20 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   body[data-fixed-mode="math"] .math-options .select-control,
+  body[data-fixed-mode="color"] .count-options .select-control,
   body[data-fixed-mode="math"] .custom-count-control,
+  body[data-fixed-mode="color"] .custom-count-control,
   body[data-fixed-mode="math"] .math-options select,
+  body[data-fixed-mode="color"] .count-options select,
   body[data-fixed-mode="math"] .custom-count-control input,
+  body[data-fixed-mode="color"] .custom-count-control input,
+  body[data-fixed-mode="color"] .count-step-button,
   body[data-fixed-mode="math"] .count-step-button {
     height: 50px;
     min-height: 50px;
   }
 
+  body[data-fixed-mode="color"] .custom-count-stepper,
   body[data-fixed-mode="math"] .custom-count-stepper {
     grid-template-columns: 50px minmax(0, 1fr) 50px;
   }
@@ -1029,21 +1039,27 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   body[data-fixed-mode="math"] .math-options .select-control,
-  body[data-fixed-mode="math"] .custom-count-control {
+  body[data-fixed-mode="color"] .count-options .select-control,
+  body[data-fixed-mode="math"] .custom-count-control,
+  body[data-fixed-mode="color"] .custom-count-control {
     min-height: 50px;
   }
 
   body[data-fixed-mode="math"] .math-options select,
-  body[data-fixed-mode="math"] .custom-count-control input {
+  body[data-fixed-mode="color"] .count-options select,
+  body[data-fixed-mode="math"] .custom-count-control input,
+  body[data-fixed-mode="color"] .custom-count-control input {
     height: 50px;
     min-height: 50px;
     font-size: 0.86rem;
   }
 
+  body[data-fixed-mode="color"] .custom-count-stepper,
   body[data-fixed-mode="math"] .custom-count-stepper {
     grid-template-columns: 50px minmax(0, 1fr) 50px;
   }
 
+  body[data-fixed-mode="color"] .count-step-button,
   body[data-fixed-mode="math"] .count-step-button {
     width: 50px;
     min-width: 50px;
@@ -1318,6 +1334,7 @@ body[data-fixed-mode="math"] .prompt-kicker {
   .mode-button,
   .screen-actions button,
   .math-options select,
+  .count-options select,
   .custom-count-control input,
   .count-step-button,
   .reaction-options select {
@@ -1328,16 +1345,21 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   body[data-fixed-mode="math"] .math-options select,
+  body[data-fixed-mode="color"] .count-options select,
   body[data-fixed-mode="math"] .custom-count-control input,
+  body[data-fixed-mode="color"] .custom-count-control input,
+  body[data-fixed-mode="color"] .count-step-button,
   body[data-fixed-mode="math"] .count-step-button {
     height: 44px;
     min-height: 44px;
   }
 
+  body[data-fixed-mode="color"] .custom-count-control,
   body[data-fixed-mode="math"] .custom-count-control {
     min-height: 44px;
   }
 
+  body[data-fixed-mode="color"] .custom-count-stepper,
   body[data-fixed-mode="math"] .custom-count-stepper {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
   }

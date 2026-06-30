@@ -15,7 +15,7 @@
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css" />
-    <link rel="stylesheet" href="../brain/styles.css?v=26" />
+    <link rel="stylesheet" href="../brain/styles.css?v=27" />
   </head>
   <body data-fixed-mode="color">
     <main class="game-shell">
@@ -29,6 +29,39 @@
 
       <section class="game-layout game-screen brain-screen">
         <aside class="side-panel">
+          <div class="count-options" id="colorOptions">
+            <label class="select-control">
+              <span>Questions</span>
+              <select id="colorQuestionCount">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
+            <div class="custom-count-control" id="colorCustomCountWrap" hidden>
+              <span>Custom</span>
+              <div class="custom-count-stepper" role="group" aria-label="Custom question count">
+                <button class="count-step-button" type="button" id="colorCustomCountDown" aria-label="Decrease questions">
+                  -
+                </button>
+                <input
+                  id="colorCustomCount"
+                  type="number"
+                  min="1"
+                  max="999"
+                  step="1"
+                  inputmode="numeric"
+                  value="10"
+                  aria-label="Custom question count"
+                />
+                <button class="count-step-button" type="button" id="colorCustomCountUp" aria-label="Increase questions">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
           <div class="screen-actions">
             <button class="primary-button" type="button" id="startBrain">Start</button>
             <button type="button" id="resetBrain">Reset</button>
@@ -51,6 +84,6 @@
         </div>
       </section>
     </main>
-    <script src="../brain/game.js?v=26"></script>
+    <script src="../brain/game.js?v=27"></script>
   </body>
 </html>
