@@ -6,6 +6,8 @@ const modePicker = document.getElementById("modePicker");
 const closeModePickerButton = document.getElementById("closeModePicker");
 const mathOptions = document.getElementById("mathOptions");
 const mathDifficultySelect = document.getElementById("mathDifficulty");
+const reactionOptions = document.getElementById("reactionOptions");
+const reactionDifficultySelect = document.getElementById("reactionDifficulty");
 const startBrainButton = document.getElementById("startBrain");
 const resetBrainButton = document.getElementById("resetBrain");
 const scoreLabel = document.getElementById("scoreLabel");
@@ -16,6 +18,7 @@ const brainBestEl = document.getElementById("brainBest");
 const brainRoundEl = document.getElementById("brainRound");
 const brainTimeEl = document.getElementById("brainTime");
 const brainMessage = document.getElementById("brainMessage");
+const promptCard = document.querySelector(".prompt-card");
 const promptKicker = document.getElementById("promptKicker");
 const brainPrompt = document.getElementById("brainPrompt");
 const brainControls = document.getElementById("brainControls");
@@ -23,7 +26,7 @@ const brainControls = document.getElementById("brainControls");
 const modeTitles = {
   math: "Math Sprint",
   color: "Word Color",
-  reaction: "Reaction Time",
+  reaction: "Cowboy Duel",
   simon: "Simon Said",
 };
 const difficultyTitles = {
@@ -39,6 +42,11 @@ const colorChoices = [
   { name: "Purple", value: "#6757c8" },
 ];
 const simonNames = ["Green", "Blue", "Gold", "Purple"];
+const reactionDifficultySettings = {
+  easy: { min: 700, max: 1050 },
+  medium: { min: 470, max: 760 },
+  hard: { min: 300, max: 520 },
+};
 
 let currentMode = "math";
 let state = {};
@@ -48,6 +56,8 @@ let brainAudio;
 
 const savedMathDifficulty = localStorage.getItem("offlineMiniGames.brain.math.difficulty");
 if (difficultyTitles[savedMathDifficulty]) mathDifficultySelect.value = savedMathDifficulty;
+const savedReactionDifficulty = localStorage.getItem("offlineMiniGames.brain.reaction.difficulty");
+if (difficultyTitles[savedReactionDifficulty]) reactionDifficultySelect.value = savedReactionDifficulty;
 
 function getBest(mode) {
   return Number(localStorage.getItem(`offlineMiniGames.brain.${mode}.best`) || 0);
@@ -58,7 +68,9 @@ function setBest(mode, value) {
 }
 
 function currentBestKey() {
-  return currentMode === "math" ? `math.${mathDifficultySelect.value}` : currentMode;
+  if (currentMode === "math") return `math.${mathDifficultySelect.value}`;
+  if (currentMode === "reaction") return `reaction.${reactionDifficultySelect.value}`;
+  return currentMode;
 }
 
 function clearTimers() {
@@ -104,17 +116,23 @@ function resetBrain() {
   clearTimers();
   state = { running: false, score: 0, round: 0 };
   mathOptions.hidden = currentMode !== "math";
-  promptKicker.textContent = currentMode === "math"
-    ? `${modeTitles[currentMode]} - ${difficultyTitles[mathDifficultySelect.value]}`
-    : modeTitles[currentMode];
+  reactionOptions.hidden = currentMode !== "reaction";
+  if (currentMode === "math") {
+    promptKicker.textContent = `${modeTitles[currentMode]} - ${difficultyTitles[mathDifficultySelect.value]}`;
+  } else if (currentMode === "reaction") {
+    promptKicker.textContent = `${modeTitles[currentMode]} - ${difficultyTitles[reactionDifficultySelect.value]}`;
+  } else {
+    promptKicker.textContent = modeTitles[currentMode];
+  }
   brainPrompt.textContent = "Ready?";
   brainPrompt.style.color = "";
-  brainMessage.textContent = currentMode === "math" ? "Choose difficulty, then press Start." : "Press Start to begin.";
+  brainMessage.textContent =
+    currentMode === "math" || currentMode === "reaction" ? "Choose difficulty, then press Start." : "Press Start to begin.";
   startBrainButton.textContent = "Start";
-  scoreLabel.textContent = currentMode === "reaction" ? "Last" : "Score";
-  roundLabel.textContent = currentMode === "reaction" ? "Tries" : "Round";
+  scoreLabel.textContent = "Score";
+  roundLabel.textContent = "Round";
   timeLabel.textContent = statFourLabel();
-  brainScoreEl.textContent = currentMode === "reaction" ? "-" : "0";
+  brainScoreEl.textContent = "0";
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
   brainRoundEl.textContent = currentMode === "reaction" ? "0/5" : "0/10";
   brainTimeEl.textContent = timeStatText();
@@ -131,7 +149,7 @@ function startBrain() {
 
 function formatBest(mode, value) {
   if (!value) return "-";
-  return mode === "reaction" ? `${value}ms` : value;
+  return value;
 }
 
 function updateStats(roundTotal = 10) {
@@ -190,9 +208,7 @@ function elapsedText() {
 
 function timeStatText() {
   if (currentMode === "reaction") {
-    if (!state.times?.length) return "-";
-    const average = Math.round(state.times.reduce((sum, time) => sum + time, 0) / state.times.length);
-    return `${average}ms`;
+    return state.last ? `${state.last}ms` : "-";
   }
   if (usesTotalTimer(currentMode)) return elapsedText();
   if (currentMode === "simon" && state.sequence?.length) return state.sequence.length;
@@ -204,7 +220,7 @@ function usesTotalTimer(mode) {
 }
 
 function statFourLabel() {
-  if (currentMode === "reaction") return "Avg";
+  if (currentMode === "reaction") return "Shot";
   if (currentMode === "simon") return "Level";
   return "Time";
 }
@@ -213,7 +229,7 @@ function renderIdleControls() {
   if (currentMode === "simon") {
     renderSimonGrid(false);
   } else if (currentMode === "reaction") {
-    brainControls.innerHTML = `<button class="reaction-button" type="button">Start when ready</button>`;
+    renderReactionButton("Press Start for duel", "", true);
   } else if (currentMode === "math") {
     renderMathAnswerControls(true);
   } else {
@@ -497,61 +513,107 @@ function renderAnswerButtons(choices, answer, nextQuestion) {
 }
 
 function startReaction() {
-  state = { running: true, score: 0, round: 0, total: 5, waiting: false, ready: false, last: 0, times: [] };
-  scoreLabel.textContent = "Last";
-  roundLabel.textContent = "Tries";
-  timeLabel.textContent = "Avg";
+  const difficulty = reactionDifficultySelect.value;
+  state = {
+    running: true,
+    score: 0,
+    round: 0,
+    total: 5,
+    waiting: false,
+    ready: false,
+    last: 0,
+    difficulty,
+  };
+  localStorage.setItem("offlineMiniGames.brain.reaction.difficulty", difficulty);
+  promptKicker.textContent = `${modeTitles.reaction} - ${difficultyTitles[difficulty]}`;
+  scoreLabel.textContent = "Score";
+  roundLabel.textContent = "Round";
+  timeLabel.textContent = "Shot";
   brainTimeEl.textContent = "-";
   startBrainButton.textContent = "Restart";
-  brainMessage.textContent = "Wait for green, then tap.";
+  brainMessage.textContent = "Wait for DRAW, then shoot before the computer.";
   nextReactionRound();
 }
 
 function nextReactionRound() {
   if (state.round >= state.total) {
-    startBrainButton.textContent = "Start";
-    brainMessage.textContent = `Done. Average: ${timeStatText()}. Lower is better.`;
-    state.running = false;
-    updateStats(5);
+    finishGame(`Duel over. Wins: ${state.score}/${state.total}.`, 5);
     return;
   }
   state.round += 1;
   state.waiting = true;
   state.ready = false;
-  brainPrompt.textContent = "Wait...";
-  brainControls.innerHTML = `<button class="reaction-button waiting" type="button">Wait</button>`;
-  brainControls.querySelector("button").addEventListener("click", handleReactionTap);
+  state.last = 0;
+  brainPrompt.textContent = "Steady...";
+  brainMessage.textContent = "Do not shoot before DRAW.";
+  renderReactionButton("Wait", "waiting", false);
   updateStats(5);
   reactionTimer = setTimeout(() => {
-    state.waiting = false;
-    state.ready = true;
-    state.readyAt = performance.now();
-    brainPrompt.textContent = "Tap!";
-    const button = brainControls.querySelector("button");
-    button.textContent = "Tap";
-    button.classList.remove("waiting");
-    button.classList.add("ready");
-  }, 900 + Math.random() * 1900);
+    startReactionDraw();
+  }, 950 + Math.random() * 1600);
+}
+
+function renderReactionButton(text, className, disabled) {
+  brainControls.innerHTML = `<button class="reaction-button ${className}" type="button">${text}</button>`;
+  const button = brainControls.querySelector("button");
+  button.disabled = disabled;
+  button.addEventListener("click", handleReactionTap);
+}
+
+function reactionComputerDelay() {
+  const settings = reactionDifficultySettings[state.difficulty];
+  return randomInt(settings.min, settings.max);
+}
+
+function startReactionDraw() {
+  if (!state.running) return;
+  state.waiting = false;
+  state.ready = true;
+  state.readyAt = performance.now();
+  state.computerDelay = reactionComputerDelay();
+  brainPrompt.textContent = "DRAW!";
+  brainMessage.textContent = "Shoot now. The computer gets faster on harder difficulty.";
+  renderReactionButton("Shoot", "ready", false);
+  reactionTimer = setTimeout(handleComputerShot, state.computerDelay);
+}
+
+function endReactionRound(message, prompt, className) {
+  state.ready = false;
+  state.waiting = false;
+  brainPrompt.textContent = prompt;
+  brainMessage.textContent = message;
+  renderReactionButton(prompt, className, true);
+  updateStats(5);
+  reactionTimer = setTimeout(nextReactionRound, 850);
+}
+
+function handleComputerShot() {
+  if (!state.running || !state.ready) return;
+  state.last = state.computerDelay;
+  endReactionRound(`Computer shot in ${state.computerDelay}ms.`, "Too slow", "lost");
 }
 
 function handleReactionTap() {
   if (!state.running) return;
   if (state.waiting) {
     clearTimeout(reactionTimer);
-    brainMessage.textContent = "Too early. Try that round again.";
-    state.round -= 1;
-    nextReactionRound();
+    state.last = 0;
+    endReactionRound("Too early. Point goes to the computer.", "False start", "lost");
     return;
   }
   if (!state.ready) return;
+  clearTimeout(reactionTimer);
   state.last = Math.max(1, Math.round(performance.now() - state.readyAt));
-  state.times.push(state.last);
-  state.score = state.last;
-  saveLowScore();
-  brainMessage.textContent = `${state.last}ms.`;
-  state.ready = false;
-  updateStats(5);
-  reactionTimer = setTimeout(nextReactionRound, 650);
+  state.score += 1;
+  endReactionRound(`You shot in ${state.last}ms.`, "You win", "won");
+}
+
+function handleReactionKeyboard(event) {
+  if (!state.running || currentMode !== "reaction") return;
+  if (event.key === " " || event.key === "Enter") {
+    event.preventDefault();
+    handleReactionTap();
+  }
 }
 
 function startSimon() {
@@ -649,6 +711,10 @@ mathDifficultySelect.addEventListener("change", () => {
   localStorage.setItem("offlineMiniGames.brain.math.difficulty", mathDifficultySelect.value);
   if (currentMode === "math") resetBrain();
 });
+reactionDifficultySelect.addEventListener("change", () => {
+  localStorage.setItem("offlineMiniGames.brain.reaction.difficulty", reactionDifficultySelect.value);
+  if (currentMode === "reaction") resetBrain();
+});
 modePickerButton.addEventListener("click", toggleModePicker);
 closeModePickerButton.addEventListener("click", closeModePicker);
 document.addEventListener("click", (event) => {
@@ -658,6 +724,8 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeModePicker();
 });
 document.addEventListener("keydown", handleMathKeyboard);
+document.addEventListener("keydown", handleReactionKeyboard);
+promptCard.addEventListener("click", handleReactionTap);
 startBrainButton.addEventListener("click", startBrain);
 resetBrainButton.addEventListener("click", resetBrain);
 window.addEventListener("pagehide", clearTimers);

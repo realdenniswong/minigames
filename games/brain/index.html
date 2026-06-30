@@ -15,7 +15,7 @@
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css" />
-    <link rel="stylesheet" href="styles.css?v=4" />
+    <link rel="stylesheet" href="styles.css?v=5" />
   </head>
   <body>
     <main class="game-shell">
@@ -55,7 +55,7 @@
                 Word Color
               </button>
               <button class="mode-button" type="button" data-mode="reaction" aria-selected="false">
-                Reaction Time
+                Cowboy Duel
               </button>
               <button class="mode-button" type="button" data-mode="simon" aria-selected="false">
                 Simon Said
@@ -69,6 +69,16 @@
             <label class="select-control">
               <span>Difficulty</span>
               <select id="mathDifficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+          </div>
+          <div class="reaction-options" id="reactionOptions" hidden>
+            <label class="select-control">
+              <span>Difficulty</span>
+              <select id="reactionDifficulty">
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
@@ -109,6 +119,6 @@
         </div>
       </section>
     </main>
-    <script src="game.js?v=3"></script>
+    <script src="game.js?v=4"></script>
   </body>
 </html>

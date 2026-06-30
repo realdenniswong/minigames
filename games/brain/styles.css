@@ -140,16 +140,19 @@
   color: #fff;
 }
 
-.math-options[hidden] {
+.math-options[hidden],
+.reaction-options[hidden] {
   display: none;
 }
 
-.math-options .select-control {
+.math-options .select-control,
+.reaction-options .select-control {
   display: flex;
   width: 100%;
 }
 
-.math-options select {
+.math-options select,
+.reaction-options select {
   flex: 1;
   min-width: 0;
 }
@@ -383,6 +386,7 @@
   border-color: transparent;
   background: var(--sky);
   color: #fff;
+  white-space: normal;
 }
 
 .reaction-button.waiting {
@@ -390,6 +394,14 @@
 }
 
 .reaction-button.ready {
+  background: var(--mint);
+}
+
+.reaction-button.lost {
+  background: var(--coral);
+}
+
+.reaction-button.won {
   background: var(--mint);
 }
 
@@ -552,7 +564,8 @@
 
   .mode-button,
   .screen-actions button,
-  .math-options select {
+  .math-options select,
+  .reaction-options select {
     height: 32px;
     min-height: 32px;
     padding: 0 8px;
