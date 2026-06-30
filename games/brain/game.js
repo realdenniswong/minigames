@@ -147,6 +147,7 @@ function resetBrain() {
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
   brainRoundEl.textContent = currentMode === "reaction" ? "0/5" : "0/10";
   brainTimeEl.textContent = timeStatText();
+  if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
   renderIdleControls();
 }
 
@@ -192,6 +193,7 @@ function finishGame(message, roundTotal = 10) {
   startBrainButton.textContent = "Start";
   brainMessage.textContent = usesTotalTimer(currentMode) ? `${message} Time: ${elapsedText()}.` : message;
   updateStats(roundTotal);
+  if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
   if (fixedMode === currentMode && (currentMode === "math" || currentMode === "reaction")) {
     renderIdleControls();
   }
@@ -262,12 +264,13 @@ function shuffle(items) {
 
 function startMath() {
   const difficulty = mathDifficultySelect.value;
-  state = { running: true, score: 0, round: 0, total: 10, input: "", difficulty };
+  state = { running: true, score: 0, round: 0, total: 10, input: "", difficulty, queue: [] };
   localStorage.setItem("offlineMiniGames.brain.math.difficulty", difficulty);
   promptKicker.textContent = `${modeTitles.math} - ${difficultyTitles[difficulty]}`;
   startBrainTimer();
   startBrainButton.textContent = "Restart";
   brainMessage.textContent = "Enter answer. Submit.";
+  fillMathQueue();
   nextMathQuestion();
 }
 
@@ -279,10 +282,33 @@ function nextMathQuestion() {
   state.round += 1;
   state.input = "";
   state.accepting = true;
-  state.problem = makeMathProblem(state.difficulty);
-  brainPrompt.textContent = state.problem.prompt;
+  fillMathQueue();
+  state.problem = state.queue[0];
+  renderMathQuestionQueue();
   renderMathAnswerControls(false);
   updateStats();
+}
+
+function fillMathQueue() {
+  state.queue ??= [];
+  while (state.queue.length < 5) {
+    state.queue.push(makeMathProblem(state.difficulty));
+  }
+}
+
+function renderMathQuestionQueue() {
+  const rows = state.queue
+    .slice(0, 5)
+    .map(
+      (problem, index) => `
+        <div class="math-question-row ${index === 0 ? "active" : ""}">
+          <span>${index === 0 ? "Now" : `Next ${index}`}</span>
+          <strong>${problem.prompt}</strong>
+        </div>
+      `,
+    )
+    .join("");
+  brainPrompt.innerHTML = `<div class="math-question-list">${rows}</div>`;
 }
 
 function randomInt(min, max) {
@@ -467,6 +493,9 @@ function submitMathAnswer() {
   const correct = submitted === state.problem.answer;
   if (correct) state.score += 1;
   brainMessage.textContent = correct ? "Correct." : `Answer: ${state.problem.answer}.`;
+  state.queue.shift();
+  fillMathQueue();
+  renderMathQuestionQueue();
   updateStats();
   setTimeout(nextMathQuestion, 520);
 }

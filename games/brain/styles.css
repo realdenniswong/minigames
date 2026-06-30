@@ -575,6 +575,51 @@ body[data-fixed-mode] .side-panel {
   overflow-wrap: anywhere;
 }
 
+.math-question-list {
+  display: grid;
+  gap: 7px;
+  width: min(100%, 520px);
+  text-align: left;
+}
+
+.math-question-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  border: 1px solid rgba(217, 222, 231, 0.92);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.76);
+  padding: 6px 10px;
+}
+
+.math-question-row span {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.math-question-row strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: clamp(1rem, 2.6vw, 1.45rem);
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.math-question-row.active {
+  border-color: rgba(28, 143, 120, 0.55);
+  background: rgba(28, 143, 120, 0.12);
+}
+
+.math-question-row.active strong {
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
+}
+
 .brain-controls {
   display: grid;
   align-content: start;
@@ -942,6 +987,26 @@ body[data-fixed-mode] .side-panel {
 
   .prompt-text {
     font-size: clamp(1.45rem, 6vw, 3rem);
+  }
+
+  .math-question-list {
+    gap: 4px;
+  }
+
+  .math-question-row {
+    grid-template-columns: 48px minmax(0, 1fr);
+    min-height: 28px;
+    gap: 6px;
+    padding: 4px 6px;
+  }
+
+  .math-question-row span {
+    font-size: 0.5rem;
+  }
+
+  .math-question-row strong,
+  .math-question-row.active strong {
+    font-size: 0.9rem;
   }
 
   .answer-grid {
