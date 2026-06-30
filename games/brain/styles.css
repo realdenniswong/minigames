@@ -140,6 +140,20 @@
   color: #fff;
 }
 
+.math-options[hidden] {
+  display: none;
+}
+
+.math-options .select-control {
+  display: flex;
+  width: 100%;
+}
+
+.math-options select {
+  flex: 1;
+  min-width: 0;
+}
+
 .screen-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -274,6 +288,56 @@
   color: #fff;
 }
 
+.math-answer {
+  display: grid;
+  gap: 10px;
+}
+
+.math-entry {
+  display: grid;
+  align-items: center;
+  min-height: 64px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 14px;
+  color: var(--ink);
+  font-size: clamp(1.7rem, 5vw, 3rem);
+  font-weight: 950;
+  line-height: 1;
+  text-align: right;
+}
+
+.math-entry.empty {
+  color: var(--muted);
+}
+
+.math-numpad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.math-numpad button {
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
+  font-size: clamp(1rem, 2.4vw, 1.35rem);
+  font-weight: 900;
+}
+
+.math-numpad .math-submit {
+  grid-column: span 3;
+  border-color: transparent;
+  background: var(--mint);
+  color: #fff;
+}
+
+.math-numpad .math-clear,
+.math-numpad .math-backspace {
+  color: var(--muted);
+}
+
 .simon-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -344,13 +408,13 @@
   .side-panel {
     grid-column: auto;
     grid-row: auto;
-    order: 3;
+    order: 2;
   }
 
   .brain-stage {
     grid-column: auto;
     grid-row: auto;
-    order: 2;
+    order: 3;
   }
 
   .mode-picker-box {
@@ -367,6 +431,10 @@
   .screen-actions,
   .answer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .math-numpad button {
+    min-height: 52px;
   }
 
   .mode-picker-button {
@@ -483,7 +551,8 @@
   }
 
   .mode-button,
-  .screen-actions button {
+  .screen-actions button,
+  .math-options select {
     height: 32px;
     min-height: 32px;
     padding: 0 8px;
@@ -536,6 +605,26 @@
   .reaction-button {
     min-height: 42px;
     font-size: 1rem;
+  }
+
+  .math-answer {
+    gap: 6px;
+  }
+
+  .math-entry {
+    min-height: 42px;
+    padding: 6px 8px;
+    font-size: 1.25rem;
+  }
+
+  .math-numpad {
+    gap: 5px;
+  }
+
+  .math-numpad button {
+    min-height: 34px;
+    padding: 0 6px;
+    font-size: 0.9rem;
   }
 
   .simon-grid {

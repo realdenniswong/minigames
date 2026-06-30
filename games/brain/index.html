@@ -15,7 +15,7 @@
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css" />
-    <link rel="stylesheet" href="styles.css?v=3" />
+    <link rel="stylesheet" href="styles.css?v=4" />
   </head>
   <body>
     <main class="game-shell">
@@ -65,6 +65,16 @@
         </div>
 
         <aside class="side-panel">
+          <div class="math-options" id="mathOptions">
+            <label class="select-control">
+              <span>Difficulty</span>
+              <select id="mathDifficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+          </div>
           <div class="screen-actions">
             <button class="primary-button" type="button" id="startBrain">Start</button>
             <button type="button" id="resetBrain">Reset</button>
@@ -99,6 +109,6 @@
         </div>
       </section>
     </main>
-    <script src="game.js?v=2"></script>
+    <script src="game.js?v=3"></script>
   </body>
 </html>
