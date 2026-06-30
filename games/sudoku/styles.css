@@ -515,10 +515,10 @@ label {
   }
 
   .board-panel {
-    position: relative;
     display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
     place-items: start center;
-    gap: 0;
+    gap: 4px;
     min-width: 0;
     max-height: 100%;
     overflow: auto;
@@ -527,17 +527,12 @@ label {
   }
 
   .board-panel .stat-grid {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    z-index: 1;
-    width: 64px;
+    width: min(100%, 390px);
     margin: 0;
-    pointer-events: none;
   }
 
   .sudoku-board {
-    width: min(390px, max(300px, calc(100dvh - 56px)));
+    width: min(390px, max(300px, calc(100dvh - 98px)));
   }
 
   .side-panel {
