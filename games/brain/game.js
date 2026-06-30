@@ -352,7 +352,9 @@ function stepMathCustomCount(delta) {
 
 function fillMathQueue() {
   state.queue ??= [];
-  while (state.queue.length < 5) {
+  const remainingQuestions = state.round <= 0 ? state.total : state.total - state.round + 1;
+  const targetQueueLength = Math.min(5, Math.max(0, remainingQuestions));
+  while (state.queue.length < targetQueueLength) {
     state.queue.push(makeMathProblem(state.difficulty));
   }
 }
@@ -550,7 +552,6 @@ function submitMathAnswer() {
   if (correct) state.score += 1;
   brainMessage.textContent = correct ? "Correct." : `Answer: ${state.problem.answer}.`;
   state.queue.shift();
-  fillMathQueue();
   updateStats();
   nextMathQuestion();
 }
