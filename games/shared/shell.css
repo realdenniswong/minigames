@@ -59,7 +59,9 @@ select {
 
 .game-shell {
   min-height: 100dvh;
-  padding: clamp(14px, 2.5vw, 22px);
+  padding-block: clamp(14px, 2.5vw, 22px);
+  padding-inline-start: max(clamp(14px, 2.5vw, 22px), env(safe-area-inset-left));
+  padding-inline-end: max(clamp(14px, 2.5vw, 22px), env(safe-area-inset-right));
 }
 
 .panel-heading {

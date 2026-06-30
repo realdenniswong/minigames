@@ -430,31 +430,32 @@ label {
 }
 
 @media (max-height: 560px) and (hover: none) and (pointer: coarse) {
-  button,
-  select,
-  .nav-button {
+  body button,
+  body select,
+  body .nav-button {
     height: 38px;
     min-height: 38px;
   }
 
-  .game-shell {
-    padding: 8px 10px;
+  body .game-shell {
+    padding: 8px max(10px, env(safe-area-inset-right)) 8px
+      max(10px, env(safe-area-inset-left));
   }
 
-  .panel-heading {
+  body .panel-heading {
     gap: 10px;
     padding-bottom: 8px;
   }
 
-  .title-block {
+  body .title-block {
     height: 38px;
   }
 
-  .title-block .eyebrow {
+  body .title-block .eyebrow {
     font-size: 0.52rem;
   }
 
-  h1 {
+  body h1 {
     font-size: 1.05rem;
   }
 
@@ -466,6 +467,7 @@ label {
   .play-layout {
     grid-template-columns: minmax(210px, 255px) minmax(0, 1fr);
     gap: 10px;
+    justify-content: center;
   }
 
   .side-panel {

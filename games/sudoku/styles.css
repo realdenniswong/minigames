@@ -473,31 +473,32 @@ label {
 }
 
 @media (max-height: 560px) and (hover: none) and (pointer: coarse) {
-  button,
-  select,
-  .nav-button {
+  body button,
+  body select,
+  body .nav-button {
     height: 38px;
     min-height: 38px;
   }
 
-  .game-shell {
-    padding: 8px 10px;
+  body .game-shell {
+    padding: 8px max(10px, env(safe-area-inset-right)) 8px
+      max(10px, env(safe-area-inset-left));
   }
 
-  .panel-heading {
+  body .panel-heading {
     gap: 10px;
     padding-bottom: 8px;
   }
 
-  .title-block {
+  body .title-block {
     height: 38px;
   }
 
-  .title-block .eyebrow {
+  body .title-block .eyebrow {
     font-size: 0.52rem;
   }
 
-  h1 {
+  body h1 {
     font-size: 1.05rem;
   }
 
@@ -508,16 +509,30 @@ label {
   }
 
   .play-layout {
-    grid-template-columns: minmax(0, calc(100dvh - 112px)) minmax(250px, 1fr);
+    grid-template-columns: minmax(0, calc(100dvh - 90px)) minmax(240px, min(48vw, 420px));
     gap: 10px;
+    justify-content: center;
   }
 
   .board-panel {
-    gap: 6px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .board-panel .stat-grid {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 1;
+    width: 64px;
+    margin: 0;
   }
 
   .sudoku-board {
-    width: min(100%, calc(100dvh - 158px));
+    width: min(100%, calc(100dvh - 98px));
   }
 
   .side-panel {
@@ -533,11 +548,12 @@ label {
   }
 
   .stat-grid div {
-    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 7px;
   }
 
   .stat-grid strong {
-    font-size: 1.15rem;
+    font-size: 1rem;
   }
 
   .number-pad {
