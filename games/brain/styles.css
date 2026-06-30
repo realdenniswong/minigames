@@ -826,6 +826,13 @@ body[data-fixed-mode="math"] .prompt-kicker {
   gap: 8px;
 }
 
+.math-edit-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.math-edit-row button,
 .math-numpad button {
   width: 100%;
   min-width: 0;
@@ -834,15 +841,19 @@ body[data-fixed-mode="math"] .prompt-kicker {
   font-weight: 900;
 }
 
+.math-numpad .math-zero,
 .math-numpad .math-submit {
   grid-column: span 3;
+}
+
+.math-numpad .math-submit {
   border-color: transparent;
   background: var(--mint);
   color: #fff;
 }
 
-.math-numpad .math-clear,
-.math-numpad .math-backspace {
+.math-edit-row .math-clear,
+.math-edit-row .math-backspace {
   color: var(--muted);
 }
 
@@ -1118,10 +1129,12 @@ body[data-fixed-mode="math"] .prompt-kicker {
     font-size: 1.1rem;
   }
 
+  body[data-fixed-mode="math"] .math-edit-row,
   body[data-fixed-mode="math"] .math-numpad {
     gap: 5px;
   }
 
+  body[data-fixed-mode="math"] .math-edit-row button,
   body[data-fixed-mode="math"] .math-numpad button {
     min-height: 52px;
     padding: 0 6px;
@@ -1418,16 +1431,19 @@ body[data-fixed-mode="math"] .prompt-kicker {
     min-height: 44px;
   }
 
+  .math-edit-row,
   .math-numpad {
     gap: 5px;
   }
 
+  .math-edit-row button,
   .math-numpad button {
     min-height: 34px;
     padding: 0 6px;
     font-size: 0.9rem;
   }
 
+  body[data-fixed-mode="math"] .math-edit-row button,
   body[data-fixed-mode="math"] .math-numpad button {
     min-height: 44px;
   }
