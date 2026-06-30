@@ -147,6 +147,8 @@ function resetBrain() {
   brainPrompt.style.color = "";
   if (currentMode === "math" && fixedMode === "math") {
     brainMessage.textContent = "Pick difficulty. Tap card.";
+  } else if (currentMode === "color" && fixedMode === "color") {
+    brainMessage.textContent = "Tap Ready.";
   } else if (currentMode === "reaction" && fixedMode === "reaction") {
     brainMessage.textContent = "Pick difficulty. Press duel.";
   } else if (currentMode === "simon" && fixedMode === "simon") {
@@ -210,8 +212,15 @@ function finishGame(message, roundTotal = 10) {
   brainMessage.textContent = usesTotalTimer(currentMode) ? `${message} Time: ${elapsedText()}.` : message;
   updateStats(roundTotal);
   if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
+  if (currentMode === "color" && fixedMode === "color") {
+    brainPrompt.textContent = "Ready?";
+    brainPrompt.style.color = "";
+  }
   if (currentMode === "simon" && fixedMode === "simon") brainPrompt.textContent = "Ready?";
-  if (fixedMode === currentMode && (currentMode === "math" || currentMode === "reaction" || currentMode === "simon")) {
+  if (
+    fixedMode === currentMode &&
+    (currentMode === "math" || currentMode === "color" || currentMode === "reaction" || currentMode === "simon")
+  ) {
     renderIdleControls();
   }
 }
@@ -750,6 +759,8 @@ function handleReactionKeyboard(event) {
 
 function handlePromptCardClick() {
   if (currentMode === "math" && fixedMode === "math" && !state.running) {
+    startBrain();
+  } else if (currentMode === "color" && fixedMode === "color" && !state.running) {
     startBrain();
   } else if (currentMode === "reaction") {
     handleReactionTap();
