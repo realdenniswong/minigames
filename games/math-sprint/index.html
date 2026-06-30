@@ -15,7 +15,7 @@
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css" />
-    <link rel="stylesheet" href="../brain/styles.css?v=21" />
+    <link rel="stylesheet" href="../brain/styles.css?v=22" />
   </head>
   <body data-fixed-mode="math">
     <main class="game-shell">
@@ -48,10 +48,27 @@
                 <option value="custom">Custom</option>
               </select>
             </label>
-            <label class="custom-count-control" id="mathCustomCountWrap" hidden>
+            <div class="custom-count-control" id="mathCustomCountWrap" hidden>
               <span>Custom</span>
-              <input id="mathCustomCount" type="number" min="1" max="999" step="1" inputmode="numeric" value="10" />
-            </label>
+              <div class="custom-count-stepper" role="group" aria-label="Custom question count">
+                <button class="count-step-button" type="button" id="mathCustomCountDown" aria-label="Decrease questions">
+                  -
+                </button>
+                <input
+                  id="mathCustomCount"
+                  type="number"
+                  min="1"
+                  max="999"
+                  step="1"
+                  inputmode="numeric"
+                  value="10"
+                  aria-label="Custom question count"
+                />
+                <button class="count-step-button" type="button" id="mathCustomCountUp" aria-label="Increase questions">
+                  +
+                </button>
+              </div>
+            </div>
           </div>
           <div class="screen-actions">
             <button class="primary-button" type="button" id="startBrain">Start</button>
@@ -75,6 +92,6 @@
         </div>
       </section>
     </main>
-    <script src="../brain/game.js?v=21"></script>
+    <script src="../brain/game.js?v=22"></script>
   </body>
 </html>
