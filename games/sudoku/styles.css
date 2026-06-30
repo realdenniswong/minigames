@@ -215,8 +215,7 @@ label {
 
 .board-panel {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 10px;
+  place-items: start center;
   min-height: 0;
 }
 
@@ -255,7 +254,7 @@ label {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
-  width: min(100%, calc(100dvh - 226px));
+  width: min(100%, calc(100dvh - 176px));
   max-width: 100%;
   aspect-ratio: 1;
   border: 3px solid var(--coal);
@@ -404,20 +403,24 @@ label {
     order: 1;
   }
 
-  .board-panel {
+  .side-panel .stat-grid {
     order: 2;
   }
 
-  .number-pad {
+  .board-panel {
     order: 3;
   }
 
-  .control-row.compact {
+  .number-pad {
     order: 4;
   }
 
-  .game-message {
+  .control-row.compact {
     order: 5;
+  }
+
+  .game-message {
+    order: 6;
   }
 
   .game-layout {
@@ -541,19 +544,12 @@ label {
 
   .board-panel {
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
     place-items: start center;
-    gap: 4px;
     min-width: 0;
     max-height: 100%;
     overflow: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-  }
-
-  .board-panel .stat-grid {
-    width: min(100%, 390px);
-    margin: 0;
   }
 
   .sudoku-board {

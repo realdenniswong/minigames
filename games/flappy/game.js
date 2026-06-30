@@ -34,7 +34,10 @@ function resetFlappy() {
 }
 
 function startFlappy() {
-  if (flappyState.over) resetFlappy();
+  if (flappyState.over) {
+    flappyMessage.textContent = "Game over. Press Reset to fly again.";
+    return;
+  }
   if (!flappyState.running) {
     flappyState.running = true;
     flappyState.paused = false;
@@ -135,7 +138,7 @@ function endFlappy() {
   flappyState.best = Math.max(flappyState.best, flappyState.score);
   localStorage.setItem("offlineMiniGames.flappyBest", String(flappyState.best));
   flappyBestEl.textContent = flappyState.best;
-  flappyMessage.textContent = "Game over. Tap the game or press Space to fly again.";
+  flappyMessage.textContent = "Game over. Press Reset to fly again.";
 }
 
 function pauseFlappy() {
