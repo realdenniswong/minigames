@@ -14,12 +14,13 @@ const mineMessage = document.getElementById("mineMessage");
 let mineMode = "reveal";
 let mineState;
 
-function newMineGame() {
+function newMineGame(startNow = false) {
   pauseMineTimer();
   const preset = minePresets[mineDifficulty.value];
   mineState = {
     ...preset,
     generated: false,
+    started: false,
     finished: false,
     flags: 0,
     revealed: 0,
@@ -36,8 +37,11 @@ function newMineGame() {
   mineCountEl.textContent = preset.mines;
   flagCountEl.textContent = "0";
   mineTimerEl.textContent = "0";
-  mineMessage.textContent = "Pick a tile. First move is safe.";
+  mineMessage.textContent = startNow
+    ? "Timer started. Pick a tile. First move is safe."
+    : "Press Start to begin the timer.";
   renderMineBoard();
+  if (startNow) startMineTimer();
 }
 
 function renderMineBoard() {
@@ -81,6 +85,10 @@ function renderMineBoard() {
 
 function handleMineClick(index) {
   if (mineState.finished) return;
+  if (!mineState.started) {
+    mineMessage.textContent = "Press Start before revealing tiles.";
+    return;
+  }
   if (mineMode === "flag") {
     toggleMineFlag(index);
     return;
@@ -89,7 +97,6 @@ function handleMineClick(index) {
   if (cell.flagged || cell.revealed) return;
   if (!mineState.generated) {
     generateMines(index);
-    startMineTimer();
   }
   revealMineCell(index);
   renderMineBoard();
@@ -98,6 +105,10 @@ function handleMineClick(index) {
 
 function toggleMineFlag(index) {
   if (mineState.finished) return;
+  if (!mineState.started) {
+    mineMessage.textContent = "Press Start before placing flags.";
+    return;
+  }
   const cell = mineState.cells[index];
   if (cell.revealed) return;
   cell.flagged = !cell.flagged;
@@ -170,6 +181,8 @@ function finishMineGame(won) {
 }
 
 function startMineTimer() {
+  if (mineState.finished) return;
+  mineState.started = true;
   pauseMineTimer();
   mineState.timer = setInterval(() => {
     mineState.seconds += 1;
@@ -192,8 +205,8 @@ function shuffle(items) {
   return items;
 }
 
-document.getElementById("newMineGame").addEventListener("click", newMineGame);
-mineDifficulty.addEventListener("change", newMineGame);
+document.getElementById("newMineGame").addEventListener("click", () => newMineGame(true));
+mineDifficulty.addEventListener("change", () => newMineGame(false));
 document.querySelectorAll("[data-mine-mode]").forEach((button) => {
   button.addEventListener("click", () => {
     mineMode = button.dataset.mineMode;

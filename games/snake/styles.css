@@ -1,0 +1,340 @@
+:root {
+  --ink: #20242c;
+  --muted: #667085;
+  --line: #d9dee7;
+  --surface: #ffffff;
+  --paper: #f7f8fb;
+  --mint: #1c8f78;
+  --gold: #d39a21;
+  --coral: #d95e4f;
+  --board: #dff2e9;
+  --wall: #3f4a5a;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overflow: hidden;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  justify-items: center;
+  min-height: calc(100dvh - 126px);
+  margin-top: 20px;
+  overscroll-behavior: contain;
+}
+
+.game-screen.snake-screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: calc(100dvh - 126px);
+  padding: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(76, 140, 201, 0.18), transparent 42%),
+    linear-gradient(315deg, rgba(28, 143, 120, 0.16), transparent 38%),
+    #edf5f2;
+}
+
+#snakeCanvas {
+  display: block;
+  width: min(100%, calc((100dvh - 126px) * 2));
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1;
+  border-radius: 8px;
+  background: var(--board);
+  box-shadow: 0 18px 38px rgba(32, 36, 44, 0.18);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.side-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: grid;
+  gap: 8px;
+  width: min(340px, calc(100% - 24px));
+}
+
+.screen-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.screen-actions > * {
+  width: 100%;
+  min-width: 0;
+}
+
+.screen-actions .primary-button {
+  width: 100%;
+  min-width: 0;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stat-grid div {
+  min-width: 0;
+  border: 1px solid rgba(217, 222, 231, 0.92);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 10px;
+}
+
+.stat-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.stat-grid strong {
+  display: block;
+  min-width: 0;
+  margin-top: 4px;
+  overflow: hidden;
+  font-size: 1.05rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.d-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 48px));
+  grid-template-areas:
+    ". up ."
+    "left . right"
+    ". down .";
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(217, 222, 231, 0.92);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.d-pad button {
+  width: 48px;
+  min-width: 48px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.d-pad [data-direction="up"] {
+  grid-area: up;
+}
+
+.d-pad [data-direction="left"] {
+  grid-area: left;
+}
+
+.d-pad [data-direction="right"] {
+  grid-area: right;
+}
+
+.d-pad [data-direction="down"] {
+  grid-area: down;
+}
+
+.game-message {
+  min-height: 44px;
+  margin: 0;
+  border-left: 4px solid var(--gold);
+  background: rgba(255, 247, 235, 0.86);
+  padding: 9px 12px;
+  color: #5e4310;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+@media (max-width: 760px) {
+  body {
+    overflow: auto;
+  }
+
+  .game-layout,
+  .game-screen.snake-screen {
+    min-height: 0;
+  }
+
+  .game-screen.snake-screen {
+    place-items: stretch;
+    gap: 12px;
+    overflow: visible;
+    background: transparent;
+  }
+
+  #snakeCanvas {
+    width: min(100%, 1000px);
+  }
+
+  .side-panel {
+    position: static;
+    justify-self: stretch;
+    width: 100%;
+    z-index: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .stat-grid div {
+    padding: 7px;
+  }
+
+  .stat-grid span {
+    font-size: 0.62rem;
+  }
+
+  .stat-grid strong {
+    font-size: 0.9rem;
+  }
+
+  .game-message {
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-height: 560px) and (hover: none) and (pointer: coarse) {
+  body button,
+  body .nav-button {
+    height: 36px;
+    min-height: 36px;
+  }
+
+  body .game-shell {
+    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom))
+      max(10px, env(safe-area-inset-left));
+  }
+
+  body .panel-heading {
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  body .title-block {
+    height: 36px;
+  }
+
+  body .title-block .eyebrow {
+    font-size: 0.5rem;
+  }
+
+  body h1 {
+    font-size: 1rem;
+  }
+
+  .primary-button,
+  .nav-button {
+    width: 104px;
+    min-width: 104px;
+  }
+
+  .game-layout {
+    height: calc(100dvh - 70px);
+    min-height: 0;
+    margin-top: 8px;
+  }
+
+  .game-screen.snake-screen {
+    grid-template-columns: minmax(0, 1fr) minmax(176px, min(35vw, 260px));
+    align-items: center;
+    justify-items: center;
+    gap: 8px;
+    height: 100%;
+    min-height: 0;
+    padding: 6px;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, rgba(76, 140, 201, 0.18), transparent 42%),
+      linear-gradient(315deg, rgba(28, 143, 120, 0.16), transparent 38%),
+      #edf5f2;
+  }
+
+  #snakeCanvas {
+    width: min(100%, calc(65vw - 16px), calc((100dvh - 82px) * 2));
+  }
+
+  .side-panel {
+    position: static;
+    align-self: start;
+    justify-self: stretch;
+    width: 100%;
+    gap: 5px;
+  }
+
+  .screen-actions,
+  .stat-grid {
+    gap: 5px;
+  }
+
+  .screen-actions button {
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    font-size: 0.82rem;
+  }
+
+  .stat-grid div {
+    padding: 5px 6px;
+  }
+
+  .stat-grid span {
+    font-size: 0.55rem;
+  }
+
+  .stat-grid strong {
+    margin-top: 2px;
+    font-size: 0.82rem;
+  }
+
+  .d-pad {
+    grid-template-columns: repeat(3, minmax(0, 38px));
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .d-pad button {
+    width: 38px;
+    min-width: 38px;
+    height: 30px;
+    min-height: 30px;
+    font-size: 1rem;
+  }
+
+  .game-message {
+    min-height: 34px;
+    padding: 7px 8px;
+    font-size: 0.76rem;
+  }
+}

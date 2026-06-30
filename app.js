@@ -17,6 +17,18 @@ const games = [
     icon: "F",
     url: "games/flappy/index.html",
   },
+  {
+    title: "Brain Training",
+    meta: "Five quick focus drills",
+    icon: "B",
+    url: "games/brain/index.html",
+  },
+  {
+    title: "Snake",
+    meta: "Classic maze chase",
+    icon: "Sn",
+    url: "games/snake/index.html",
+  },
 ];
 
 const gameList = document.getElementById("gameList");

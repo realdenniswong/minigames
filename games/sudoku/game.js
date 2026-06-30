@@ -31,7 +31,7 @@ const sudokuTimerEl = document.getElementById("sudokuTimer");
 const noteSudokuButton = document.getElementById("noteSudoku");
 let sudokuState;
 
-function newSudoku() {
+function newSudoku(startNow = false) {
   pauseSudokuTimer();
   const list = sudokuPuzzleBank[sudokuDifficulty.value];
   const puzzle = list[Math.floor(Math.random() * list.length)];
@@ -50,8 +50,11 @@ function newSudoku() {
   sudokuTimerEl.textContent = "0";
   noteSudokuButton.classList.remove("active");
   noteSudokuButton.setAttribute("aria-pressed", "false");
-  sudokuMessage.textContent = "Select a blank cell, then choose a number.";
+  sudokuMessage.textContent = startNow
+    ? "Timer started. Select a blank cell, then choose a number."
+    : "Press Start to begin the timer.";
   renderSudoku();
+  if (startNow) startSudokuTimer();
 }
 
 function renderSudoku() {
@@ -110,6 +113,10 @@ function renderSudokuNotes(cell, index) {
 }
 
 function setSudokuValue(value) {
+  if (!sudokuState.started) {
+    sudokuMessage.textContent = "Press Start before placing numbers.";
+    return;
+  }
   const selected = sudokuState.selected;
   if (selected === null) {
     sudokuMessage.textContent = "Choose a blank cell first.";
@@ -123,7 +130,6 @@ function setSudokuValue(value) {
     toggleSudokuNote(value);
     return;
   }
-  if (!sudokuState.started && value !== "0") startSudokuTimer();
   sudokuState.values[selected] = value;
   sudokuState.notes[selected].clear();
   renderSudoku();
@@ -138,12 +144,15 @@ function setSudokuValue(value) {
 }
 
 function toggleSudokuNote(value) {
+  if (!sudokuState.started) {
+    sudokuMessage.textContent = "Press Start before adding notes.";
+    return;
+  }
   const selected = sudokuState.selected;
   if (sudokuState.values[selected] !== "0") {
     sudokuMessage.textContent = "Erase the cell before adding notes.";
     return;
   }
-  if (!sudokuState.started) startSudokuTimer();
   const notes = sudokuState.notes[selected];
   if (notes.has(value)) {
     notes.delete(value);
@@ -165,6 +174,10 @@ function toggleSudokuNoteMode() {
 }
 
 function eraseSudokuCell() {
+  if (!sudokuState.started) {
+    sudokuMessage.textContent = "Press Start before editing the puzzle.";
+    return;
+  }
   const selected = sudokuState.selected;
   if (selected === null) {
     sudokuMessage.textContent = "Choose a blank cell first.";
@@ -214,8 +227,8 @@ function finishSudokuTimer() {
   pauseSudokuTimer();
 }
 
-document.getElementById("newSudoku").addEventListener("click", newSudoku);
-sudokuDifficulty.addEventListener("change", newSudoku);
+document.getElementById("newSudoku").addEventListener("click", () => newSudoku(true));
+sudokuDifficulty.addEventListener("change", () => newSudoku(false));
 noteSudokuButton.addEventListener("click", toggleSudokuNoteMode);
 document.getElementById("eraseSudoku").addEventListener("click", eraseSudokuCell);
 window.addEventListener("keydown", (event) => {

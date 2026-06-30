@@ -5,6 +5,7 @@ const flappyBestEl = document.getElementById("flappyBest");
 const flappyMessage = document.getElementById("flappyMessage");
 let flappyState;
 let flappyFrame;
+let flappyAudio;
 
 const groundHeight = 54;
 const pipeWidth = 62;
@@ -28,7 +29,7 @@ function resetFlappy() {
   };
   flappyScoreEl.textContent = "0";
   flappyBestEl.textContent = flappyState.best;
-  flappyMessage.textContent = "Press Start, then tap the game to flap.";
+  flappyMessage.textContent = "Tap the game or press Space to start.";
   drawFlappy();
 }
 
@@ -46,6 +47,26 @@ function startFlappy() {
 function flap() {
   if (!flappyState.running) return;
   flappyState.bird.vy = flapPower;
+  playFlapSound();
+}
+
+function playFlapSound() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+  flappyAudio ??= new AudioContext();
+  if (flappyAudio.state === "suspended") flappyAudio.resume();
+  const now = flappyAudio.currentTime;
+  const oscillator = flappyAudio.createOscillator();
+  const gain = flappyAudio.createGain();
+  oscillator.type = "triangle";
+  oscillator.frequency.setValueAtTime(460, now);
+  oscillator.frequency.exponentialRampToValueAtTime(640, now + 0.055);
+  gain.gain.setValueAtTime(0.055, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+  oscillator.connect(gain);
+  gain.connect(flappyAudio.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.09);
 }
 
 function handleFlappyTap(event) {
@@ -53,7 +74,7 @@ function handleFlappyTap(event) {
   if (event.pointerId !== undefined && canvas.setPointerCapture) {
     canvas.setPointerCapture(event.pointerId);
   }
-  if (flappyState.running) flap();
+  startFlappy();
 }
 
 function stopFlappyPageGesture(event) {
@@ -114,7 +135,7 @@ function endFlappy() {
   flappyState.best = Math.max(flappyState.best, flappyState.score);
   localStorage.setItem("offlineMiniGames.flappyBest", String(flappyState.best));
   flappyBestEl.textContent = flappyState.best;
-  flappyMessage.textContent = "Game over. Press Start to fly again.";
+  flappyMessage.textContent = "Game over. Tap the game or press Space to fly again.";
 }
 
 function pauseFlappy() {
@@ -123,7 +144,7 @@ function pauseFlappy() {
   if (flappyState.running) {
     flappyState.running = false;
     flappyState.paused = true;
-    flappyMessage.textContent = "Paused. Press Start to continue.";
+    flappyMessage.textContent = "Paused. Tap the game to continue.";
   }
 }
 
@@ -207,7 +228,6 @@ function bindImmediateButton(id, action) {
   });
 }
 
-bindImmediateButton("startFlappy", startFlappy);
 bindImmediateButton("resetFlappy", resetFlappy);
 canvas.addEventListener("pointerdown", handleFlappyTap);
 canvas.addEventListener("pointermove", stopFlappyPageGesture);
@@ -218,7 +238,7 @@ canvas.addEventListener("contextmenu", stopFlappyPageGesture);
 window.addEventListener("keydown", (event) => {
   if (event.code === "Space") {
     event.preventDefault();
-    flap();
+    startFlappy();
   }
 });
 window.addEventListener("pagehide", pauseFlappy);

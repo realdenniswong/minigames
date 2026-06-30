@@ -11,40 +11,50 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Mini Games" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <title>Flappy Bird</title>
+    <title>Snake</title>
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css" />
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="game-shell">
       <header class="panel-heading">
         <a class="nav-button" href="../../index.html">Library</a>
         <div class="title-block">
-          <p class="eyebrow">tap timing</p>
-          <h1>Flappy Bird</h1>
+          <p class="eyebrow">maze chase</p>
+          <h1>Snake</h1>
         </div>
       </header>
 
       <section class="game-layout">
-        <div class="game-screen flappy-screen">
-          <canvas id="flappyCanvas" width="432" height="576" aria-label="Flappy game canvas"></canvas>
-          <aside class="side-panel screen-panel">
+        <div class="game-screen snake-screen">
+          <canvas id="snakeCanvas" width="1000" height="500" aria-label="Snake game board"></canvas>
+          <aside class="side-panel">
             <div class="screen-actions">
-              <button class="primary-button" type="button" id="resetFlappy">Reset</button>
+              <button class="primary-button" type="button" id="newSnake">New map</button>
             </div>
             <div class="stat-grid">
               <div>
                 <span>Score</span>
-                <strong id="flappyScore">0</strong>
+                <strong id="snakeScore">0</strong>
               </div>
               <div>
                 <span>Best</span>
-                <strong id="flappyBest">0</strong>
+                <strong id="snakeBest">0</strong>
+              </div>
+              <div>
+                <span>Seed</span>
+                <strong id="snakeSeed">0</strong>
               </div>
             </div>
-            <p class="game-message" id="flappyMessage">Tap the game or press Space to start.</p>
+            <div class="d-pad" aria-label="Snake direction controls">
+              <button type="button" data-direction="up" aria-label="Move up">↑</button>
+              <button type="button" data-direction="left" aria-label="Move left">←</button>
+              <button type="button" data-direction="right" aria-label="Move right">→</button>
+              <button type="button" data-direction="down" aria-label="Move down">↓</button>
+            </div>
+            <p class="game-message" id="snakeMessage">Tap an arrow or press an arrow key to start.</p>
           </aside>
         </div>
       </section>
