@@ -322,11 +322,15 @@ function makeMediumMathProblem(operator) {
   }
   if (operator === "*") {
     const left = randomInt(10, 99);
-    const right = randomInt(10, 99);
+    const right = randomInt(2, 9);
     return { prompt: `${left} * ${right}`, answer: left * right };
   }
-  const divisor = randomInt(10, 19);
-  const answer = randomInt(2, 5);
+  let divisor = randomInt(10, 99);
+  let answer = randomInt(2, 9);
+  while (divisor * answer > 99) {
+    divisor = randomInt(10, 99);
+    answer = randomInt(2, 9);
+  }
   return { prompt: `${divisor * answer} / ${divisor}`, answer };
 }
 
@@ -352,17 +356,8 @@ function makeHardMathProblem(operator) {
     return { prompt: `${left} * ${right}`, answer: left * right };
   }
   if (operator === "/") {
-    if (Math.random() < 0.5) {
-      let divisor = randomInt(10, 99);
-      let answer = randomInt(2, 9);
-      while (divisor * answer > 99) {
-        divisor = randomInt(10, 99);
-        answer = randomInt(2, 9);
-      }
-      return { prompt: `${divisor * answer} / ${divisor}`, answer };
-    }
-    const divisor = randomInt(2, 9);
-    const answer = randomInt(20, Math.floor(999 / divisor));
+    const divisor = randomInt(10, 99);
+    const answer = randomInt(Math.ceil(100 / divisor), Math.floor(999 / divisor));
     return { prompt: `${divisor * answer} / ${divisor}`, answer };
   }
   if (operator === "pow2") {
