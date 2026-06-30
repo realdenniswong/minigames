@@ -484,20 +484,14 @@ function submitMathAnswer() {
     brainMessage.textContent = "Type an answer first.";
     return;
   }
-  state.accepting = false;
-  const buttons = brainControls.querySelectorAll("[data-math-key]");
-  buttons.forEach((button) => {
-    button.disabled = true;
-  });
   const submitted = Number(state.input);
   const correct = submitted === state.problem.answer;
   if (correct) state.score += 1;
   brainMessage.textContent = correct ? "Correct." : `Answer: ${state.problem.answer}.`;
   state.queue.shift();
   fillMathQueue();
-  renderMathQuestionQueue();
   updateStats();
-  setTimeout(nextMathQuestion, 520);
+  nextMathQuestion();
 }
 
 function startColor() {
