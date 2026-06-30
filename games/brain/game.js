@@ -567,7 +567,10 @@ function reactionComputerDelay() {
 }
 
 function countdownDelay() {
-  return 750 + Math.random() * 500;
+  const roll = Math.random();
+  if (roll < 0.25) return randomInt(420, 680);
+  if (roll < 0.72) return randomInt(760, 1250);
+  return randomInt(1350, 1900);
 }
 
 function showReactionCountdown() {
