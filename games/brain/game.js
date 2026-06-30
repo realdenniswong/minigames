@@ -6,6 +6,9 @@ const modePicker = document.getElementById("modePicker");
 const closeModePickerButton = document.getElementById("closeModePicker");
 const mathOptions = document.getElementById("mathOptions");
 const mathDifficultySelect = document.getElementById("mathDifficulty");
+const mathQuestionCountSelect = document.getElementById("mathQuestionCount");
+const mathCustomCountWrap = document.getElementById("mathCustomCountWrap");
+const mathCustomCountInput = document.getElementById("mathCustomCount");
 const reactionOptions = document.getElementById("reactionOptions");
 const reactionDifficultySelect = document.getElementById("reactionDifficulty");
 const startBrainButton = document.getElementById("startBrain");
@@ -57,6 +60,14 @@ let brainAudio;
 
 const savedMathDifficulty = localStorage.getItem("offlineMiniGames.brain.math.difficulty");
 if (mathDifficultySelect && difficultyTitles[savedMathDifficulty]) mathDifficultySelect.value = savedMathDifficulty;
+const savedMathQuestionCount = localStorage.getItem("offlineMiniGames.brain.math.questionCount");
+if (mathQuestionCountSelect && ["10", "20", "50", "100", "custom"].includes(savedMathQuestionCount)) {
+  mathQuestionCountSelect.value = savedMathQuestionCount;
+}
+const savedMathCustomCount = Number(localStorage.getItem("offlineMiniGames.brain.math.customQuestionCount") || 10);
+if (mathCustomCountInput && Number.isFinite(savedMathCustomCount)) {
+  mathCustomCountInput.value = String(Math.min(999, Math.max(1, Math.round(savedMathCustomCount))));
+}
 const savedReactionDifficulty = localStorage.getItem("offlineMiniGames.brain.reaction.difficulty");
 if (reactionDifficultySelect && difficultyTitles[savedReactionDifficulty]) reactionDifficultySelect.value = savedReactionDifficulty;
 
@@ -69,7 +80,7 @@ function setBest(mode, value) {
 }
 
 function currentBestKey() {
-  if (currentMode === "math") return `math.${mathDifficultySelect?.value || "easy"}`;
+  if (currentMode === "math") return `math.${mathDifficultySelect?.value || "easy"}.${getMathQuestionTotal()}`;
   if (currentMode === "reaction") return `reaction.${reactionDifficultySelect?.value || "easy"}`;
   return currentMode;
 }
@@ -119,6 +130,7 @@ function toggleModePicker() {
 function resetBrain() {
   clearTimers();
   state = { running: false, score: 0, round: 0 };
+  updateMathQuestionControls();
   setDuelScene("idle");
   if (mathOptions) mathOptions.hidden = currentMode !== "math";
   if (reactionOptions) reactionOptions.hidden = currentMode !== "reaction";
@@ -145,7 +157,7 @@ function resetBrain() {
   timeLabel.textContent = statFourLabel();
   brainScoreEl.textContent = "0";
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
-  brainRoundEl.textContent = currentMode === "reaction" ? "0/5" : "0/10";
+  brainRoundEl.textContent = currentMode === "reaction" ? "0/5" : `0/${currentMode === "math" ? getMathQuestionTotal() : 10}`;
   brainTimeEl.textContent = timeStatText();
   if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
   renderIdleControls();
@@ -264,8 +276,10 @@ function shuffle(items) {
 
 function startMath() {
   const difficulty = mathDifficultySelect.value;
-  state = { running: true, score: 0, round: 0, total: 10, input: "", difficulty, queue: [] };
+  const total = getMathQuestionTotal();
+  state = { running: true, score: 0, round: 0, total, input: "", difficulty, queue: [] };
   localStorage.setItem("offlineMiniGames.brain.math.difficulty", difficulty);
+  saveMathQuestionSettings();
   promptKicker.textContent = `${modeTitles.math} - ${difficultyTitles[difficulty]}`;
   startBrainTimer();
   startBrainButton.textContent = "Restart";
@@ -276,7 +290,7 @@ function startMath() {
 
 function nextMathQuestion() {
   if (state.round >= state.total) {
-    finishGame(`Finished. Score: ${state.score}/${state.total}.`);
+    finishGame(`Finished. Score: ${state.score}/${state.total}.`, state.total);
     return;
   }
   state.round += 1;
@@ -286,7 +300,38 @@ function nextMathQuestion() {
   state.problem = state.queue[0];
   renderMathQuestionQueue();
   renderMathAnswerControls(false);
-  updateStats();
+  updateStats(state.total);
+}
+
+function getMathQuestionTotal() {
+  if (mathQuestionCountSelect?.value === "custom") {
+    return clampMathQuestionCount(mathCustomCountInput?.value);
+  }
+  return clampMathQuestionCount(mathQuestionCountSelect?.value || 10);
+}
+
+function clampMathQuestionCount(value) {
+  const count = Math.round(Number(value));
+  if (!Number.isFinite(count)) return 10;
+  return Math.min(999, Math.max(1, count));
+}
+
+function saveMathQuestionSettings() {
+  if (mathQuestionCountSelect) {
+    localStorage.setItem("offlineMiniGames.brain.math.questionCount", mathQuestionCountSelect.value);
+  }
+  if (mathCustomCountInput) {
+    localStorage.setItem("offlineMiniGames.brain.math.customQuestionCount", String(getMathQuestionTotal()));
+  }
+}
+
+function updateMathQuestionControls() {
+  if (!mathQuestionCountSelect || !mathCustomCountWrap) return;
+  const isCustom = mathQuestionCountSelect.value === "custom";
+  mathCustomCountWrap.hidden = !isCustom;
+  if (isCustom && mathCustomCountInput) {
+    mathCustomCountInput.value = String(getMathQuestionTotal());
+  }
 }
 
 function fillMathQueue() {
@@ -876,6 +921,23 @@ if (modePickerCurrent) modePickerCurrent.textContent = modeTitles[currentMode];
 mathDifficultySelect?.addEventListener("change", () => {
   localStorage.setItem("offlineMiniGames.brain.math.difficulty", mathDifficultySelect.value);
   if (currentMode === "math") resetBrain();
+});
+mathQuestionCountSelect?.addEventListener("change", () => {
+  saveMathQuestionSettings();
+  updateMathQuestionControls();
+  if (currentMode === "math") resetBrain();
+});
+mathCustomCountInput?.addEventListener("input", () => {
+  saveMathQuestionSettings();
+  if (currentMode === "math" && !state.running) {
+    brainRoundEl.textContent = `0/${getMathQuestionTotal()}`;
+    brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
+  }
+});
+mathCustomCountInput?.addEventListener("change", () => {
+  if (mathCustomCountInput) mathCustomCountInput.value = String(getMathQuestionTotal());
+  saveMathQuestionSettings();
+  if (currentMode === "math" && !state.running) resetBrain();
 });
 reactionDifficultySelect?.addEventListener("change", () => {
   localStorage.setItem("offlineMiniGames.brain.reaction.difficulty", reactionDifficultySelect.value);

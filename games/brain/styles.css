@@ -145,16 +145,39 @@
   display: none;
 }
 
+.math-options {
+  display: grid;
+  gap: 8px;
+}
+
 .math-options .select-control,
-.reaction-options .select-control {
+.reaction-options .select-control,
+.custom-count-control {
   display: flex;
   width: 100%;
 }
 
+.custom-count-control[hidden] {
+  display: none;
+}
+
 .math-options select,
-.reaction-options select {
+.reaction-options select,
+.custom-count-control input {
   flex: 1;
   min-width: 0;
+}
+
+.custom-count-control input {
+  height: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 12px;
+  font-weight: 850;
 }
 
 .screen-actions {
@@ -939,7 +962,8 @@ body[data-fixed-mode="math"] .prompt-kicker {
     min-height: 36px;
   }
 
-  body[data-fixed-mode="math"] .math-options select {
+  body[data-fixed-mode="math"] .math-options select,
+  body[data-fixed-mode="math"] .custom-count-control input {
     height: 36px;
     min-height: 36px;
     font-size: 0.86rem;
@@ -1210,6 +1234,7 @@ body[data-fixed-mode="math"] .prompt-kicker {
   .mode-button,
   .screen-actions button,
   .math-options select,
+  .custom-count-control input,
   .reaction-options select {
     height: 32px;
     min-height: 32px;

@@ -15,7 +15,7 @@
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css" />
-    <link rel="stylesheet" href="styles.css?v=18" />
+    <link rel="stylesheet" href="styles.css?v=19" />
   </head>
   <body>
     <main class="game-shell">
@@ -74,6 +74,20 @@
                 <option value="hard">Hard</option>
               </select>
             </label>
+            <label class="select-control">
+              <span>Questions</span>
+              <select id="mathQuestionCount">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
+            <label class="custom-count-control" id="mathCustomCountWrap" hidden>
+              <span>Custom</span>
+              <input id="mathCustomCount" type="number" min="1" max="999" step="1" inputmode="numeric" value="10" />
+            </label>
           </div>
           <div class="reaction-options" id="reactionOptions" hidden>
             <label class="select-control">
@@ -119,6 +133,6 @@
         </div>
       </section>
     </main>
-    <script src="game.js?v=20"></script>
+    <script src="game.js?v=21"></script>
   </body>
 </html>
