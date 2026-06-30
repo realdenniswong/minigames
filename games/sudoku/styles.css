@@ -471,3 +471,88 @@ label {
     height: 50px;
   }
 }
+
+@media (max-height: 560px) and (hover: none) and (pointer: coarse) {
+  button,
+  select,
+  .nav-button {
+    height: 38px;
+    min-height: 38px;
+  }
+
+  .game-shell {
+    padding: 8px 10px;
+  }
+
+  .panel-heading {
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  .title-block {
+    height: 38px;
+  }
+
+  .title-block .eyebrow {
+    font-size: 0.52rem;
+  }
+
+  h1 {
+    font-size: 1.05rem;
+  }
+
+  .game-layout {
+    height: calc(100dvh - 72px);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .play-layout {
+    grid-template-columns: minmax(0, calc(100dvh - 112px)) minmax(250px, 1fr);
+    gap: 10px;
+  }
+
+  .board-panel {
+    gap: 6px;
+  }
+
+  .sudoku-board {
+    width: min(100%, calc(100dvh - 158px));
+  }
+
+  .side-panel {
+    gap: 8px;
+    overflow: auto;
+    max-height: 100%;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .screen-controls {
+    gap: 8px;
+  }
+
+  .stat-grid div {
+    padding: 6px 8px;
+  }
+
+  .stat-grid strong {
+    font-size: 1.15rem;
+  }
+
+  .number-pad {
+    gap: 6px;
+  }
+
+  .number-pad button {
+    height: 34px;
+    min-height: 34px;
+    font-size: 1rem;
+  }
+
+  .game-message {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+}
