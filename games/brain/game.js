@@ -144,6 +144,7 @@ function resetBrain() {
 }
 
 function startBrain() {
+  unlockBrainAudio();
   clearTimers();
   if (currentMode === "math") startMath();
   if (currentMode === "color") startColor();
@@ -581,6 +582,7 @@ function showReactionCountdown() {
   }
   brainPrompt.textContent = countdown[state.countdownIndex];
   brainMessage.textContent = "Still wait. Shoot only on DRAW.";
+  playDuelSound("countdown");
   state.countdownIndex += 1;
   reactionTimer = setTimeout(showReactionCountdown, countdownDelay());
 }
@@ -593,6 +595,7 @@ function startReactionDraw() {
   state.computerDelay = reactionComputerDelay();
   brainPrompt.textContent = "DRAW!";
   brainMessage.textContent = "Shoot now. The computer gets faster on harder difficulty.";
+  playDuelSound("draw");
   renderReactionButton("Shoot", "ready", false);
   reactionTimer = setTimeout(handleComputerShot, state.computerDelay);
 }
@@ -616,12 +619,14 @@ function handleComputerShot() {
 function handleReactionTap() {
   if (!state.running) return;
   if (state.waiting) {
+    playDuelSound("shot");
     clearTimeout(reactionTimer);
     state.last = 0;
     endReactionRound("Too early. Point goes to the computer.", "False start", "lost");
     return;
   }
   if (!state.ready) return;
+  playDuelSound("shot");
   clearTimeout(reactionTimer);
   state.last = Math.max(1, Math.round(performance.now() - state.readyAt));
   state.score += 1;
@@ -708,20 +713,71 @@ function handleSimonPad(index, button) {
 }
 
 function playBrainTone(frequency, duration) {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
-  brainAudio ??= new AudioContext();
-  if (brainAudio.state === "suspended") brainAudio.resume();
-  const oscillator = brainAudio.createOscillator();
-  const gain = brainAudio.createGain();
+  const context = unlockBrainAudio();
+  if (!context) return;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
   oscillator.type = "sine";
   oscillator.frequency.value = frequency;
-  gain.gain.setValueAtTime(0.06, brainAudio.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, brainAudio.currentTime + duration);
+  gain.gain.setValueAtTime(0.06, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + duration);
   oscillator.connect(gain);
-  gain.connect(brainAudio.destination);
+  gain.connect(context.destination);
   oscillator.start();
-  oscillator.stop(brainAudio.currentTime + duration);
+  oscillator.stop(context.currentTime + duration);
+}
+
+function unlockBrainAudio() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+  brainAudio ??= new AudioContext();
+  if (brainAudio.state === "suspended") brainAudio.resume();
+  return brainAudio;
+}
+
+function playDuelSound(type) {
+  const context = unlockBrainAudio();
+  if (!context) return;
+  if (type === "countdown") {
+    playTone(context, 520, 0.055, "sine", 0.055);
+  } else if (type === "draw") {
+    playTone(context, 880, 0.08, "triangle", 0.065);
+    setTimeout(() => playTone(context, 1320, 0.09, "triangle", 0.06), 90);
+  } else if (type === "shot") {
+    playTone(context, 120, 0.12, "square", 0.08);
+    playNoiseBurst(context, 0.12);
+  }
+}
+
+function playTone(context, frequency, duration, type, volume) {
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  oscillator.type = type;
+  oscillator.frequency.value = frequency;
+  gain.gain.setValueAtTime(volume, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + duration);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start();
+  oscillator.stop(context.currentTime + duration);
+}
+
+function playNoiseBurst(context, duration) {
+  const bufferSize = Math.max(1, Math.floor(context.sampleRate * duration));
+  const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let index = 0; index < bufferSize; index += 1) {
+    data[index] = (Math.random() * 2 - 1) * (1 - index / bufferSize);
+  }
+  const source = context.createBufferSource();
+  const gain = context.createGain();
+  gain.gain.setValueAtTime(0.12, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + duration);
+  source.buffer = buffer;
+  source.connect(gain);
+  gain.connect(context.destination);
+  source.start();
+  source.stop(context.currentTime + duration);
 }
 
 modeButtons.forEach((button) => {
