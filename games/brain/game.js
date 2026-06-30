@@ -45,8 +45,8 @@ const colorChoices = [
 const simonNames = ["Green", "Blue", "Gold", "Purple"];
 const reactionDifficultySettings = {
   easy: { min: 700, max: 1050 },
-  medium: { min: 470, max: 760 },
-  hard: { min: 300, max: 520 },
+  medium: { min: 360, max: 620 },
+  hard: { min: 190, max: 360 },
 };
 
 let currentMode = modeTitles[fixedMode] ? fixedMode : "math";
