@@ -222,6 +222,14 @@
   min-height: 0;
 }
 
+body[data-fixed-mode] .game-layout.brain-screen {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+body[data-fixed-mode] .side-panel {
+  grid-row: 1;
+}
+
 .prompt-card {
   display: grid;
   align-content: center;
@@ -429,6 +437,11 @@
     order: 3;
   }
 
+  body[data-fixed-mode] .side-panel,
+  body[data-fixed-mode] .brain-stage {
+    grid-row: auto;
+  }
+
   .mode-picker-box {
     width: 100%;
     max-height: min(54dvh, 360px);
@@ -534,6 +547,11 @@
     order: 0;
     grid-template-rows: minmax(98px, auto) minmax(0, 1fr);
     gap: 8px;
+  }
+
+  body[data-fixed-mode] .side-panel {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .mode-picker-button {

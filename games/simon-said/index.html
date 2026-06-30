@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#1c8f78" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Mini Games" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>Simon Said</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="../../icon.svg" />
+    <link rel="stylesheet" href="../shared/shell.css" />
+    <link rel="stylesheet" href="../brain/styles.css?v=6" />
+  </head>
+  <body data-fixed-mode="simon">
+    <main class="game-shell">
+      <header class="panel-heading">
+        <a class="nav-button" href="../../index.html">Library</a>
+        <div class="title-block">
+          <p class="eyebrow">memory chain</p>
+          <h1>Simon Said</h1>
+        </div>
+      </header>
+
+      <section class="game-layout game-screen brain-screen">
+        <aside class="side-panel">
+          <div class="screen-actions">
+            <button class="primary-button" type="button" id="startBrain">Start</button>
+            <button type="button" id="resetBrain">Reset</button>
+          </div>
+          <div class="stat-grid">
+            <div><span id="scoreLabel">Score</span><strong id="brainScore">0</strong></div>
+            <div><span>Best</span><strong id="brainBest">0</strong></div>
+            <div><span id="roundLabel">Round</span><strong id="brainRound">0/10</strong></div>
+            <div><span id="timeLabel">Level</span><strong id="brainTime">-</strong></div>
+          </div>
+          <p class="game-message" id="brainMessage">Press Start to begin.</p>
+        </aside>
+
+        <div class="brain-stage">
+          <div class="prompt-card">
+            <p class="prompt-kicker" id="promptKicker">Simon Said</p>
+            <div class="prompt-text" id="brainPrompt">Ready?</div>
+          </div>
+          <div class="brain-controls" id="brainControls"></div>
+        </div>
+      </section>
+    </main>
+    <script src="../brain/game.js?v=5"></script>
+  </body>
+</html>

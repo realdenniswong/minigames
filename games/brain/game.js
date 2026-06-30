@@ -22,6 +22,7 @@ const promptCard = document.querySelector(".prompt-card");
 const promptKicker = document.getElementById("promptKicker");
 const brainPrompt = document.getElementById("brainPrompt");
 const brainControls = document.getElementById("brainControls");
+const fixedMode = document.body.dataset.fixedMode;
 
 const modeTitles = {
   math: "Math Sprint",
@@ -48,16 +49,16 @@ const reactionDifficultySettings = {
   hard: { min: 300, max: 520 },
 };
 
-let currentMode = "math";
+let currentMode = modeTitles[fixedMode] ? fixedMode : "math";
 let state = {};
 let reactionTimer = 0;
 let sequenceTimer = 0;
 let brainAudio;
 
 const savedMathDifficulty = localStorage.getItem("offlineMiniGames.brain.math.difficulty");
-if (difficultyTitles[savedMathDifficulty]) mathDifficultySelect.value = savedMathDifficulty;
+if (mathDifficultySelect && difficultyTitles[savedMathDifficulty]) mathDifficultySelect.value = savedMathDifficulty;
 const savedReactionDifficulty = localStorage.getItem("offlineMiniGames.brain.reaction.difficulty");
-if (difficultyTitles[savedReactionDifficulty]) reactionDifficultySelect.value = savedReactionDifficulty;
+if (reactionDifficultySelect && difficultyTitles[savedReactionDifficulty]) reactionDifficultySelect.value = savedReactionDifficulty;
 
 function getBest(mode) {
   return Number(localStorage.getItem(`offlineMiniGames.brain.${mode}.best`) || 0);
@@ -68,8 +69,8 @@ function setBest(mode, value) {
 }
 
 function currentBestKey() {
-  if (currentMode === "math") return `math.${mathDifficultySelect.value}`;
-  if (currentMode === "reaction") return `reaction.${reactionDifficultySelect.value}`;
+  if (currentMode === "math") return `math.${mathDifficultySelect?.value || "easy"}`;
+  if (currentMode === "reaction") return `reaction.${reactionDifficultySelect?.value || "easy"}`;
   return currentMode;
 }
 
@@ -89,22 +90,25 @@ function setMode(mode) {
     button.classList.toggle("active", button.dataset.mode === mode);
     button.setAttribute("aria-selected", String(button.dataset.mode === mode));
   });
-  modePickerCurrent.textContent = modeTitles[mode];
+  if (modePickerCurrent) modePickerCurrent.textContent = modeTitles[mode];
   closeModePicker();
   resetBrain();
 }
 
 function openModePicker() {
+  if (!modePicker || !modePickerButton) return;
   modePicker.hidden = false;
   modePickerButton.setAttribute("aria-expanded", "true");
 }
 
 function closeModePicker() {
+  if (!modePicker || !modePickerButton) return;
   modePicker.hidden = true;
   modePickerButton.setAttribute("aria-expanded", "false");
 }
 
 function toggleModePicker() {
+  if (!modePicker) return;
   if (modePicker.hidden) {
     openModePicker();
   } else {
@@ -115,8 +119,8 @@ function toggleModePicker() {
 function resetBrain() {
   clearTimers();
   state = { running: false, score: 0, round: 0 };
-  mathOptions.hidden = currentMode !== "math";
-  reactionOptions.hidden = currentMode !== "reaction";
+  if (mathOptions) mathOptions.hidden = currentMode !== "math";
+  if (reactionOptions) reactionOptions.hidden = currentMode !== "reaction";
   if (currentMode === "math") {
     promptKicker.textContent = `${modeTitles[currentMode]} - ${difficultyTitles[mathDifficultySelect.value]}`;
   } else if (currentMode === "reaction") {
@@ -153,7 +157,7 @@ function formatBest(mode, value) {
 }
 
 function updateStats(roundTotal = 10) {
-  brainScoreEl.textContent = currentMode === "reaction" && state.last ? `${state.last}ms` : state.score;
+  brainScoreEl.textContent = state.score;
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
   brainRoundEl.textContent = `${state.round}/${roundTotal}`;
   brainTimeEl.textContent = timeStatText();
@@ -544,13 +548,12 @@ function nextReactionRound() {
   state.waiting = true;
   state.ready = false;
   state.last = 0;
-  brainPrompt.textContent = "Steady...";
-  brainMessage.textContent = "Do not shoot before DRAW.";
+  state.countdownIndex = 0;
+  brainPrompt.textContent = "Ready...";
+  brainMessage.textContent = "Wait for 3, 2, 1, DRAW. Shoot only on DRAW.";
   renderReactionButton("Wait", "waiting", false);
   updateStats(5);
-  reactionTimer = setTimeout(() => {
-    startReactionDraw();
-  }, 950 + Math.random() * 1600);
+  reactionTimer = setTimeout(showReactionCountdown, countdownDelay());
 }
 
 function renderReactionButton(text, className, disabled) {
@@ -563,6 +566,23 @@ function renderReactionButton(text, className, disabled) {
 function reactionComputerDelay() {
   const settings = reactionDifficultySettings[state.difficulty];
   return randomInt(settings.min, settings.max);
+}
+
+function countdownDelay() {
+  return 750 + Math.random() * 500;
+}
+
+function showReactionCountdown() {
+  if (!state.running || !state.waiting) return;
+  const countdown = ["3", "2", "1"];
+  if (state.countdownIndex >= countdown.length) {
+    startReactionDraw();
+    return;
+  }
+  brainPrompt.textContent = countdown[state.countdownIndex];
+  brainMessage.textContent = "Still wait. Shoot only on DRAW.";
+  state.countdownIndex += 1;
+  reactionTimer = setTimeout(showReactionCountdown, countdownDelay());
 }
 
 function startReactionDraw() {
@@ -707,25 +727,32 @@ function playBrainTone(frequency, duration) {
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => setMode(button.dataset.mode));
 });
-mathDifficultySelect.addEventListener("change", () => {
+if (modeButtons.length) {
+  modeButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.mode === currentMode);
+    button.setAttribute("aria-selected", String(button.dataset.mode === currentMode));
+  });
+}
+if (modePickerCurrent) modePickerCurrent.textContent = modeTitles[currentMode];
+mathDifficultySelect?.addEventListener("change", () => {
   localStorage.setItem("offlineMiniGames.brain.math.difficulty", mathDifficultySelect.value);
   if (currentMode === "math") resetBrain();
 });
-reactionDifficultySelect.addEventListener("change", () => {
+reactionDifficultySelect?.addEventListener("change", () => {
   localStorage.setItem("offlineMiniGames.brain.reaction.difficulty", reactionDifficultySelect.value);
   if (currentMode === "reaction") resetBrain();
 });
-modePickerButton.addEventListener("click", toggleModePicker);
-closeModePickerButton.addEventListener("click", closeModePicker);
+modePickerButton?.addEventListener("click", toggleModePicker);
+closeModePickerButton?.addEventListener("click", closeModePicker);
 document.addEventListener("click", (event) => {
-  if (!modePickerArea.contains(event.target)) closeModePicker();
+  if (modePickerArea && !modePickerArea.contains(event.target)) closeModePicker();
 });
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeModePicker();
 });
 document.addEventListener("keydown", handleMathKeyboard);
 document.addEventListener("keydown", handleReactionKeyboard);
-promptCard.addEventListener("click", handleReactionTap);
+promptCard?.addEventListener("click", handleReactionTap);
 startBrainButton.addEventListener("click", startBrain);
 resetBrainButton.addEventListener("click", resetBrain);
 window.addEventListener("pagehide", clearTimers);

@@ -18,10 +18,28 @@ const games = [
     url: "games/flappy/index.html",
   },
   {
-    title: "Brain Training",
-    meta: "Five quick focus drills",
-    icon: "B",
-    url: "games/brain/index.html",
+    title: "Math Sprint",
+    meta: "Timed numpad arithmetic",
+    icon: "Ma",
+    url: "games/math-sprint/index.html",
+  },
+  {
+    title: "Word Color",
+    meta: "Pick the ink color",
+    icon: "W",
+    url: "games/word-color/index.html",
+  },
+  {
+    title: "Cowboy Duel",
+    meta: "Draw faster than the computer",
+    icon: "C",
+    url: "games/cowboy-duel/index.html",
+  },
+  {
+    title: "Simon Said",
+    meta: "Repeat the memory chain",
+    icon: "Si",
+    url: "games/simon-said/index.html",
   },
   {
     title: "Snake",
