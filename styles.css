@@ -60,7 +60,8 @@ a {
 .app-shell {
   width: min(1180px, calc(100vw - clamp(18px, 4vw, 48px)));
   margin: 0 auto;
-  padding: clamp(14px, 3vw, 28px) 0 clamp(26px, 4vw, 40px);
+  padding-block-start: max(clamp(14px, 3vw, 28px), env(safe-area-inset-top));
+  padding-block-end: max(clamp(26px, 4vw, 40px), env(safe-area-inset-bottom));
 }
 
 .topbar {
