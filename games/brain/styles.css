@@ -154,7 +154,11 @@
 .reaction-options .select-control,
 .custom-count-control {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
   width: 100%;
+  white-space: nowrap;
 }
 
 .custom-count-control[hidden] {
@@ -958,7 +962,8 @@ body[data-fixed-mode="math"] .prompt-kicker {
     gap: 6px;
   }
 
-  body[data-fixed-mode="math"] .math-options .select-control {
+  body[data-fixed-mode="math"] .math-options .select-control,
+  body[data-fixed-mode="math"] .custom-count-control {
     min-height: 36px;
   }
 
