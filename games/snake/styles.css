@@ -165,6 +165,10 @@ body {
   display: none;
 }
 
+.d-pad-center {
+  display: none;
+}
+
 .d-pad button {
   width: 100%;
   min-width: 0;
@@ -257,6 +261,61 @@ body {
       ". up ."
       "left . right"
       ". down .";
+  }
+
+  .d-pad-center {
+    position: relative;
+    display: grid;
+    grid-area: 2 / 2;
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      linear-gradient(45deg, transparent calc(50% - 2px), rgba(32, 36, 44, 0.34) calc(50% - 2px), rgba(32, 36, 44, 0.34) calc(50% + 2px), transparent calc(50% + 2px)),
+      linear-gradient(135deg, transparent calc(50% - 2px), rgba(32, 36, 44, 0.34) calc(50% - 2px), rgba(32, 36, 44, 0.34) calc(50% + 2px), transparent calc(50% + 2px)),
+      rgba(255, 255, 255, 0.72);
+    overflow: hidden;
+  }
+
+  .d-pad-center .center-zone {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    min-width: 0;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  .center-zone-up {
+    top: 0;
+    left: 0;
+    width: 100%;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+
+  .center-zone-left {
+    top: 0;
+    left: 0;
+    height: 100%;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  .center-zone-right {
+    top: 0;
+    right: 0;
+    height: 100%;
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+  }
+
+  .center-zone-down {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    clip-path: polygon(0 100%, 50% 0, 100% 100%);
   }
 
   .d-pad {
