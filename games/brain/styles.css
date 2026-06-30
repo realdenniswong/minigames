@@ -177,8 +177,8 @@
 }
 
 .custom-count-control input {
-  height: 44px;
-  min-height: 44px;
+  height: 48px;
+  min-height: 48px;
   border: 1px solid var(--line);
   border-width: 0 1px;
   border-radius: 0;
@@ -198,7 +198,7 @@
 
 .custom-count-stepper {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
   flex: 1;
   min-width: 0;
   border: 1px solid var(--line);
@@ -209,10 +209,10 @@
 }
 
 .count-step-button {
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
-  min-height: 44px;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
   border: 0;
   border-radius: 0;
   background: rgba(79, 140, 201, 0.1);
@@ -921,6 +921,19 @@ body[data-fixed-mode="math"] .prompt-kicker {
     min-height: 0;
   }
 
+  body[data-fixed-mode="math"] .math-options .select-control,
+  body[data-fixed-mode="math"] .custom-count-control,
+  body[data-fixed-mode="math"] .math-options select,
+  body[data-fixed-mode="math"] .custom-count-control input,
+  body[data-fixed-mode="math"] .count-step-button {
+    height: 50px;
+    min-height: 50px;
+  }
+
+  body[data-fixed-mode="math"] .custom-count-stepper {
+    grid-template-columns: 50px minmax(0, 1fr) 50px;
+  }
+
   body[data-fixed-mode="math"] .prompt-card {
     min-height: clamp(210px, 30dvh, 280px);
   }
@@ -1002,25 +1015,25 @@ body[data-fixed-mode="math"] .prompt-kicker {
 
   body[data-fixed-mode="math"] .math-options .select-control,
   body[data-fixed-mode="math"] .custom-count-control {
-    min-height: 36px;
+    min-height: 50px;
   }
 
   body[data-fixed-mode="math"] .math-options select,
   body[data-fixed-mode="math"] .custom-count-control input {
-    height: 36px;
-    min-height: 36px;
+    height: 50px;
+    min-height: 50px;
     font-size: 0.86rem;
   }
 
   body[data-fixed-mode="math"] .custom-count-stepper {
-    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    grid-template-columns: 50px minmax(0, 1fr) 50px;
   }
 
   body[data-fixed-mode="math"] .count-step-button {
-    width: 40px;
-    min-width: 40px;
-    height: 36px;
-    min-height: 36px;
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
+    min-height: 50px;
   }
 
   body[data-fixed-mode="math"] .stat-grid {
@@ -1100,7 +1113,7 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   body[data-fixed-mode="math"] .math-entry {
-    min-height: 34px;
+    min-height: 50px;
     padding: 5px 8px;
     font-size: 1.1rem;
   }
@@ -1110,7 +1123,7 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   body[data-fixed-mode="math"] .math-numpad button {
-    min-height: 38px;
+    min-height: 52px;
     padding: 0 6px;
     font-size: 0.94rem;
   }
@@ -1156,7 +1169,7 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   body[data-fixed-mode="math"] .math-numpad button {
-    min-height: 34px;
+    min-height: 50px;
   }
 }
 
@@ -1297,6 +1310,21 @@ body[data-fixed-mode="math"] .prompt-kicker {
     font-size: 0.78rem;
   }
 
+  body[data-fixed-mode="math"] .math-options select,
+  body[data-fixed-mode="math"] .custom-count-control input,
+  body[data-fixed-mode="math"] .count-step-button {
+    height: 44px;
+    min-height: 44px;
+  }
+
+  body[data-fixed-mode="math"] .custom-count-control {
+    min-height: 44px;
+  }
+
+  body[data-fixed-mode="math"] .custom-count-stepper {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
+
   .stat-grid,
   .screen-actions {
     gap: 5px;
@@ -1386,6 +1414,10 @@ body[data-fixed-mode="math"] .prompt-kicker {
     font-size: 1.25rem;
   }
 
+  body[data-fixed-mode="math"] .math-entry {
+    min-height: 44px;
+  }
+
   .math-numpad {
     gap: 5px;
   }
@@ -1394,6 +1426,10 @@ body[data-fixed-mode="math"] .prompt-kicker {
     min-height: 34px;
     padding: 0 6px;
     font-size: 0.9rem;
+  }
+
+  body[data-fixed-mode="math"] .math-numpad button {
+    min-height: 44px;
   }
 
   .simon-grid {
