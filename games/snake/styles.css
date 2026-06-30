@@ -24,18 +24,22 @@ body {
   grid-template-columns: 1fr;
   align-items: start;
   justify-items: center;
-  min-height: calc(100dvh - 126px);
+  height: calc(100dvh - 126px);
+  min-height: 0;
   margin-top: 20px;
   overscroll-behavior: contain;
 }
 
 .game-screen.snake-screen {
-  position: relative;
   display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
   place-items: center;
+  align-content: center;
+  gap: 12px;
   width: 100%;
-  min-height: calc(100dvh - 126px);
-  padding: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 12px;
   overflow: hidden;
   background:
     linear-gradient(135deg, rgba(76, 140, 201, 0.18), transparent 42%),
@@ -45,9 +49,10 @@ body {
 
 #snakeCanvas {
   display: block;
-  width: min(100%, calc((100dvh - 126px) * 2));
+  width: min(100%, 1000px, calc((100dvh - 286px) * 2));
   max-width: 100%;
   height: auto;
+  max-height: calc(100dvh - 286px);
   aspect-ratio: 2 / 1;
   border-radius: 8px;
   background: var(--board);
@@ -59,13 +64,18 @@ body {
 }
 
 .side-panel {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1;
   display: grid;
+  grid-template-columns: minmax(140px, 190px) minmax(0, 1fr) minmax(250px, 330px);
+  grid-template-areas:
+    "actions stats dpad"
+    "message message dpad";
+  align-items: stretch;
   gap: 8px;
-  width: min(340px, calc(100% - 24px));
+  width: min(100%, 1000px);
+}
+
+.screen-actions {
+  grid-area: actions;
 }
 
 .screen-actions {
@@ -85,6 +95,7 @@ body {
 }
 
 .stat-grid {
+  grid-area: stats;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
@@ -118,6 +129,7 @@ body {
 }
 
 .d-pad {
+  grid-area: dpad;
   display: grid;
   grid-template-columns: minmax(58px, 1fr) minmax(112px, 1.7fr) minmax(58px, 1fr);
   grid-template-rows: repeat(2, minmax(54px, 1fr));
@@ -160,6 +172,7 @@ body {
 }
 
 .game-message {
+  grid-area: message;
   min-height: 44px;
   margin: 0;
   border-left: 4px solid var(--gold);
@@ -189,13 +202,18 @@ body {
 
   #snakeCanvas {
     width: min(100%, 1000px);
+    max-height: none;
   }
 
   .side-panel {
-    position: static;
     justify-self: stretch;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "actions"
+      "stats"
+      "dpad"
+      "message";
     width: 100%;
-    z-index: auto;
   }
 }
 
@@ -266,6 +284,7 @@ body {
 
   .game-screen.snake-screen {
     grid-template-columns: minmax(0, 1fr) minmax(176px, min(35vw, 260px));
+    grid-template-rows: minmax(0, 1fr);
     align-items: center;
     justify-items: center;
     gap: 8px;
@@ -281,12 +300,18 @@ body {
 
   #snakeCanvas {
     width: min(100%, calc(65vw - 16px), calc((100dvh - 82px) * 2));
+    max-height: 100%;
   }
 
   .side-panel {
-    position: static;
     align-self: start;
     justify-self: stretch;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "actions"
+      "stats"
+      "dpad"
+      "message";
     width: 100%;
     gap: 5px;
   }
