@@ -132,12 +132,12 @@ function resetBrain() {
   brainPrompt.textContent = "Ready?";
   brainPrompt.style.color = "";
   if (currentMode === "math" && fixedMode === "math") {
-    brainMessage.textContent = "Choose difficulty, then tap the question card.";
+    brainMessage.textContent = "Pick difficulty. Tap card.";
   } else if (currentMode === "reaction" && fixedMode === "reaction") {
-    brainMessage.textContent = "Choose difficulty, then press the duel button.";
+    brainMessage.textContent = "Pick difficulty. Press duel.";
   } else {
     brainMessage.textContent =
-      currentMode === "math" || currentMode === "reaction" ? "Choose difficulty, then press Start." : "Press Start to begin.";
+      currentMode === "math" || currentMode === "reaction" ? "Pick difficulty, then Start." : "Press Start.";
   }
   startBrainButton.textContent = "Start";
   scoreLabel.textContent = "Score";
@@ -267,7 +267,7 @@ function startMath() {
   promptKicker.textContent = `${modeTitles.math} - ${difficultyTitles[difficulty]}`;
   startBrainTimer();
   startBrainButton.textContent = "Restart";
-  brainMessage.textContent = "Enter the answer, then press Submit.";
+  brainMessage.textContent = "Enter answer. Submit.";
   nextMathQuestion();
 }
 
@@ -475,7 +475,7 @@ function startColor() {
   state = { running: true, score: 0, round: 0, total: 10 };
   startBrainTimer();
   startBrainButton.textContent = "Restart";
-  brainMessage.textContent = "Pick the ink color, not the word.";
+  brainMessage.textContent = "Pick ink color.";
   nextColorQuestion();
 }
 
@@ -541,7 +541,7 @@ function startReaction() {
   timeLabel.textContent = "Shot";
   brainTimeEl.textContent = "-";
   startBrainButton.textContent = "Restart";
-  brainMessage.textContent = "Wait for DRAW, then shoot before the computer.";
+  brainMessage.textContent = "Wait for DRAW.";
   nextReactionRound();
 }
 
@@ -556,7 +556,7 @@ function nextReactionRound() {
   state.last = 0;
   state.countdownIndex = 0;
   brainPrompt.textContent = "Ready...";
-  brainMessage.textContent = "Wait for 3, 2, 1, DRAW. Shoot only on DRAW.";
+  brainMessage.textContent = "Shoot only on DRAW.";
   setDuelScene("ready");
   renderReactionButton("Wait", "waiting", false);
   updateStats(5);
@@ -590,7 +590,7 @@ function showReactionCountdown() {
     return;
   }
   brainPrompt.textContent = countdown[state.countdownIndex];
-  brainMessage.textContent = "Still wait. Shoot only on DRAW.";
+  brainMessage.textContent = "Wait. Not yet.";
   setDuelScene("ready");
   playDuelSound("countdown");
   state.countdownIndex += 1;
@@ -604,7 +604,7 @@ function startReactionDraw() {
   state.readyAt = performance.now();
   state.computerDelay = reactionComputerDelay();
   brainPrompt.textContent = "DRAW!";
-  brainMessage.textContent = "Shoot now. The computer gets faster on harder difficulty.";
+  brainMessage.textContent = "Shoot now.";
   setDuelScene("draw");
   playDuelSound("draw");
   renderReactionButton("Shoot", "ready", false);
@@ -625,7 +625,7 @@ function handleComputerShot() {
   if (!state.running || !state.ready) return;
   state.last = state.computerDelay;
   setDuelScene("computer-shot");
-  endReactionRound(`Computer shot in ${state.computerDelay}ms.`, "Too slow", "lost");
+  endReactionRound(`Computer: ${state.computerDelay}ms.`, "Too slow", "lost");
 }
 
 function handleReactionTap() {
@@ -638,7 +638,7 @@ function handleReactionTap() {
     clearTimeout(reactionTimer);
     state.last = 0;
     setDuelScene("player-shot");
-    endReactionRound("Too early. Point goes to the computer.", "False start", "lost");
+    endReactionRound("Too early. Computer scores.", "False start", "lost");
     return;
   }
   if (!state.ready) return;
@@ -647,7 +647,7 @@ function handleReactionTap() {
   state.last = Math.max(1, Math.round(performance.now() - state.readyAt));
   state.score += 1;
   setDuelScene("player-shot");
-  endReactionRound(`You shot in ${state.last}ms.`, "You win", "won");
+  endReactionRound(`You: ${state.last}ms.`, "You win", "won");
 }
 
 function handleReactionKeyboard(event) {
@@ -670,7 +670,7 @@ function startSimon() {
   state = { running: true, score: 0, round: 1, sequence: [], inputIndex: 0, showing: false };
   timeLabel.textContent = "Level";
   startBrainButton.textContent = "Restart";
-  brainMessage.textContent = "Watch Simon, then repeat.";
+  brainMessage.textContent = "Watch, then repeat.";
   nextSimonRound();
 }
 

@@ -247,7 +247,8 @@ label {
 }
 
 .game-message {
-  min-height: 52px;
+  display: -webkit-box;
+  height: calc(2.7em + 24px);
   margin: 0;
   border-left: 4px solid var(--gold);
   background: rgba(211, 154, 33, 0.11);
@@ -255,6 +256,9 @@ label {
   color: #5e4310;
   font-weight: 700;
   line-height: 1.35;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .board-wrap {
@@ -500,7 +504,7 @@ label {
   }
 
   .game-message {
-    min-height: 38px;
+    height: calc(2.7em + 16px);
     padding: 8px 10px;
     font-size: 0.82rem;
   }

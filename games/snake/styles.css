@@ -194,7 +194,8 @@ body {
 
 .game-message {
   grid-area: message;
-  min-height: 44px;
+  display: -webkit-box;
+  height: calc(2.7em + 18px);
   margin: 0;
   border-left: 4px solid var(--gold);
   background: rgba(255, 247, 235, 0.86);
@@ -202,6 +203,9 @@ body {
   color: #5e4310;
   font-weight: 700;
   line-height: 1.35;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 @media (max-width: 760px) {
@@ -420,7 +424,7 @@ body {
   }
 
   .game-message {
-    min-height: 34px;
+    height: calc(2.7em + 14px);
     padding: 7px 8px;
     font-size: 0.76rem;
   }

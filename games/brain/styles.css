@@ -212,7 +212,8 @@ body[data-fixed-mode="reaction"] .reaction-button {
 }
 
 .game-message {
-  min-height: 52px;
+  display: -webkit-box;
+  height: calc(2.7em + 24px);
   margin: 0;
   border-left: 4px solid var(--gold);
   background: rgba(255, 247, 235, 0.82);
@@ -220,10 +221,13 @@ body[data-fixed-mode="reaction"] .reaction-button {
   color: #5e4310;
   font-weight: 700;
   line-height: 1.35;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 body[data-fixed-mode="reaction"] .game-message {
-  min-height: calc(2.7em + 22px);
+  height: calc(2.7em + 22px);
 }
 
 .brain-stage {
@@ -917,13 +921,13 @@ body[data-fixed-mode] .side-panel {
   }
 
   .game-message {
-    min-height: 34px;
+    height: calc(2.7em + 14px);
     padding: 7px 8px;
     font-size: 0.74rem;
   }
 
   body[data-fixed-mode="reaction"] .game-message {
-    min-height: calc(2.7em + 14px);
+    height: calc(2.7em + 14px);
   }
 
   .prompt-card {
