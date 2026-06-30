@@ -565,6 +565,10 @@ body[data-fixed-mode] .side-panel {
   text-transform: uppercase;
 }
 
+body[data-fixed-mode="math"] .prompt-kicker {
+  display: none;
+}
+
 .prompt-text {
   min-width: 0;
   max-width: 100%;
@@ -584,9 +588,8 @@ body[data-fixed-mode] .side-panel {
 
 .math-question-row {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  justify-items: center;
   min-height: 36px;
   border: 1px solid rgba(217, 222, 231, 0.92);
   border-radius: 8px;
@@ -594,16 +597,9 @@ body[data-fixed-mode] .side-panel {
   padding: 6px 10px;
 }
 
-.math-question-row span {
-  color: var(--muted);
-  font-size: 0.62rem;
-  font-weight: 900;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .math-question-row strong {
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   font-size: clamp(1rem, 2.6vw, 1.45rem);
   line-height: 1.05;
@@ -905,36 +901,31 @@ body[data-fixed-mode] .side-panel {
   }
 
   body[data-fixed-mode="math"] .prompt-card {
-    min-height: 176px;
+    min-height: 142px;
     padding: 8px;
   }
 
-  body[data-fixed-mode="math"] .prompt-kicker {
-    margin-bottom: 5px;
-    font-size: 0.6rem;
-  }
-
   body[data-fixed-mode="math"] .math-question-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 4px;
   }
 
   body[data-fixed-mode="math"] .math-question-row {
-    grid-template-columns: 46px minmax(0, 1fr);
-    min-height: 25px;
-    gap: 5px;
+    min-height: 30px;
     padding: 3px 6px;
   }
 
-  body[data-fixed-mode="math"] .math-question-row span {
-    font-size: 0.48rem;
+  body[data-fixed-mode="math"] .math-question-row.active {
+    grid-column: 1 / -1;
+    min-height: 38px;
   }
 
   body[data-fixed-mode="math"] .math-question-row strong {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 
   body[data-fixed-mode="math"] .math-question-row.active strong {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   body[data-fixed-mode="math"] .math-answer {
@@ -986,11 +977,15 @@ body[data-fixed-mode] .side-panel {
 
 @media (max-width: 390px) {
   body[data-fixed-mode="math"] .prompt-card {
-    min-height: 164px;
+    min-height: 132px;
   }
 
   body[data-fixed-mode="math"] .math-question-row {
-    min-height: 23px;
+    min-height: 28px;
+  }
+
+  body[data-fixed-mode="math"] .math-question-row.active {
+    min-height: 34px;
   }
 
   body[data-fixed-mode="math"] .math-numpad button {
@@ -1155,14 +1150,8 @@ body[data-fixed-mode] .side-panel {
   }
 
   .math-question-row {
-    grid-template-columns: 48px minmax(0, 1fr);
     min-height: 28px;
-    gap: 6px;
     padding: 4px 6px;
-  }
-
-  .math-question-row span {
-    font-size: 0.5rem;
   }
 
   .math-question-row strong,

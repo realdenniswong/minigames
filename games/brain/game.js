@@ -301,8 +301,7 @@ function renderMathQuestionQueue() {
     .slice(0, 5)
     .map(
       (problem, index) => `
-        <div class="math-question-row ${index === 0 ? "active" : ""}">
-          <span>${index === 0 ? "Now" : `Next ${index}`}</span>
+        <div class="math-question-row ${index === 0 ? "active" : ""}" aria-label="${index === 0 ? "Current question" : `Next question ${index}`}">
           <strong>${problem.prompt}</strong>
         </div>
       `,
