@@ -15,7 +15,7 @@
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css" />
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
     <main class="game-shell">
@@ -28,13 +28,43 @@
       </header>
 
       <section class="game-layout game-screen brain-screen">
-        <aside class="side-panel">
-          <div class="mode-list" role="tablist" aria-label="Brain Training drills">
-            <button class="mode-button active" type="button" data-mode="math">Math Sprint</button>
-            <button class="mode-button" type="button" data-mode="color">Word Color</button>
-            <button class="mode-button" type="button" data-mode="reaction">Reaction Time</button>
-            <button class="mode-button" type="button" data-mode="simon">Simon Said</button>
+        <div class="mode-picker-area">
+          <button
+            class="mode-picker-button"
+            type="button"
+            id="modePickerButton"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+          >
+            <span>
+              <span class="mode-picker-label">Mode</span>
+              <strong id="modePickerCurrent">Math Sprint</strong>
+            </span>
+            <span class="mode-picker-arrow" aria-hidden="true"></span>
+          </button>
+          <div class="mode-picker-box" id="modePicker" role="dialog" aria-label="Choose game mode" hidden>
+            <div class="mode-picker-head">
+              <strong>Choose mode</strong>
+              <button type="button" id="closeModePicker" aria-label="Close mode picker">Close</button>
+            </div>
+            <div class="mode-list" role="listbox" aria-label="Brain Training modes">
+              <button class="mode-button active" type="button" data-mode="math" aria-selected="true">
+                Math Sprint
+              </button>
+              <button class="mode-button" type="button" data-mode="color" aria-selected="false">
+                Word Color
+              </button>
+              <button class="mode-button" type="button" data-mode="reaction" aria-selected="false">
+                Reaction Time
+              </button>
+              <button class="mode-button" type="button" data-mode="simon" aria-selected="false">
+                Simon Said
+              </button>
+            </div>
           </div>
+        </div>
+
+        <aside class="side-panel">
           <div class="screen-actions">
             <button class="primary-button" type="button" id="startBrain">Start</button>
             <button type="button" id="resetBrain">Reset</button>
@@ -69,6 +99,6 @@
         </div>
       </section>
     </main>
-    <script src="game.js"></script>
+    <script src="game.js?v=2"></script>
   </body>
 </html>

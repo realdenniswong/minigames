@@ -1,4 +1,9 @@
 const modeButtons = document.querySelectorAll("[data-mode]");
+const modePickerArea = document.querySelector(".mode-picker-area");
+const modePickerButton = document.getElementById("modePickerButton");
+const modePickerCurrent = document.getElementById("modePickerCurrent");
+const modePicker = document.getElementById("modePicker");
+const closeModePickerButton = document.getElementById("closeModePicker");
 const startBrainButton = document.getElementById("startBrain");
 const resetBrainButton = document.getElementById("resetBrain");
 const scoreLabel = document.getElementById("scoreLabel");
@@ -56,8 +61,29 @@ function setMode(mode) {
   clearTimers();
   modeButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.mode === mode);
+    button.setAttribute("aria-selected", String(button.dataset.mode === mode));
   });
+  modePickerCurrent.textContent = modeTitles[mode];
+  closeModePicker();
   resetBrain();
+}
+
+function openModePicker() {
+  modePicker.hidden = false;
+  modePickerButton.setAttribute("aria-expanded", "true");
+}
+
+function closeModePicker() {
+  modePicker.hidden = true;
+  modePickerButton.setAttribute("aria-expanded", "false");
+}
+
+function toggleModePicker() {
+  if (modePicker.hidden) {
+    openModePicker();
+  } else {
+    closeModePicker();
+  }
 }
 
 function resetBrain() {
@@ -409,6 +435,14 @@ function playBrainTone(frequency, duration) {
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => setMode(button.dataset.mode));
+});
+modePickerButton.addEventListener("click", toggleModePicker);
+closeModePickerButton.addEventListener("click", closeModePicker);
+document.addEventListener("click", (event) => {
+  if (!modePickerArea.contains(event.target)) closeModePicker();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeModePicker();
 });
 startBrainButton.addEventListener("click", startBrain);
 resetBrainButton.addEventListener("click", resetBrain);
