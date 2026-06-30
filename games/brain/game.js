@@ -131,8 +131,14 @@ function resetBrain() {
   }
   brainPrompt.textContent = "Ready?";
   brainPrompt.style.color = "";
-  brainMessage.textContent =
-    currentMode === "math" || currentMode === "reaction" ? "Choose difficulty, then press Start." : "Press Start to begin.";
+  if (currentMode === "math" && fixedMode === "math") {
+    brainMessage.textContent = "Choose difficulty, then tap the question card.";
+  } else if (currentMode === "reaction" && fixedMode === "reaction") {
+    brainMessage.textContent = "Choose difficulty, then press the duel button.";
+  } else {
+    brainMessage.textContent =
+      currentMode === "math" || currentMode === "reaction" ? "Choose difficulty, then press Start." : "Press Start to begin.";
+  }
   startBrainButton.textContent = "Start";
   scoreLabel.textContent = "Score";
   roundLabel.textContent = "Round";
@@ -186,6 +192,9 @@ function finishGame(message, roundTotal = 10) {
   startBrainButton.textContent = "Start";
   brainMessage.textContent = usesTotalTimer(currentMode) ? `${message} Time: ${elapsedText()}.` : message;
   updateStats(roundTotal);
+  if (fixedMode === currentMode && (currentMode === "math" || currentMode === "reaction")) {
+    renderIdleControls();
+  }
 }
 
 function startBrainTimer() {
@@ -235,7 +244,7 @@ function renderIdleControls() {
   if (currentMode === "simon") {
     renderSimonGrid(false);
   } else if (currentMode === "reaction") {
-    renderReactionButton("Press Start for duel", "", true);
+    renderReactionButton("Press Start for duel", "", false);
   } else if (currentMode === "math") {
     renderMathAnswerControls(true);
   } else {
@@ -620,7 +629,10 @@ function handleComputerShot() {
 }
 
 function handleReactionTap() {
-  if (!state.running) return;
+  if (!state.running) {
+    if (currentMode === "reaction") startBrain();
+    return;
+  }
   if (state.waiting) {
     playDuelSound("shot");
     clearTimeout(reactionTimer);
@@ -642,6 +654,14 @@ function handleReactionKeyboard(event) {
   if (!state.running || currentMode !== "reaction") return;
   if (event.key === " " || event.key === "Enter") {
     event.preventDefault();
+    handleReactionTap();
+  }
+}
+
+function handlePromptCardClick() {
+  if (currentMode === "math" && fixedMode === "math" && !state.running) {
+    startBrain();
+  } else if (currentMode === "reaction") {
     handleReactionTap();
   }
 }
@@ -848,7 +868,7 @@ document.addEventListener("keydown", (event) => {
 });
 document.addEventListener("keydown", handleMathKeyboard);
 document.addEventListener("keydown", handleReactionKeyboard);
-promptCard?.addEventListener("click", handleReactionTap);
+promptCard?.addEventListener("click", handlePromptCardClick);
 startBrainButton.addEventListener("click", startBrain);
 resetBrainButton.addEventListener("click", resetBrain);
 window.addEventListener("pagehide", clearTimers);

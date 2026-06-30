@@ -168,6 +168,16 @@
   min-width: 0;
 }
 
+body[data-fixed-mode="math"] .screen-actions,
+body[data-fixed-mode="reaction"] .screen-actions {
+  display: none;
+}
+
+body[data-fixed-mode="math"] .prompt-card,
+body[data-fixed-mode="reaction"] .reaction-button {
+  cursor: pointer;
+}
+
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
