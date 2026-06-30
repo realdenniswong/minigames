@@ -132,11 +132,11 @@ body {
   grid-area: dpad;
   display: grid;
   grid-template-columns: minmax(58px, 1fr) minmax(112px, 1.7fr) minmax(58px, 1fr);
-  grid-template-rows: repeat(2, minmax(54px, 1fr));
+  grid-template-rows: repeat(2, minmax(72px, 1fr));
   grid-template-areas:
     "left up right"
     "left down right";
-  min-height: 132px;
+  min-height: 176px;
   gap: 6px;
   padding: 8px;
   border: 1px solid rgba(217, 222, 231, 0.92);
@@ -217,6 +217,10 @@ body {
       "dpad"
       "message";
     width: 100%;
+  }
+
+  .d-pad {
+    min-height: 210px;
   }
 }
 
@@ -348,9 +352,9 @@ body {
 
   .d-pad {
     grid-template-columns: minmax(42px, 1fr) minmax(76px, 1.7fr) minmax(42px, 1fr);
-    grid-template-rows: repeat(2, minmax(32px, 1fr));
+    grid-template-rows: repeat(2, minmax(40px, 1fr));
     gap: 5px;
-    min-height: 74px;
+    min-height: 92px;
     padding: 5px;
   }
 
