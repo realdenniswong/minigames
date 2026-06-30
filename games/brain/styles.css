@@ -1006,9 +1006,19 @@ body[data-fixed-mode="math"] .prompt-kicker {
       max(10px, env(safe-area-inset-left));
   }
 
+  body[data-fixed-mode="reaction"] .game-shell {
+    padding-block-start: max(6px, env(safe-area-inset-top));
+    padding-block-end: max(2px, env(safe-area-inset-bottom));
+  }
+
   body .panel-heading {
     gap: 10px;
     padding-bottom: 8px;
+  }
+
+  body[data-fixed-mode="reaction"] .panel-heading {
+    gap: 8px;
+    padding-bottom: 6px;
   }
 
   body .title-block {
@@ -1040,6 +1050,12 @@ body[data-fixed-mode="math"] .prompt-kicker {
     overflow: hidden;
   }
 
+  body[data-fixed-mode="reaction"] .game-layout.brain-screen {
+    height: calc(100dvh - 58px);
+    margin-top: 4px;
+    padding: 4px;
+  }
+
   .mode-picker-area {
     grid-column: 1;
     grid-row: 1;
@@ -1054,12 +1070,21 @@ body[data-fixed-mode="math"] .prompt-kicker {
     overflow: auto;
   }
 
+  body[data-fixed-mode="reaction"] .side-panel {
+    gap: 4px;
+  }
+
   .brain-stage {
     grid-column: 2;
     grid-row: 1 / span 2;
     order: 0;
     grid-template-rows: minmax(98px, auto) minmax(0, 1fr);
     gap: 8px;
+  }
+
+  body[data-fixed-mode="reaction"] .brain-stage {
+    grid-template-rows: minmax(90px, auto) minmax(0, 1fr);
+    gap: 4px;
   }
 
   body[data-fixed-mode] .side-panel {
@@ -1129,6 +1154,11 @@ body[data-fixed-mode="math"] .prompt-kicker {
 
   body[data-fixed-mode="reaction"] .game-message {
     height: calc(2.7em + 14px);
+  }
+
+  body[data-fixed-mode="reaction"] .duel-scene {
+    height: clamp(104px, 29dvh, 164px);
+    margin-bottom: 6px;
   }
 
   .prompt-card {
