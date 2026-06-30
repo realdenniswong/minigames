@@ -298,3 +298,104 @@ h1 {
     font-size: 0.86rem;
   }
 }
+
+@media (max-height: 560px) and (hover: none) and (pointer: coarse) {
+  body button,
+  body .nav-button {
+    height: 36px;
+    min-height: 36px;
+  }
+
+  body .game-shell {
+    padding: 8px max(10px, env(safe-area-inset-right)) 8px
+      max(10px, env(safe-area-inset-left));
+  }
+
+  body .panel-heading {
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  body .title-block {
+    height: 36px;
+  }
+
+  body .title-block .eyebrow {
+    font-size: 0.5rem;
+  }
+
+  body h1 {
+    font-size: 1rem;
+  }
+
+  .primary-button,
+  .nav-button {
+    width: 104px;
+    min-width: 104px;
+  }
+
+  .game-layout {
+    min-height: 0;
+    height: calc(100dvh - 70px);
+    margin-top: 8px;
+  }
+
+  .game-screen.flappy-screen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, min(34vw, 240px));
+    align-items: center;
+    justify-items: center;
+    gap: 8px;
+    min-height: 0;
+    height: 100%;
+    padding: 6px;
+    overflow: hidden;
+  }
+
+  #flappyCanvas {
+    width: auto;
+    height: min(100%, calc(75vw - 160px));
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .side-panel {
+    position: static;
+    align-self: start;
+    justify-self: stretch;
+    z-index: auto;
+    width: 100%;
+    gap: 5px;
+  }
+
+  .screen-actions,
+  .stat-grid {
+    gap: 5px;
+  }
+
+  .screen-actions button {
+    height: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    font-size: 0.85rem;
+  }
+
+  .stat-grid div {
+    padding: 5px 7px;
+  }
+
+  .stat-grid span {
+    font-size: 0.58rem;
+  }
+
+  .stat-grid strong {
+    margin-top: 2px;
+    font-size: 0.95rem;
+  }
+
+  .game-message {
+    min-height: 34px;
+    padding: 7px 8px;
+    font-size: 0.78rem;
+  }
+}
