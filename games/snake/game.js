@@ -4,6 +4,7 @@ const snakeScoreEl = document.getElementById("snakeScore");
 const snakeBestEl = document.getElementById("snakeBest");
 const snakeSeedEl = document.getElementById("snakeSeed");
 const snakeMessage = document.getElementById("snakeMessage");
+const restartSnakeButton = document.getElementById("restartSnake");
 
 const cols = 50;
 const rows = 25;
@@ -64,10 +65,12 @@ function resetSnake(seed = createRandomSeed()) {
     food: generateRandomPosition(rng, snake, walls),
     direction: directions.right,
     directionQueue: [],
+    collisionWarning: false,
   };
   snakeScoreEl.textContent = "0";
   snakeBestEl.textContent = best;
   snakeSeedEl.textContent = seed;
+  restartSnakeButton.hidden = true;
   snakeMessage.textContent = "Tap an arrow or press an arrow key to start.";
   drawSnake();
 }
@@ -119,9 +122,7 @@ function generateRandomPosition(rng, snake, walls) {
 }
 
 function startSnake() {
-  if (snakeState.over) {
-    resetSnake(snakeState.seed);
-  }
+  if (snakeState.over) return;
   if (snakeState.running) return;
   snakeState.running = true;
   snakeState.over = false;
@@ -157,10 +158,22 @@ function updateSnake() {
     row: head.row + state.direction.row,
     col: head.col + state.direction.col,
   };
+  const willEat = nextHead.row === state.food.row && nextHead.col === state.food.col;
+
+  if (isSnakeCollision(nextHead, willEat)) {
+    if (state.collisionWarning) {
+      endSnake();
+      return;
+    }
+    state.collisionWarning = true;
+    snakeMessage.textContent = "Careful. Turn now.";
+    return;
+  }
+
+  state.collisionWarning = false;
   state.snake.unshift(nextHead);
 
-  const ate = nextHead.row === state.food.row && nextHead.col === state.food.col;
-  if (ate) {
+  if (willEat) {
     state.score += 1;
     snakeScoreEl.textContent = state.score;
     playEatSound();
@@ -169,11 +182,16 @@ function updateSnake() {
     state.snake.pop();
   }
 
+}
+
+function isSnakeCollision(cell, willEat) {
+  const state = snakeState;
   const hitBorder =
-    nextHead.row <= 0 || nextHead.row >= rows - 1 || nextHead.col <= 0 || nextHead.col >= cols - 1;
-  const hitWall = state.walls.has(cellKey(nextHead));
-  const hitSelf = state.snake.slice(1).some((segment) => segment.row === nextHead.row && segment.col === nextHead.col);
-  if (hitBorder || hitWall || hitSelf) endSnake();
+    cell.row <= 0 || cell.row >= rows - 1 || cell.col <= 0 || cell.col >= cols - 1;
+  const hitWall = state.walls.has(cellKey(cell));
+  const body = willEat ? state.snake : state.snake.slice(0, -1);
+  const hitSelf = body.some((segment) => segment.row === cell.row && segment.col === cell.col);
+  return hitBorder || hitWall || hitSelf;
 }
 
 function endSnake() {
@@ -183,6 +201,7 @@ function endSnake() {
   state.best = Math.max(state.best, state.score);
   localStorage.setItem("offlineMiniGames.snakeBest", String(state.best));
   snakeBestEl.textContent = state.best;
+  restartSnakeButton.hidden = false;
   snakeMessage.textContent = `Game over. Final score: ${state.score}.`;
   cancelAnimationFrame(snakeFrame);
   drawSnake();
@@ -200,7 +219,10 @@ function setDirection(nextDirection) {
 }
 
 function handleDirectionInput(nextDirection) {
-  if (snakeState.over) resetSnake(snakeState.seed);
+  if (snakeState.over) {
+    snakeMessage.textContent = "Press Restart to play this map again.";
+    return;
+  }
   setDirection(nextDirection);
   startSnake();
 }
@@ -345,6 +367,7 @@ function preventGameGesture(event) {
 }
 
 bindImmediateButton("newSnake", () => resetSnake());
+bindImmediateButton("restartSnake", () => resetSnake(snakeState.seed));
 document.querySelectorAll("[data-direction]").forEach((button) => {
   const direction = directions[button.dataset.direction];
   button.addEventListener("pointerdown", (event) => {

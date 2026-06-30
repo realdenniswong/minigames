@@ -81,7 +81,9 @@ body {
 .screen-actions {
   display: grid;
   grid-template-columns: 1fr;
+  grid-auto-rows: minmax(0, 1fr);
   gap: 8px;
+  height: 100%;
 }
 
 .screen-actions > * {
@@ -92,6 +94,10 @@ body {
 .screen-actions .primary-button {
   width: 100%;
   min-width: 0;
+}
+
+.screen-actions button {
+  height: 100%;
 }
 
 .stat-grid {
