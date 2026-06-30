@@ -134,9 +134,8 @@ h1 {
 
 #flappyCanvas {
   display: block;
-  width: auto;
-  max-width: 100%;
-  height: min(calc(100dvh - 126px), 576px);
+  width: min(100%, calc(75dvh - 95px));
+  height: auto;
   max-height: calc(100dvh - 126px);
   aspect-ratio: 3 / 4;
   border: 0;
