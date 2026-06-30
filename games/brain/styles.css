@@ -212,6 +212,10 @@
   line-height: 1.35;
 }
 
+body[data-fixed-mode="reaction"] .game-message {
+  min-height: calc(2.7em + 22px);
+}
+
 .brain-stage {
   grid-column: 2;
   grid-row: 1 / span 2;
@@ -906,6 +910,10 @@ body[data-fixed-mode] .side-panel {
     min-height: 34px;
     padding: 7px 8px;
     font-size: 0.74rem;
+  }
+
+  body[data-fixed-mode="reaction"] .game-message {
+    min-height: calc(2.7em + 14px);
   }
 
   .prompt-card {
