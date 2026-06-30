@@ -149,6 +149,8 @@ function resetBrain() {
     brainMessage.textContent = "Pick difficulty. Tap card.";
   } else if (currentMode === "reaction" && fixedMode === "reaction") {
     brainMessage.textContent = "Pick difficulty. Press duel.";
+  } else if (currentMode === "simon" && fixedMode === "simon") {
+    brainMessage.textContent = "Tap Ready.";
   } else {
     brainMessage.textContent =
       currentMode === "math" || currentMode === "reaction" ? "Pick difficulty, then Start." : "Press Start.";
@@ -208,7 +210,8 @@ function finishGame(message, roundTotal = 10) {
   brainMessage.textContent = usesTotalTimer(currentMode) ? `${message} Time: ${elapsedText()}.` : message;
   updateStats(roundTotal);
   if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
-  if (fixedMode === currentMode && (currentMode === "math" || currentMode === "reaction")) {
+  if (currentMode === "simon" && fixedMode === "simon") brainPrompt.textContent = "Ready?";
+  if (fixedMode === currentMode && (currentMode === "math" || currentMode === "reaction" || currentMode === "simon")) {
     renderIdleControls();
   }
 }
@@ -750,6 +753,8 @@ function handlePromptCardClick() {
     startBrain();
   } else if (currentMode === "reaction") {
     handleReactionTap();
+  } else if (currentMode === "simon" && fixedMode === "simon" && !state.running) {
+    startBrain();
   }
 }
 

@@ -234,11 +234,13 @@
 }
 
 body[data-fixed-mode="math"] .screen-actions,
-body[data-fixed-mode="reaction"] .screen-actions {
+body[data-fixed-mode="reaction"] .screen-actions,
+body[data-fixed-mode="simon"] .screen-actions {
   display: none;
 }
 
 body[data-fixed-mode="math"] .prompt-card,
+body[data-fixed-mode="simon"] .prompt-card,
 body[data-fixed-mode="reaction"] .reaction-button {
   cursor: pointer;
 }
