@@ -238,9 +238,16 @@
 }
 
 body[data-fixed-mode="math"] .screen-actions,
-body[data-fixed-mode="color"] .screen-actions,
 body[data-fixed-mode="reaction"] .screen-actions,
 body[data-fixed-mode="simon"] .screen-actions {
+  display: none;
+}
+
+body[data-fixed-mode="color"] .screen-actions {
+  grid-template-columns: 1fr;
+}
+
+body[data-fixed-mode="color"] #startBrain {
   display: none;
 }
 

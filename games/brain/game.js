@@ -298,6 +298,13 @@ function renderIdleControls() {
     renderSimonGrid(false);
   } else if (currentMode === "reaction") {
     renderReactionButton("Press Start for duel", "", false);
+  } else if (currentMode === "color") {
+    renderAnswerButtons(
+      colorChoices.map((color) => color.name),
+      "",
+      null,
+      true,
+    );
   } else if (currentMode === "math") {
     renderMathAnswerControls(true);
   } else {
@@ -664,7 +671,7 @@ function nextColorQuestion() {
   updateStats(state.total);
 }
 
-function renderAnswerButtons(choices, answer, nextQuestion) {
+function renderAnswerButtons(choices, answer, nextQuestion, disabled = false) {
   brainControls.innerHTML = `<div class="answer-grid"></div>`;
   const grid = brainControls.querySelector(".answer-grid");
   choices.forEach((choice) => {
@@ -672,7 +679,9 @@ function renderAnswerButtons(choices, answer, nextQuestion) {
     button.className = "answer-button";
     button.type = "button";
     button.textContent = choice;
+    button.disabled = disabled;
     button.addEventListener("click", () => {
+      if (disabled) return;
       grid.querySelectorAll("button").forEach((answerButton) => {
         answerButton.disabled = true;
       });
