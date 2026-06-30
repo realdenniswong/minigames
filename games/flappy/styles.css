@@ -374,6 +374,8 @@ h1 {
   }
 
   .screen-actions button {
+    width: 100%;
+    min-width: 0;
     height: 34px;
     min-height: 34px;
     padding: 0 8px;
