@@ -205,11 +205,14 @@ body {
 
   .game-layout,
   .game-screen.snake-screen {
+    height: auto;
     min-height: 0;
   }
 
   .game-screen.snake-screen {
+    grid-template-rows: auto auto;
     place-items: stretch;
+    align-content: start;
     gap: 12px;
     overflow: visible;
     background: transparent;
