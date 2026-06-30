@@ -275,7 +275,7 @@ label {
   border-radius: 0;
   background: #fff;
   color: var(--ink);
-  font-size: clamp(1rem, 3.5vw, 1.8rem);
+  font-size: clamp(0.95rem, min(3.2vw, 3.2dvh), 1.65rem);
   font-weight: 800;
   padding: 0;
 }
@@ -288,7 +288,7 @@ label {
   height: 100%;
   place-items: center;
   color: #5a6677;
-  font-size: clamp(0.42rem, 1.25vw, 0.78rem);
+  font-size: clamp(0.36rem, min(1.1vw, 1.1dvh), 0.68rem);
   font-weight: 800;
   line-height: 1;
   pointer-events: none;
@@ -509,7 +509,7 @@ label {
   }
 
   .play-layout {
-    grid-template-columns: minmax(0, calc(100dvh - 90px)) minmax(240px, min(48vw, 420px));
+    grid-template-columns: minmax(0, min(46vw, 390px)) minmax(230px, min(46vw, 420px));
     gap: 10px;
     justify-content: center;
   }
@@ -517,9 +517,13 @@ label {
   .board-panel {
     position: relative;
     display: grid;
-    place-items: center;
+    place-items: start center;
     gap: 0;
     min-width: 0;
+    max-height: 100%;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .board-panel .stat-grid {
@@ -529,10 +533,11 @@ label {
     z-index: 1;
     width: 64px;
     margin: 0;
+    pointer-events: none;
   }
 
   .sudoku-board {
-    width: min(100%, calc(100dvh - 98px));
+    width: min(390px, max(300px, calc(100dvh - 56px)));
   }
 
   .side-panel {
