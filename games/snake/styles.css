@@ -65,10 +65,10 @@ body {
 
 .side-panel {
   display: grid;
-  grid-template-columns: minmax(140px, 190px) minmax(0, 1fr) minmax(250px, 330px);
+  grid-template-columns: minmax(180px, 1fr) minmax(140px, 180px) minmax(220px, 1.2fr) minmax(180px, 1fr);
   grid-template-areas:
-    "actions stats dpad"
-    "message message dpad";
+    "leftpad actions stats rightpad"
+    "leftpad message message rightpad";
   align-items: stretch;
   gap: 8px;
   width: min(100%, 1000px);
@@ -129,19 +129,30 @@ body {
 }
 
 .d-pad {
-  grid-area: dpad;
   display: grid;
-  grid-template-columns: minmax(58px, 1fr) minmax(112px, 1.7fr) minmax(58px, 1fr);
+  grid-template-columns: minmax(70px, 1fr) minmax(100px, 1.35fr);
   grid-template-rows: repeat(2, minmax(72px, 1fr));
-  grid-template-areas:
-    "left up right"
-    "left down right";
   min-height: 176px;
   gap: 6px;
   padding: 8px;
   border: 1px solid rgba(217, 222, 231, 0.92);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.78);
+}
+
+.d-pad-left {
+  grid-area: leftpad;
+  grid-template-areas:
+    "left up"
+    "left down";
+}
+
+.d-pad-right {
+  grid-area: rightpad;
+  grid-template-columns: minmax(100px, 1.35fr) minmax(70px, 1fr);
+  grid-template-areas:
+    "up right"
+    "down right";
 }
 
 .d-pad button {
@@ -210,12 +221,12 @@ body {
 
   .side-panel {
     justify-self: stretch;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      "actions"
-      "stats"
-      "dpad"
-      "message";
+      "actions actions"
+      "stats stats"
+      "leftpad rightpad"
+      "message message";
     width: 100%;
   }
 
@@ -313,12 +324,12 @@ body {
   .side-panel {
     align-self: start;
     justify-self: stretch;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      "actions"
-      "stats"
-      "dpad"
-      "message";
+      "actions actions"
+      "stats stats"
+      "leftpad rightpad"
+      "message message";
     width: 100%;
     gap: 5px;
   }
@@ -351,11 +362,15 @@ body {
   }
 
   .d-pad {
-    grid-template-columns: minmax(42px, 1fr) minmax(76px, 1.7fr) minmax(42px, 1fr);
+    grid-template-columns: minmax(34px, 1fr) minmax(48px, 1.35fr);
     grid-template-rows: repeat(2, minmax(40px, 1fr));
     gap: 5px;
     min-height: 92px;
     padding: 5px;
+  }
+
+  .d-pad-right {
+    grid-template-columns: minmax(48px, 1.35fr) minmax(34px, 1fr);
   }
 
   .d-pad button {
