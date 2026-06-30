@@ -8,7 +8,7 @@ const restartSnakeButton = document.getElementById("restartSnake");
 
 const cols = 50;
 const rows = 25;
-const tickMs = 80;
+const tickMs = 92;
 const cellWidth = canvas.width / cols;
 const cellHeight = canvas.height / rows;
 const directions = {
@@ -78,17 +78,17 @@ function resetSnake(seed = createRandomSeed()) {
 function generateMap(rng, start) {
   const walls = new Set();
   const protectedCells = new Set();
-  for (let row = -2; row <= 2; row += 1) {
-    for (let col = -3; col <= 3; col += 1) {
+  for (let row = -4; row <= 4; row += 1) {
+    for (let col = -6; col <= 6; col += 1) {
       protectedCells.add(cellKey({ row: start.row + row, col: start.col + col }));
     }
   }
 
-  for (let shape = 0; shape < 12; shape += 1) {
+  for (let shape = 0; shape < 8; shape += 1) {
     const row = randomInt(rng, 2, rows - 3);
     const col = randomInt(rng, 2, cols - 3);
     const horizontal = rng() < 0.5;
-    const length = randomInt(rng, 2, 6);
+    const length = randomInt(rng, 2, 4);
     for (let step = 0; step < length; step += 1) {
       const cell = {
         row: row + (horizontal ? 0 : step),
