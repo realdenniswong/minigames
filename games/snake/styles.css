@@ -155,6 +155,10 @@ body {
     "down right";
 }
 
+.d-pad-mobile {
+  display: none;
+}
+
 .d-pad button {
   width: 100%;
   min-width: 0;
@@ -221,13 +225,27 @@ body {
 
   .side-panel {
     justify-self: stretch;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "actions actions"
-      "stats stats"
-      "leftpad rightpad"
-      "message message";
+      "actions"
+      "stats"
+      "mobilepad"
+      "message";
     width: 100%;
+  }
+
+  .d-pad-left,
+  .d-pad-right {
+    display: none;
+  }
+
+  .d-pad-mobile {
+    display: grid;
+    grid-area: mobilepad;
+    grid-template-columns: minmax(58px, 1fr) minmax(112px, 1.7fr) minmax(58px, 1fr);
+    grid-template-areas:
+      "left up right"
+      "left down right";
   }
 
   .d-pad {
@@ -258,7 +276,7 @@ body {
   }
 }
 
-@media (max-height: 560px) and (hover: none) and (pointer: coarse) {
+@media (max-height: 560px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
   body button,
   body .nav-button {
     height: 36px;
@@ -328,6 +346,15 @@ body {
 
   .side-panel {
     display: contents;
+  }
+
+  .d-pad-left,
+  .d-pad-right {
+    display: grid;
+  }
+
+  .d-pad-mobile {
+    display: none;
   }
 
   .screen-actions,
