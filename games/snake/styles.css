@@ -201,7 +201,10 @@ body {
   }
 
   #snakeCanvas {
+    align-self: start;
+    justify-self: center;
     width: min(100%, 1000px);
+    height: auto;
     max-height: none;
   }
 
