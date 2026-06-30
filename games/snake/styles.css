@@ -242,14 +242,16 @@ body {
   .d-pad-mobile {
     display: grid;
     grid-area: mobilepad;
-    grid-template-columns: minmax(58px, 1fr) minmax(112px, 1.7fr) minmax(58px, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(58px, 1fr));
     grid-template-areas:
-      "left up right"
-      "left down right";
+      ". up ."
+      "left . right"
+      ". down .";
   }
 
   .d-pad {
-    min-height: 210px;
+    min-height: 240px;
   }
 }
 
