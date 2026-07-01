@@ -571,15 +571,15 @@ function renderMathAnswerControls(disabled) {
         <button class="math-backspace" type="button" data-math-key="backspace">Back</button>
       </div>
       <div class="math-numpad" aria-label="Math answer keypad">
-        <button type="button" data-math-key="7">7</button>
-        <button type="button" data-math-key="8">8</button>
-        <button type="button" data-math-key="9">9</button>
-        <button type="button" data-math-key="4">4</button>
-        <button type="button" data-math-key="5">5</button>
-        <button type="button" data-math-key="6">6</button>
         <button type="button" data-math-key="1">1</button>
         <button type="button" data-math-key="2">2</button>
         <button type="button" data-math-key="3">3</button>
+        <button type="button" data-math-key="4">4</button>
+        <button type="button" data-math-key="5">5</button>
+        <button type="button" data-math-key="6">6</button>
+        <button type="button" data-math-key="7">7</button>
+        <button type="button" data-math-key="8">8</button>
+        <button type="button" data-math-key="9">9</button>
         <button class="math-zero" type="button" data-math-key="0">0</button>
       </div>
     </div>
