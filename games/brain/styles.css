@@ -539,7 +539,7 @@ body[data-fixed-mode] .side-panel {
 }
 
 .duel-scene[data-phase="ready"] .hand {
-  animation: hand-ready 0.42s ease-in-out infinite alternate;
+  animation: hand-swing 0.42s ease-in-out infinite alternate;
 }
 
 .gun {
@@ -634,15 +634,15 @@ body[data-fixed-mode] .side-panel {
   }
 }
 
-@keyframes hand-ready {
+@keyframes hand-swing {
   from {
     left: 80px;
     top: 99px;
   }
 
   to {
-    left: 79px;
-    top: 103px;
+    left: 75px;
+    top: 99px;
   }
 }
 
