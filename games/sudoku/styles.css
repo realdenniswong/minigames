@@ -549,8 +549,8 @@ label {
   }
 
   .play-layout {
-    grid-template-columns: minmax(0, min(46vw, 390px)) minmax(230px, min(46vw, 420px));
-    gap: 10px;
+    grid-template-columns: minmax(0, min(48vw, 390px)) minmax(216px, min(42vw, 390px));
+    gap: 8px;
     justify-content: center;
   }
 
@@ -565,7 +565,7 @@ label {
   }
 
   .sudoku-board {
-    width: min(360px, calc(100dvh - 83px), calc(48vw - 12px));
+    width: min(360px, calc(100dvh - 81px), calc(48vw - 12px));
   }
 
   .side-panel {
