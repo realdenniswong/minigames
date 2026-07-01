@@ -811,7 +811,7 @@ function handleReactionTap() {
     playDuelSound("shot");
     clearTimeout(reactionTimer);
     state.last = 0;
-    setDuelScene("player-shot");
+    setDuelScene("player-hit");
     endReactionRound("Too early. Computer scores.", "False start", "lost");
     return;
   }
@@ -820,7 +820,7 @@ function handleReactionTap() {
   clearTimeout(reactionTimer);
   state.last = Math.max(1, Math.round(performance.now() - state.readyAt));
   state.score += 1;
-  setDuelScene("player-shot");
+  setDuelScene("player-hit");
   endReactionRound(`You: ${state.last}ms.`, "You win", "won");
 }
 

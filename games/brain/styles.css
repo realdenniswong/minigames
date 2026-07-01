@@ -401,9 +401,12 @@ body[data-fixed-mode] .side-panel {
   animation: gunman-ready 0.42s ease-in-out infinite alternate;
 }
 
-.duel-scene[data-phase="computer-shot"] .gunman,
-.duel-scene[data-phase="player-shot"] .gunman {
+.duel-scene[data-phase="computer-shot"] .gunman {
   animation: gunman-recoil 0.28s ease-out 1;
+}
+
+.duel-scene[data-phase="player-hit"] .gunman {
+  animation: gunman-hit 0.38s ease-out 1 forwards;
 }
 
 .hat-brim,
@@ -515,8 +518,7 @@ body[data-fixed-mode] .side-panel {
 }
 
 .duel-scene[data-phase="draw"] .arm-right,
-.duel-scene[data-phase="computer-shot"] .arm-right,
-.duel-scene[data-phase="player-shot"] .arm-right {
+.duel-scene[data-phase="computer-shot"] .arm-right {
   transform: rotate(-78deg);
 }
 
@@ -531,10 +533,13 @@ body[data-fixed-mode] .side-panel {
 }
 
 .duel-scene[data-phase="draw"] .hand,
-.duel-scene[data-phase="computer-shot"] .hand,
-.duel-scene[data-phase="player-shot"] .hand {
+.duel-scene[data-phase="computer-shot"] .hand {
   left: 91px;
   top: 70px;
+}
+
+.duel-scene[data-phase="ready"] .hand {
+  animation: hand-ready 0.42s ease-in-out infinite alternate;
 }
 
 .gun {
@@ -550,8 +555,7 @@ body[data-fixed-mode] .side-panel {
 }
 
 .duel-scene[data-phase="draw"] .gun,
-.duel-scene[data-phase="computer-shot"] .gun,
-.duel-scene[data-phase="player-shot"] .gun {
+.duel-scene[data-phase="computer-shot"] .gun {
   left: 94px;
   top: 73px;
   opacity: 1;
@@ -569,9 +573,17 @@ body[data-fixed-mode] .side-panel {
   opacity: 0;
 }
 
-.duel-scene[data-phase="computer-shot"] .muzzle-flash,
-.duel-scene[data-phase="player-shot"] .muzzle-flash {
+.duel-scene[data-phase="computer-shot"] .muzzle-flash {
   animation: muzzle-pop 0.18s steps(1, end) 1;
+}
+
+.duel-scene[data-phase="player-hit"] .muzzle-flash {
+  left: 54px;
+  top: 58px;
+  width: 22px;
+  height: 22px;
+  background: #f05d4f;
+  animation: hit-pop 0.26s ease-out 1;
 }
 
 .leg {
@@ -622,6 +634,18 @@ body[data-fixed-mode] .side-panel {
   }
 }
 
+@keyframes hand-ready {
+  from {
+    left: 80px;
+    top: 99px;
+  }
+
+  to {
+    left: 79px;
+    top: 103px;
+  }
+}
+
 @keyframes gunman-recoil {
   0% {
     transform: translateX(-50%) rotate(0deg) scale(var(--gunman-scale, 1));
@@ -636,6 +660,22 @@ body[data-fixed-mode] .side-panel {
   }
 }
 
+@keyframes gunman-hit {
+  0% {
+    transform: translateX(-50%) rotate(0deg) scale(var(--gunman-scale, 1));
+  }
+
+  45% {
+    transform: translateX(-50%) translateX(8px) translateY(4px) rotate(7deg)
+      scale(var(--gunman-scale, 1));
+  }
+
+  100% {
+    transform: translateX(-50%) translateX(5px) translateY(8px) rotate(4deg)
+      scale(var(--gunman-scale, 1));
+  }
+}
+
 @keyframes muzzle-pop {
   0%,
   100% {
@@ -646,6 +686,19 @@ body[data-fixed-mode] .side-panel {
   35% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes hit-pop {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  35% {
+    opacity: 1;
+    transform: scale(1.1);
   }
 }
 
