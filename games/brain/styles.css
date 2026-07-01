@@ -1057,6 +1057,45 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 }
 
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) and (max-width: 1180px) {
+  body[data-fixed-mode="reaction"] .game-layout.brain-screen {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: start;
+  }
+
+  body[data-fixed-mode="reaction"] .side-panel {
+    grid-column: 1;
+    grid-row: 1;
+    order: 1;
+  }
+
+  body[data-fixed-mode="reaction"] .brain-stage {
+    grid-column: 1;
+    grid-row: 2;
+    order: 2;
+    grid-template-rows: auto minmax(120px, auto);
+  }
+
+  body[data-fixed-mode="reaction"] .prompt-card {
+    min-height: clamp(330px, 46dvh, 520px);
+  }
+
+  body[data-fixed-mode="reaction"] .duel-scene {
+    width: min(620px, 94%);
+    height: clamp(220px, 30dvh, 360px);
+  }
+
+  body[data-fixed-mode="reaction"] .duel-scene .gunman {
+    --gunman-scale: 1.18;
+    bottom: 15%;
+  }
+
+  body[data-fixed-mode="reaction"] .reaction-button {
+    min-height: clamp(120px, 18dvh, 220px);
+  }
+}
+
 @media (max-width: 560px) {
   .game-layout.brain-screen {
     padding: 10px;
