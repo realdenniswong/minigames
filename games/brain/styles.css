@@ -1214,6 +1214,12 @@ body[data-fixed-mode="math"] .prompt-kicker {
 }
 
 @media (max-height: 560px) and (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   body button,
   body .nav-button {
     height: 36px;
@@ -1221,14 +1227,16 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   body .game-shell {
-    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
-      max(8px, env(safe-area-inset-bottom))
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px max(10px, env(safe-area-inset-right)) 4px
       max(10px, env(safe-area-inset-left));
   }
 
   body[data-fixed-mode="reaction"] .game-shell {
-    padding-block-start: max(6px, env(safe-area-inset-top));
-    padding-block-end: max(2px, env(safe-area-inset-bottom));
+    padding-block-start: 4px;
+    padding-block-end: 2px;
   }
 
   body .panel-heading {
@@ -1263,15 +1271,19 @@ body[data-fixed-mode="math"] .prompt-kicker {
     grid-template-columns: minmax(170px, 240px) minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     gap: 8px;
-    height: calc(100dvh - 70px);
+    height: calc(100dvh - 56px);
     min-height: 0;
-    margin-top: 8px;
-    padding: 8px;
+    margin-top: 4px;
+    padding: 6px;
     overflow: hidden;
   }
 
+  body[data-fixed-mode="math"] .game-layout.brain-screen {
+    grid-template-columns: minmax(150px, 210px) minmax(0, 1fr);
+  }
+
   body[data-fixed-mode="reaction"] .game-layout.brain-screen {
-    height: calc(100dvh - 58px);
+    height: calc(100dvh - 52px);
     margin-top: 4px;
     padding: 4px;
   }
@@ -1305,6 +1317,21 @@ body[data-fixed-mode="math"] .prompt-kicker {
   body[data-fixed-mode="reaction"] .brain-stage {
     grid-template-rows: minmax(90px, auto) minmax(0, 1fr);
     gap: 4px;
+  }
+
+  body[data-fixed-mode="math"] .brain-stage {
+    grid-template-columns: minmax(0, 1fr) minmax(224px, 0.85fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  body[data-fixed-mode="math"] .prompt-card {
+    min-height: 0;
+    padding: 8px;
+  }
+
+  body[data-fixed-mode="math"] .brain-controls {
+    min-height: 0;
   }
 
   body[data-fixed-mode] .side-panel {
@@ -1451,17 +1478,20 @@ body[data-fixed-mode="math"] .prompt-kicker {
   }
 
   .math-answer {
-    gap: 6px;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 4px;
+    height: 100%;
+    min-height: 0;
   }
 
   .math-entry {
-    min-height: 42px;
-    padding: 6px 8px;
-    font-size: 1.25rem;
+    min-height: 36px;
+    padding: 4px 8px;
+    font-size: 1rem;
   }
 
   body[data-fixed-mode="math"] .math-entry {
-    min-height: 44px;
+    min-height: 36px;
   }
 
   .math-edit-row,
@@ -1471,14 +1501,35 @@ body[data-fixed-mode="math"] .prompt-kicker {
 
   .math-edit-row button,
   .math-numpad button {
-    min-height: 34px;
+    min-height: 36px;
     padding: 0 6px;
     font-size: 0.9rem;
   }
 
   body[data-fixed-mode="math"] .math-edit-row button,
+  body[data-fixed-mode="math"] .math-numpad button,
+  body[data-fixed-mode="math"] .math-entry {
+    height: 32px;
+    min-height: 32px;
+  }
+
+  body[data-fixed-mode="math"] .math-edit-row button,
   body[data-fixed-mode="math"] .math-numpad button {
-    min-height: 44px;
+    font-size: 0.86rem;
+  }
+
+  body[data-fixed-mode="math"] .math-numpad {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(32px, 1fr);
+  }
+
+  body[data-fixed-mode="math"] .math-numpad .math-submit {
+    grid-column: 4;
+    grid-row: 1 / span 4;
+  }
+
+  body[data-fixed-mode="math"] .math-numpad .math-zero {
+    grid-column: 1 / span 3;
   }
 
   .simon-grid {

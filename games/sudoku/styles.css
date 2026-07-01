@@ -504,6 +504,12 @@ label {
 }
 
 @media (max-height: 560px) and (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   body button,
   body select,
   body .nav-button {
@@ -512,8 +518,10 @@ label {
   }
 
   body .game-shell {
-    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
-      max(8px, env(safe-area-inset-bottom))
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px max(10px, env(safe-area-inset-right)) 4px
       max(10px, env(safe-area-inset-left));
   }
 
@@ -535,8 +543,8 @@ label {
   }
 
   .game-layout {
-    height: calc(100dvh - 72px);
-    margin-top: 8px;
+    height: calc(100dvh - 56px);
+    margin-top: 4px;
     overflow: hidden;
   }
 
@@ -551,13 +559,13 @@ label {
     place-items: start center;
     min-width: 0;
     max-height: 100%;
-    overflow: auto;
+    overflow: hidden;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .sudoku-board {
-    width: min(390px, max(300px, calc(100dvh - 98px)));
+    width: min(360px, calc(100dvh - 112px), calc(48vw - 12px));
   }
 
   .side-panel {

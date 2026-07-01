@@ -292,6 +292,12 @@ body {
 }
 
 @media (max-height: 560px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   body button,
   body .nav-button {
     height: 36px;
@@ -299,8 +305,10 @@ body {
   }
 
   body .game-shell {
-    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
-      max(8px, env(safe-area-inset-bottom))
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px max(10px, env(safe-area-inset-right)) 4px
       max(10px, env(safe-area-inset-left));
   }
 
@@ -328,9 +336,9 @@ body {
   }
 
   .game-layout {
-    height: calc(100dvh - 70px);
+    height: calc(100dvh - 56px);
     min-height: 0;
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   .game-screen.snake-screen {

@@ -312,6 +312,12 @@ h1 {
 }
 
 @media (max-height: 560px) and (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   body button,
   body .nav-button {
     height: 36px;
@@ -319,8 +325,10 @@ h1 {
   }
 
   body .game-shell {
-    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
-      max(8px, env(safe-area-inset-bottom))
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px max(10px, env(safe-area-inset-right)) 4px
       max(10px, env(safe-area-inset-left));
   }
 
@@ -349,8 +357,8 @@ h1 {
 
   .game-layout {
     min-height: 0;
-    height: calc(100dvh - 70px);
-    margin-top: 8px;
+    height: calc(100dvh - 56px);
+    margin-top: 4px;
   }
 
   .game-screen.flappy-screen {
