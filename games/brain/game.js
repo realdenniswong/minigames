@@ -657,14 +657,14 @@ function resolveMathAnswer(correct) {
   clearMathAnswerTimer();
   state.accepting = false;
   if (correct) state.score += 1;
-  playMathAnswerSound(correct);
+  playAnswerSound(correct);
   brainMessage.textContent = correct ? "Correct." : `Answer: ${state.problem.answer}.`;
   state.queue.shift();
   updateStats();
   setTimeout(nextMathQuestion, correct ? 120 : 360);
 }
 
-function playMathAnswerSound(correct) {
+function playAnswerSound(correct) {
   if (correct) {
     playBrainTone(740, 0.055);
     setTimeout(() => playBrainTone(990, 0.075), 58);
@@ -720,6 +720,7 @@ function renderAnswerButtons(choices, answer, nextQuestion, disabled = false) {
       });
       const correct = String(choice) === String(answer);
       if (correct) state.score += 1;
+      playAnswerSound(correct);
       button.classList.add(correct ? "correct" : "wrong");
       brainMessage.textContent = correct ? "Correct." : `Answer: ${answer}.`;
       updateStats();
