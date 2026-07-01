@@ -63,6 +63,7 @@ const reactionDifficultySettings = {
 let currentMode = modeTitles[fixedMode] ? fixedMode : "math";
 let state = {};
 let reactionTimer = 0;
+let reactionAimTimer = 0;
 let sequenceTimer = 0;
 let brainAudio;
 
@@ -104,6 +105,7 @@ function currentBestKey() {
 
 function clearTimers() {
   clearTimeout(reactionTimer);
+  clearTimeout(reactionAimTimer);
   clearTimeout(sequenceTimer);
   clearMathAnswerTimer();
   if (state.timer) {
@@ -807,6 +809,7 @@ function showReactionCountdown() {
 
 function startReactionDraw() {
   if (!state.running) return;
+  const aimLeadMs = 50;
   state.waiting = false;
   state.ready = true;
   state.readyAt = performance.now();
@@ -816,6 +819,8 @@ function startReactionDraw() {
   setDuelScene("draw");
   playDuelSound("draw");
   renderReactionButton("Shoot", "ready", false);
+  clearTimeout(reactionAimTimer);
+  reactionAimTimer = setTimeout(handleComputerAim, Math.max(0, state.computerDelay - aimLeadMs));
   reactionTimer = setTimeout(handleComputerShot, state.computerDelay);
 }
 
@@ -832,8 +837,14 @@ function endReactionRound(message, prompt, className) {
 function handleComputerShot() {
   if (!state.running || !state.ready) return;
   state.last = state.computerDelay;
+  clearTimeout(reactionAimTimer);
   setDuelScene("computer-shot");
   endReactionRound(`Computer: ${state.computerDelay}ms.`, "Too slow", "lost");
+}
+
+function handleComputerAim() {
+  if (!state.running || !state.ready) return;
+  setDuelScene("computer-aim");
 }
 
 function handleReactionTap() {
@@ -844,6 +855,7 @@ function handleReactionTap() {
   if (state.waiting) {
     playDuelSound("shot");
     clearTimeout(reactionTimer);
+    clearTimeout(reactionAimTimer);
     state.last = 0;
     setDuelScene("player-hit");
     endReactionRound("Too early. Computer scores.", "False start", "lost");
@@ -852,6 +864,7 @@ function handleReactionTap() {
   if (!state.ready) return;
   playDuelSound("shot");
   clearTimeout(reactionTimer);
+  clearTimeout(reactionAimTimer);
   state.last = Math.max(1, Math.round(performance.now() - state.readyAt));
   state.score += 1;
   setDuelScene("player-hit");

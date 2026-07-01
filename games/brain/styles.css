@@ -530,7 +530,7 @@ body[data-fixed-mode] .side-panel {
   animation: hand-hover 0.42s ease-in-out infinite alternate;
 }
 
-.duel-scene[data-phase="draw"] .arm-right,
+.duel-scene[data-phase="computer-aim"] .arm-right,
 .duel-scene[data-phase="computer-shot"] .arm-right {
   transform: rotate(-78deg);
 }
@@ -547,7 +547,7 @@ body[data-fixed-mode] .side-panel {
   transform-origin: 0 50%;
 }
 
-.duel-scene[data-phase="draw"] .gun,
+.duel-scene[data-phase="computer-aim"] .gun,
 .duel-scene[data-phase="computer-shot"] .gun {
   left: 94px;
   top: 73px;

@@ -53,23 +53,47 @@ function flap() {
   playFlapSound();
 }
 
-function playFlapSound() {
+function getFlappyAudio() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
+  if (!AudioContext) return null;
   flappyAudio ??= new AudioContext();
   if (flappyAudio.state === "suspended") flappyAudio.resume();
-  const now = flappyAudio.currentTime;
-  const oscillator = flappyAudio.createOscillator();
-  const gain = flappyAudio.createGain();
+  return flappyAudio;
+}
+
+function playFlapSound() {
+  const context = getFlappyAudio();
+  if (!context) return;
+  const now = context.currentTime;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
   oscillator.type = "triangle";
   oscillator.frequency.setValueAtTime(460, now);
   oscillator.frequency.exponentialRampToValueAtTime(640, now + 0.055);
   gain.gain.setValueAtTime(0.055, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
   oscillator.connect(gain);
-  gain.connect(flappyAudio.destination);
+  gain.connect(context.destination);
   oscillator.start(now);
   oscillator.stop(now + 0.09);
+}
+
+function playScoreSound() {
+  const context = getFlappyAudio();
+  if (!context) return;
+  const now = context.currentTime;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(720, now);
+  oscillator.frequency.exponentialRampToValueAtTime(1040, now + 0.075);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.linearRampToValueAtTime(0.075, now + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.14);
 }
 
 function handleFlappyTap(event) {
@@ -109,6 +133,7 @@ function updateFlappy() {
       pipe.scored = true;
       state.score += 1;
       flappyScoreEl.textContent = state.score;
+      playScoreSound();
     }
   });
   state.pipes = state.pipes.filter((pipe) => pipe.x > -70);
