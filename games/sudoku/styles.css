@@ -522,8 +522,9 @@ label {
 @media (max-height: 560px) and (hover: none) and (pointer: coarse) {
   html,
   body {
-    height: 100dvh;
-    overflow: hidden;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   body button,
@@ -534,9 +535,8 @@ label {
   }
 
   body .game-shell {
-    height: 100dvh;
-    min-height: 0;
-    overflow: hidden;
+    min-height: 100dvh;
+    overflow: visible;
     padding: 4px max(10px, env(safe-area-inset-right)) 4px
       max(10px, env(safe-area-inset-left));
   }
@@ -559,7 +559,7 @@ label {
   }
 
   .game-layout {
-    height: calc(100dvh - 56px);
+    height: calc(100dvh - 62px);
     margin-top: 4px;
     overflow: hidden;
   }
