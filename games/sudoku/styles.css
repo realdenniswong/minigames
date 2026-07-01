@@ -285,7 +285,7 @@ label {
   inset: 0;
   display: block;
   color: #5a6677;
-  font-size: clamp(0.36rem, min(1.1vw, 1.1dvh), 0.68rem);
+  font-size: clamp(0.42rem, min(1.25vw, 1.25dvh), 0.78rem);
   font-weight: 800;
   line-height: 1;
   pointer-events: none;
