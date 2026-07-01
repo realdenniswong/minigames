@@ -33,8 +33,14 @@ let sudokuState;
 
 function newSudoku(startNow = false) {
   pauseSudokuTimer();
-  const list = sudokuPuzzleBank[sudokuDifficulty.value];
-  const puzzle = list[Math.floor(Math.random() * list.length)];
+  const puzzle = startNow
+    ? sudokuPuzzleBank[sudokuDifficulty.value][
+        Math.floor(Math.random() * sudokuPuzzleBank[sudokuDifficulty.value].length)
+      ]
+    : {
+        puzzle: "0".repeat(81),
+        solution: "0".repeat(81),
+      };
   sudokuState = {
     puzzle: puzzle.puzzle,
     solution: puzzle.solution,
@@ -52,7 +58,7 @@ function newSudoku(startNow = false) {
   noteSudokuButton.setAttribute("aria-pressed", "false");
   sudokuMessage.textContent = startNow
     ? "Timer started. Select a blank cell, then choose a number."
-    : "Press Start to begin the timer.";
+    : "Press Start to generate a puzzle.";
   renderSudoku();
   if (startNow) startSudokuTimer();
 }
