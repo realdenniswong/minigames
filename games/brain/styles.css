@@ -532,14 +532,24 @@ body[data-fixed-mode] .side-panel {
   background: #c9834b;
 }
 
-.duel-scene[data-phase="draw"] .hand,
-.duel-scene[data-phase="computer-shot"] .hand {
+.hand-left {
+  left: 18px;
+  top: 99px;
+}
+
+.hand-right {
+  left: 80px;
+  top: 99px;
+}
+
+.duel-scene[data-phase="draw"] .hand-right,
+.duel-scene[data-phase="computer-shot"] .hand-right {
   left: 91px;
   top: 70px;
 }
 
-.duel-scene[data-phase="ready"] .hand {
-  animation: hand-swing 0.42s ease-in-out infinite alternate;
+.duel-scene[data-phase="ready"] .hand-right {
+  animation: hand-right-hover 0.42s ease-in-out infinite alternate;
 }
 
 .gun {
@@ -634,15 +644,15 @@ body[data-fixed-mode] .side-panel {
   }
 }
 
-@keyframes hand-swing {
+@keyframes hand-right-hover {
   from {
-    left: 80px;
+    left: 79px;
     top: 99px;
   }
 
   to {
     left: 75px;
-    top: 99px;
+    top: 101px;
   }
 }
 
