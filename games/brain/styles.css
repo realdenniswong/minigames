@@ -890,15 +890,8 @@ body[data-fixed-mode="math"] .prompt-kicker {
   font-weight: 900;
 }
 
-.math-numpad .math-zero,
-.math-numpad .math-submit {
+.math-numpad .math-zero {
   grid-column: span 3;
-}
-
-.math-numpad .math-submit {
-  border-color: transparent;
-  background: var(--mint);
-  color: #fff;
 }
 
 .math-edit-row .math-clear,
@@ -1561,11 +1554,6 @@ body[data-fixed-mode="math"] .prompt-kicker {
   body[data-fixed-mode="math"] .math-numpad {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-auto-rows: minmax(30px, 1fr);
-  }
-
-  body[data-fixed-mode="math"] .math-numpad .math-submit {
-    grid-column: 1 / -1;
-    grid-row: auto;
   }
 
   body[data-fixed-mode="math"] .math-numpad .math-zero {

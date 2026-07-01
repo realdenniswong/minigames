@@ -105,9 +105,17 @@ function currentBestKey() {
 function clearTimers() {
   clearTimeout(reactionTimer);
   clearTimeout(sequenceTimer);
+  clearMathAnswerTimer();
   if (state.timer) {
     clearInterval(state.timer);
     state.timer = null;
+  }
+}
+
+function clearMathAnswerTimer() {
+  if (state?.mathAnswerTimer) {
+    clearTimeout(state.mathAnswerTimer);
+    state.mathAnswerTimer = null;
   }
 }
 
@@ -329,7 +337,7 @@ function startMath() {
   promptKicker.textContent = `${modeTitles.math} - ${difficultyTitles[difficulty]}`;
   startBrainTimer();
   startBrainButton.textContent = "Restart";
-  brainMessage.textContent = "Enter answer. Submit.";
+  brainMessage.textContent = "Enter answer.";
   fillMathQueue();
   nextMathQuestion();
 }
@@ -340,6 +348,7 @@ function nextMathQuestion() {
     return;
   }
   state.round += 1;
+  clearMathAnswerTimer();
   state.input = "";
   state.accepting = true;
   fillMathQueue();
@@ -572,7 +581,6 @@ function renderMathAnswerControls(disabled) {
         <button type="button" data-math-key="2">2</button>
         <button type="button" data-math-key="3">3</button>
         <button class="math-zero" type="button" data-math-key="0">0</button>
-        <button class="math-submit" type="button" data-math-key="submit">Submit</button>
       </div>
     </div>
   `;
@@ -592,10 +600,15 @@ function updateMathEntry() {
 
 function handleMathKey(key) {
   if (!state.running || !state.accepting || currentMode !== "math") return;
+  clearMathAnswerTimer();
   if (/^\d$/.test(key)) {
-    if (state.input.length >= 8) return;
+    if (state.input.length >= 8) {
+      checkMathInput();
+      return;
+    }
     state.input = state.input === "0" ? key : `${state.input}${key}`;
     updateMathEntry();
+    checkMathInput();
     return;
   }
   if (key === "backspace") {
@@ -608,7 +621,6 @@ function handleMathKey(key) {
     updateMathEntry();
     return;
   }
-  if (key === "submit") submitMathAnswer();
 }
 
 function handleMathKeyboard(event) {
@@ -621,24 +633,34 @@ function handleMathKeyboard(event) {
     handleMathKey("backspace");
   } else if (event.key === "Enter") {
     event.preventDefault();
-    handleMathKey("submit");
   } else if (event.key === "Escape") {
     handleMathKey("clear");
   }
 }
 
-function submitMathAnswer() {
-  if (!state.input) {
-    brainMessage.textContent = "Type an answer first.";
+function checkMathInput() {
+  if (!state.input) return;
+  const submitted = Number(state.input);
+  if (submitted === state.problem.answer) {
+    resolveMathAnswer(true);
     return;
   }
-  const submitted = Number(state.input);
-  const correct = submitted === state.problem.answer;
+  const pendingInput = state.input;
+  state.mathAnswerTimer = setTimeout(() => {
+    if (!state.running || !state.accepting || currentMode !== "math") return;
+    if (state.input !== pendingInput) return;
+    resolveMathAnswer(false);
+  }, 1000);
+}
+
+function resolveMathAnswer(correct) {
+  clearMathAnswerTimer();
+  state.accepting = false;
   if (correct) state.score += 1;
   brainMessage.textContent = correct ? "Correct." : `Answer: ${state.problem.answer}.`;
   state.queue.shift();
   updateStats();
-  nextMathQuestion();
+  setTimeout(nextMathQuestion, correct ? 120 : 360);
 }
 
 function startColor() {
