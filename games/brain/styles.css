@@ -415,7 +415,6 @@ body[data-fixed-mode] .side-panel {
 .body,
 .neckwear,
 .arm,
-.hand,
 .gun,
 .muzzle-flash,
 .leg,
@@ -494,11 +493,25 @@ body[data-fixed-mode] .side-panel {
 .arm-left {
   left: 21px;
   top: 62px;
+  z-index: 5;
   width: 16px;
   height: 42px;
   border-radius: 999px;
   background: #274e70;
+  transform-origin: 8px 5px;
   transform: rotate(14deg);
+}
+
+.arm::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #c9834b;
+  transform: translateX(-50%);
 }
 
 .arm-right {
@@ -520,36 +533,6 @@ body[data-fixed-mode] .side-panel {
 .duel-scene[data-phase="draw"] .arm-right,
 .duel-scene[data-phase="computer-shot"] .arm-right {
   transform: rotate(-78deg);
-}
-
-.hand {
-  left: 80px;
-  top: 99px;
-  z-index: 7;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #c9834b;
-}
-
-.hand-left {
-  left: 18px;
-  top: 99px;
-}
-
-.hand-right {
-  left: 80px;
-  top: 99px;
-}
-
-.duel-scene[data-phase="draw"] .hand-right,
-.duel-scene[data-phase="computer-shot"] .hand-right {
-  left: 91px;
-  top: 70px;
-}
-
-.duel-scene[data-phase="ready"] .hand-right {
-  animation: hand-right-hover 0.42s ease-in-out infinite alternate;
 }
 
 .gun {
@@ -641,18 +624,6 @@ body[data-fixed-mode] .side-panel {
 
   to {
     transform: rotate(-18deg) translateY(3px);
-  }
-}
-
-@keyframes hand-right-hover {
-  from {
-    left: 79px;
-    top: 99px;
-  }
-
-  to {
-    left: 75px;
-    top: 101px;
   }
 }
 

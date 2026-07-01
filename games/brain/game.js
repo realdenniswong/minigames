@@ -952,8 +952,6 @@ function setDuelScene(phase) {
         <span class="neckwear"></span>
         <span class="arm arm-left"></span>
         <span class="arm arm-right"></span>
-        <span class="hand hand-left"></span>
-        <span class="hand hand-right"></span>
         <span class="gun"></span>
         <span class="muzzle-flash"></span>
         <span class="leg leg-left"></span>
