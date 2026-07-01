@@ -657,10 +657,21 @@ function resolveMathAnswer(correct) {
   clearMathAnswerTimer();
   state.accepting = false;
   if (correct) state.score += 1;
+  playMathAnswerSound(correct);
   brainMessage.textContent = correct ? "Correct." : `Answer: ${state.problem.answer}.`;
   state.queue.shift();
   updateStats();
   setTimeout(nextMathQuestion, correct ? 120 : 360);
+}
+
+function playMathAnswerSound(correct) {
+  if (correct) {
+    playBrainTone(740, 0.055);
+    setTimeout(() => playBrainTone(990, 0.075), 58);
+  } else {
+    playBrainTone(170, 0.12);
+    setTimeout(() => playBrainTone(120, 0.14), 95);
+  }
 }
 
 function startColor() {
