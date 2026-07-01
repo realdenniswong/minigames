@@ -47,6 +47,12 @@ button,
   white-space: nowrap;
 }
 
+.share-score-button {
+  width: 100%;
+  min-width: 0;
+  font-weight: 900;
+}
+
 select {
   appearance: none;
   -webkit-appearance: none;
