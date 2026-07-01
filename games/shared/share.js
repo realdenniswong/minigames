@@ -27,6 +27,7 @@
   }
 
   function getShareUrl() {
+    const publicBaseUrl = "https://realdenniswong.github.io/minigames/";
     if (location.protocol !== "file:") return location.href;
 
     const marker = "/Dennis Minigames/";
@@ -34,16 +35,16 @@
     const markerIndex = decodedPath.indexOf(marker);
     if (markerIndex !== -1) {
       const relativePath = decodedPath.slice(markerIndex + marker.length);
-      return `https://realdenniswong.github.io/${encodeURI(relativePath)}`;
+      return `${publicBaseUrl}${encodeURI(relativePath)}`;
     }
 
     const gamesIndex = decodedPath.indexOf("/games/");
     if (gamesIndex !== -1) {
       const relativePath = decodedPath.slice(gamesIndex + 1);
-      return `https://realdenniswong.github.io/${encodeURI(relativePath)}`;
+      return `${publicBaseUrl}${encodeURI(relativePath)}`;
     }
 
-    return "https://realdenniswong.github.io/";
+    return publicBaseUrl;
   }
 
   function getScoreSummary() {
