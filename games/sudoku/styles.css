@@ -314,7 +314,7 @@ label {
 }
 
 .sudoku-notes span:nth-child(3n + 1) {
-  left: 2px;
+  left: 4px;
   justify-content: flex-start;
 }
 
@@ -325,7 +325,7 @@ label {
 }
 
 .sudoku-notes span:nth-child(3n) {
-  right: 2px;
+  right: 4px;
   justify-content: flex-end;
 }
 
