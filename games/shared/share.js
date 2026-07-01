@@ -3,6 +3,7 @@
   shareButton.type = "button";
   shareButton.className = "share-score-button";
   shareButton.textContent = "Share";
+  let resultText = "";
 
   function visible(element) {
     return element && getComputedStyle(element).display !== "none";
@@ -48,6 +49,9 @@
   }
 
   function getScoreSummary() {
+    if (resultText) return resultText;
+    if (document.body.dataset.shareResult) return document.body.dataset.shareResult;
+
     const rows = [...document.querySelectorAll(".stat-grid > div")]
       .map((row) => {
         const label = row.querySelector("span")?.textContent.trim();
@@ -59,8 +63,19 @@
     return rows.length ? rows.join(", ") : "Come play this game with me.";
   }
 
+  function setResult(text) {
+    resultText = text || "";
+    if (resultText) {
+      document.body.dataset.shareResult = resultText;
+      shareButton.textContent = "Share result";
+    } else {
+      delete document.body.dataset.shareResult;
+      shareButton.textContent = "Share";
+    }
+  }
+
   function setTemporaryLabel(text) {
-    const original = "Share";
+    const original = resultText || document.body.dataset.shareResult ? "Share result" : "Share";
     shareButton.textContent = text;
     window.setTimeout(() => {
       shareButton.textContent = original;
@@ -95,4 +110,5 @@
 
   document.addEventListener("DOMContentLoaded", placeShareButton);
   shareButton.addEventListener("click", shareScore);
+  window.MiniGameShare = { setResult };
 })();

@@ -322,6 +322,55 @@ body[data-fixed-mode="reaction"] .game-message {
   height: calc(2.7em + 22px);
 }
 
+.reaction-history {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  gap: 6px;
+}
+
+.reaction-history[hidden] {
+  display: none;
+}
+
+.reaction-shot {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 7px 5px;
+  text-align: center;
+}
+
+.reaction-shot span {
+  color: var(--muted);
+  font-size: 0.52rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.reaction-shot strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reaction-shot.won {
+  border-color: rgba(28, 143, 120, 0.45);
+  background: rgba(28, 143, 120, 0.1);
+}
+
+.reaction-shot.lost,
+.reaction-shot.early {
+  border-color: rgba(217, 94, 79, 0.4);
+  background: rgba(217, 94, 79, 0.08);
+}
+
 .brain-stage {
   grid-column: 2;
   grid-row: 1 / span 2;

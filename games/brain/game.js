@@ -28,6 +28,7 @@ const brainScoreEl = document.getElementById("brainScore");
 const brainBestEl = document.getElementById("brainBest");
 const brainRoundEl = document.getElementById("brainRound");
 const brainTimeEl = document.getElementById("brainTime");
+const reactionHistoryEl = document.getElementById("reactionHistory");
 const brainMessage = document.getElementById("brainMessage");
 const promptCard = document.querySelector(".prompt-card");
 const promptKicker = document.getElementById("promptKicker");
@@ -156,6 +157,7 @@ function toggleModePicker() {
 
 function resetBrain() {
   clearTimers();
+  window.MiniGameShare?.setResult("");
   state = { running: false, score: 0, round: 0 };
   updateMathQuestionControls();
   updateColorQuestionControls();
@@ -192,6 +194,7 @@ function resetBrain() {
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
   brainRoundEl.textContent = idleRoundText();
   brainTimeEl.textContent = timeStatText();
+  resetReactionHistory();
   if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
   renderIdleControls();
 }
@@ -215,6 +218,55 @@ function updateStats(roundTotal = 10) {
   brainBestEl.textContent = formatBest(currentMode, getBest(currentBestKey()));
   brainRoundEl.textContent = currentMode === "simon" ? String(state.round || 0) : `${state.round}/${roundTotal}`;
   brainTimeEl.textContent = timeStatText();
+}
+
+function resetReactionHistory() {
+  if (!reactionHistoryEl) return;
+  reactionHistoryEl.hidden = currentMode !== "reaction";
+  reactionHistoryEl.innerHTML = "";
+}
+
+function renderReactionHistory() {
+  if (!reactionHistoryEl || currentMode !== "reaction") return;
+  const shots = state.shots || [];
+  reactionHistoryEl.hidden = false;
+  reactionHistoryEl.innerHTML = Array.from({ length: state.total || 5 }, (_, index) => {
+    const shot = shots[index];
+    const label = `R${index + 1}`;
+    const value = shot?.label || "-";
+    const status = shot?.status || "";
+    return `<div class="reaction-shot ${status}"><span>${label}</span><strong>${value}</strong></div>`;
+  }).join("");
+}
+
+function recordReactionShot(status, label, shareText) {
+  if (!state.shots) state.shots = [];
+  state.shots[state.round - 1] = {
+    status,
+    label,
+    shareText: shareText || label,
+  };
+  renderReactionHistory();
+}
+
+function reactionShareSummary() {
+  const shots = state.shots || [];
+  const shotText = shots
+    .map((shot, index) => `R${index + 1} ${shot?.shareText || "-"}`)
+    .join(", ");
+  return `Wins ${state.score}/${state.total} on ${difficultyTitles[state.difficulty]}. Shots: ${shotText}`;
+}
+
+function setShareResult(message) {
+  if (currentMode === "reaction") {
+    window.MiniGameShare?.setResult(reactionShareSummary());
+    return;
+  }
+  if (usesTotalTimer(currentMode)) {
+    window.MiniGameShare?.setResult(`${message} Time: ${elapsedText()}.`);
+    return;
+  }
+  window.MiniGameShare?.setResult(message);
 }
 
 function idleRoundText() {
@@ -246,6 +298,7 @@ function finishGame(message, roundTotal = 10) {
   startBrainButton.textContent = "Start";
   brainMessage.textContent = usesTotalTimer(currentMode) ? `${message} Time: ${elapsedText()}.` : message;
   updateStats(roundTotal);
+  setShareResult(message);
   if (currentMode === "math") brainPrompt.innerHTML = "Ready?";
   if (currentMode === "color" && fixedMode === "color") {
     brainPrompt.textContent = "Ready?";
@@ -743,6 +796,7 @@ function startReaction() {
     ready: false,
     last: 0,
     difficulty,
+    shots: [],
   };
   localStorage.setItem("offlineMiniGames.brain.reaction.difficulty", difficulty);
   promptKicker.textContent = `${modeTitles.reaction} - ${difficultyTitles[difficulty]}`;
@@ -752,6 +806,8 @@ function startReaction() {
   brainTimeEl.textContent = "-";
   startBrainButton.textContent = "Restart";
   brainMessage.textContent = "Wait for DRAW.";
+  window.MiniGameShare?.setResult("");
+  renderReactionHistory();
   nextReactionRound();
 }
 
@@ -839,6 +895,7 @@ function handleComputerShot() {
   state.last = state.computerDelay;
   clearTimeout(reactionAimTimer);
   setDuelScene("computer-shot");
+  recordReactionShot("lost", `${state.computerDelay}ms`, `CPU ${state.computerDelay}ms`);
   endReactionRound(`Computer: ${state.computerDelay}ms.`, "Too slow", "lost");
 }
 
@@ -858,6 +915,7 @@ function handleReactionTap() {
     clearTimeout(reactionAimTimer);
     state.last = 0;
     setDuelScene("player-hit");
+    recordReactionShot("early", "Early", "early");
     endReactionRound("Too early. Computer scores.", "False start", "lost");
     return;
   }
@@ -868,6 +926,7 @@ function handleReactionTap() {
   state.last = Math.max(1, Math.round(performance.now() - state.readyAt));
   state.score += 1;
   setDuelScene("player-hit");
+  recordReactionShot("won", `${state.last}ms`, `you ${state.last}ms`);
   endReactionRound(`You: ${state.last}ms.`, "You win", "won");
 }
 
