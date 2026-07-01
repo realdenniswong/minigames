@@ -565,7 +565,7 @@ label {
   }
 
   .sudoku-board {
-    width: min(360px, calc(100dvh - 98px), calc(48vw - 12px));
+    width: min(360px, calc(100dvh - 92px), calc(48vw - 12px));
   }
 
   .side-panel {
