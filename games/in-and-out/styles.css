@@ -60,16 +60,20 @@
   min-width: 0;
 }
 
-.select-control,
-.select-control select {
+.screen-controls .select-control {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
   width: 100%;
 }
 
-.select-control span {
-  flex: 0 0 auto;
+.screen-controls .select-control span {
+  min-width: 0;
 }
 
-.select-control select {
+.screen-controls .select-control select {
+  width: 100%;
   min-width: 0;
 }
 
@@ -224,6 +228,10 @@
 
   .game-screen.inout-screen {
     padding: 8px;
+  }
+
+  .screen-controls .select-control {
+    grid-template-columns: 86px minmax(0, 1fr);
   }
 
   #inoutCanvas {
