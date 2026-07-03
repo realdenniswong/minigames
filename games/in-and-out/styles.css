@@ -136,11 +136,12 @@
   font-size: clamp(1.35rem, 3vw, 2.1rem);
   font-weight: 950;
   line-height: 1;
-  text-align: right;
+  text-align: center;
 }
 
 .answer-entry.filled {
   color: var(--ink);
+  text-align: right;
 }
 
 .answer-edit-row,
