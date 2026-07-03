@@ -22,6 +22,7 @@ const colors = ["#d95e4f", "#4f8cc9", "#1c8f78", "#d39a21", "#6757c8", "#e28445"
 let state;
 let animationFrame = 0;
 let sequenceTimer = 0;
+let countdownTimer = 0;
 let audioContext;
 
 const savedDifficulty = localStorage.getItem("offlineMiniGames.inout.difficulty");
@@ -38,6 +39,7 @@ function randomFloat(min, max) {
 function resetGame() {
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
+  clearTimeout(countdownTimer);
   const difficulty = difficultySelect.value;
   state = {
     running: false,
@@ -72,6 +74,7 @@ function startGame() {
   unlockAudio();
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
+  clearTimeout(countdownTimer);
   const difficulty = difficultySelect.value;
   state = {
     ...state,
@@ -95,6 +98,7 @@ function startGame() {
 
 function nextRound() {
   clearTimeout(sequenceTimer);
+  clearTimeout(countdownTimer);
   state.round += 1;
   if (state.round > totalRounds) {
     finishGame();
@@ -107,17 +111,14 @@ function nextRound() {
   roundEl.textContent = `${state.round}/${totalRounds}`;
   createRound();
   setMessage(`Starting: ${state.startedInside}`);
-  sequenceTimer = setTimeout(() => {
-    setMessage("Watch the door.");
-    startAnimation();
-  }, 650);
+  runCountdown();
   drawScene();
 }
 
 function createRound() {
   const settings = difficultySettings[state.difficulty];
   const waveCount = randomInt(settings.wavesMin, settings.wavesMax);
-  let inside = randomInt(settings.startMin, settings.startMax);
+  let inside = state.round === 1 ? randomInt(settings.startMin, settings.startMax) : state.currentInside;
   state.startedInside = inside;
   state.currentInside = inside;
   state.target = inside;
@@ -138,6 +139,24 @@ function createRound() {
   }
 
   state.sequenceEnd = time + 1300;
+}
+
+function runCountdown() {
+  const steps = [`Starting: ${state.startedInside}`, "3", "2", "1"];
+  let index = 0;
+  const showStep = () => {
+    setMessage(steps[index]);
+    index += 1;
+    if (index < steps.length) {
+      countdownTimer = setTimeout(showStep, index === 1 ? 1250 : 720);
+      return;
+    }
+    countdownTimer = setTimeout(() => {
+      setMessage("Watch the door.");
+      startAnimation();
+    }, 720);
+  };
+  showStep();
 }
 
 function startAnimation() {
@@ -489,5 +508,6 @@ document.addEventListener("keydown", handleKeyboard);
 window.addEventListener("pagehide", () => {
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
+  clearTimeout(countdownTimer);
 });
 resetGame();
