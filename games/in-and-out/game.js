@@ -1,5 +1,6 @@
 const canvas = document.getElementById("inoutCanvas");
 const ctx = canvas.getContext("2d");
+const modeSelect = document.getElementById("inoutMode");
 const difficultySelect = document.getElementById("inoutDifficulty");
 const startButton = document.getElementById("startInout");
 const scoreEl = document.getElementById("inoutScore");
@@ -52,6 +53,7 @@ const difficultySettings = {
 };
 
 const colors = ["#d95e4f", "#4f8cc9", "#1c8f78", "#d39a21", "#6757c8", "#e28445"];
+const gameModes = new Set(["house", "classic"]);
 let state;
 let animationFrame = 0;
 let sequenceTimer = 0;
@@ -60,6 +62,8 @@ let audioContext;
 
 const savedDifficulty = localStorage.getItem("offlineMiniGames.inout.difficulty");
 if (difficultySettings[savedDifficulty]) difficultySelect.value = savedDifficulty;
+const savedMode = localStorage.getItem("offlineMiniGames.inout.mode");
+if (gameModes.has(savedMode)) modeSelect.value = savedMode;
 
 function randomInt(min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
@@ -69,19 +73,25 @@ function randomFloat(min, max) {
   return min + Math.random() * (max - min);
 }
 
+function bestKey(mode = modeSelect.value, difficulty = difficultySelect.value) {
+  return `offlineMiniGames.inout.best.${mode}.${difficulty}`;
+}
+
 function resetGame() {
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
   clearTimeout(countdownTimer);
   const difficulty = difficultySelect.value;
+  const mode = modeSelect.value;
   state = {
     running: false,
     answering: false,
     finished: false,
     difficulty,
+    mode,
     score: 0,
     round: 0,
-    best: Number(localStorage.getItem(`offlineMiniGames.inout.best.${difficulty}`) || 0),
+    best: Number(localStorage.getItem(bestKey(mode, difficulty)) || 0),
     input: "",
     people: [],
     waves: [],
@@ -109,19 +119,22 @@ function startGame() {
   clearTimeout(sequenceTimer);
   clearTimeout(countdownTimer);
   const difficulty = difficultySelect.value;
+  const mode = modeSelect.value;
   state = {
     ...state,
     running: true,
     answering: false,
     finished: false,
     difficulty,
+    mode,
     score: 0,
     round: 0,
-    best: Number(localStorage.getItem(`offlineMiniGames.inout.best.${difficulty}`) || 0),
+    best: Number(localStorage.getItem(bestKey(mode, difficulty)) || 0),
     input: "",
     results: [],
   };
   localStorage.setItem("offlineMiniGames.inout.difficulty", difficulty);
+  localStorage.setItem("offlineMiniGames.inout.mode", mode);
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
   startButton.textContent = "Restart";
@@ -243,7 +256,7 @@ function launchWave(wave) {
 function createMovingPersonIn(index, count) {
   const settings = difficultySettings[state.difficulty];
   const lane = index - (count - 1) / 2;
-  const side = Math.random() < 0.5 ? -1 : 1;
+  const side = state.mode === "classic" ? -1 : Math.random() < 0.5 ? -1 : 1;
   return {
     x: side < 0 ? -52 - randomInt(0, 80) : canvas.width + 52 + randomInt(0, 80),
     y: 424 + lane * 22 + randomInt(-6, 6),
@@ -261,7 +274,7 @@ function createMovingPersonIn(index, count) {
 function createMovingPersonOut(index, count) {
   const settings = difficultySettings[state.difficulty];
   const lane = index - (count - 1) / 2;
-  const side = Math.random() < 0.5 ? -1 : 1;
+  const side = state.mode === "classic" ? 1 : Math.random() < 0.5 ? -1 : 1;
   return {
     x: 461 + lane * 5,
     y: 374 + lane * 2,
@@ -341,13 +354,15 @@ function finishGame() {
   state.running = false;
   state.finished = true;
   state.best = Math.max(state.best, state.score);
-  localStorage.setItem(`offlineMiniGames.inout.best.${state.difficulty}`, String(state.best));
+  localStorage.setItem(bestKey(state.mode, state.difficulty), String(state.best));
   bestEl.textContent = state.best;
   startButton.textContent = "Start";
   answerStateEl.textContent = "-";
   setMessage(`Finished. Score: ${state.score}/${totalRounds}.`, state.score >= 7 ? "good" : "");
+  const modeName = modeSelect.options[modeSelect.selectedIndex].text;
+  const difficultyName = difficultySelect.options[difficultySelect.selectedIndex].text;
   window.MiniGameShare?.setResult(
-    `Score ${state.score}/${totalRounds} on ${difficultySelect.options[difficultySelect.selectedIndex].text}.`
+    `Score ${state.score}/${totalRounds} on ${modeName} ${difficultyName}.`
   );
 }
 
@@ -537,6 +552,7 @@ function handleKeyboard(event) {
 
 startButton.addEventListener("click", startGame);
 difficultySelect.addEventListener("change", resetGame);
+modeSelect.addEventListener("change", resetGame);
 document.querySelectorAll("[data-answer-key]").forEach((button) => {
   button.addEventListener("click", () => handleAnswerKey(button.dataset.answerKey));
 });
