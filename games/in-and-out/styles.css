@@ -142,7 +142,6 @@
 
 .answer-entry.filled {
   color: var(--ink);
-  text-align: right;
 }
 
 .answer-edit-row,
@@ -152,7 +151,8 @@
 }
 
 .answer-edit-row {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .answer-numpad {
@@ -261,6 +261,11 @@
 
   .answer-panel {
     grid-template-columns: 1fr;
+  }
+
+  .answer-edit-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
   }
 
   .answer-numpad {
