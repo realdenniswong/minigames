@@ -224,7 +224,7 @@ function launchWave(wave) {
   const settings = roundSettings;
   const waveSpeed = randomFloat(settings.speedMin, settings.speedMax);
   if (wave.direction === "out") state.doorOpenUntil = performance.now() + 680;
-  playMoveSound(wave.direction);
+  playMoveSound(wave.direction, count);
   if (wave.direction === "out") state.currentInside -= count;
   for (let index = 0; index < count; index += 1) {
     if (wave.direction === "out") {
@@ -505,19 +505,20 @@ function unlockAudio() {
   return audioContext;
 }
 
-function playMoveSound(direction) {
+function playMoveSound(direction, count = 1) {
   const context = unlockAudio();
   if (!context) return;
   const now = context.currentTime;
+  const tickGap = 0.16;
 
-  if (direction === "in") {
-    playTone(context, now, 640, 840, 0.07, "sine", 0.035);
-    playTone(context, now + 0.055, 760, 1040, 0.08, "sine", 0.028);
-    return;
+  for (let index = 0; index < count; index += 1) {
+    const startAt = now + index * tickGap;
+    if (direction === "in") {
+      playTone(context, startAt, 820, 1120, 0.06, "sine", 0.035);
+    } else {
+      playTone(context, startAt, 260, 155, 0.08, "triangle", 0.04);
+    }
   }
-
-  playTone(context, now, 280, 170, 0.13, "square", 0.026);
-  playTone(context, now + 0.035, 190, 125, 0.12, "triangle", 0.032);
 }
 
 function playTone(context, startAt, startFrequency, endFrequency, duration, type, volume) {
