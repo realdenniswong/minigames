@@ -200,7 +200,12 @@ function createRound() {
 
 function runCountdown() {
   const startText = `Starting: ${state.startedInside}`;
-  const steps = [startText, `${startText}  3`, `${startText}  2`, `${startText}  1`];
+  const steps = [
+    startText,
+    `${startText}\n3`,
+    `${startText}\n3...2`,
+    `${startText}\n3...2...1`,
+  ];
   let index = 0;
   const showStep = () => {
     setScreenCount(steps[index]);

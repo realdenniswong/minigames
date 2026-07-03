@@ -82,8 +82,9 @@
   color: var(--ink);
   font-size: clamp(1.05rem, 3vw, 1.7rem);
   font-weight: 950;
-  line-height: 1.05;
+  line-height: 1.16;
   text-align: center;
+  white-space: pre-line;
   transform: translateX(-50%);
   pointer-events: none;
   transition:
