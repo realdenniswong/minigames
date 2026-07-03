@@ -158,6 +158,10 @@
   grid-column: auto;
 }
 
+.submit-answer {
+  height: 100%;
+}
+
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -243,6 +247,10 @@
   .zero-key,
   .submit-answer {
     grid-column: 1 / -1;
+  }
+
+  .submit-answer {
+    height: auto;
   }
 
   .stat-grid {
@@ -361,6 +369,10 @@
   .zero-key,
   .submit-answer {
     grid-column: auto;
+  }
+
+  .submit-answer {
+    height: 100%;
   }
 
   .answer-edit-row button,
