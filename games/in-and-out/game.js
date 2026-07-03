@@ -241,29 +241,32 @@ function launchWave(wave) {
   wave.launched = true;
   const count = wave.direction === "out" ? Math.min(wave.count, state.currentInside) : wave.count;
   if (count <= 0) return;
+  const settings = difficultySettings[state.difficulty];
+  const waveSpeed = randomFloat(settings.speedMin, settings.speedMax);
   if (wave.direction === "out") state.doorOpenUntil = performance.now() + 680;
   playMoveSound(wave.direction);
   if (wave.direction === "out") state.currentInside -= count;
   for (let index = 0; index < count; index += 1) {
     if (wave.direction === "out") {
-      state.people.push(createMovingPersonOut(index, count));
+      state.people.push(createMovingPersonOut(index, count, waveSpeed));
     } else {
-      state.people.push(createMovingPersonIn(index, count));
+      state.people.push(createMovingPersonIn(index, count, waveSpeed));
     }
   }
 }
 
-function createMovingPersonIn(index, count) {
-  const settings = difficultySettings[state.difficulty];
+function createMovingPersonIn(index, count, speed) {
   const lane = index - (count - 1) / 2;
   const side = state.mode === "classic" ? -1 : Math.random() < 0.5 ? -1 : 1;
+  const laneGap = 42;
+  const groupOffset = lane * laneGap;
   return {
-    x: side < 0 ? -52 - randomInt(0, 80) : canvas.width + 52 + randomInt(0, 80),
-    y: 424 + lane * 22 + randomInt(-6, 6),
-    targetX: 461 + lane * 3,
-    targetY: 374 + lane * 2,
-    size: randomFloat(1.62, 1.82),
-    speed: randomFloat(settings.speedMin, settings.speedMax),
+    x: side < 0 ? -72 - Math.abs(groupOffset) : canvas.width + 72 + Math.abs(groupOffset),
+    y: 424 + groupOffset,
+    targetX: 461 + lane * 12,
+    targetY: 374 + lane * 8,
+    size: 1.72,
+    speed,
     color: colors[randomInt(0, colors.length - 1)],
     mode: "entering",
     alpha: 1,
@@ -271,17 +274,18 @@ function createMovingPersonIn(index, count) {
   };
 }
 
-function createMovingPersonOut(index, count) {
-  const settings = difficultySettings[state.difficulty];
+function createMovingPersonOut(index, count, speed) {
   const lane = index - (count - 1) / 2;
   const side = state.mode === "classic" ? 1 : Math.random() < 0.5 ? -1 : 1;
+  const laneGap = 42;
+  const groupOffset = lane * laneGap;
   return {
-    x: 461 + lane * 5,
-    y: 374 + lane * 2,
-    targetX: side < 0 ? -58 - randomInt(0, 70) : canvas.width + 58 + randomInt(0, 70),
-    targetY: 424 + lane * 24 + randomInt(-6, 6),
-    size: randomFloat(1.62, 1.82),
-    speed: randomFloat(settings.speedMin, settings.speedMax),
+    x: 461 + lane * 12,
+    y: 374 + lane * 8,
+    targetX: side < 0 ? -72 - Math.abs(groupOffset) : canvas.width + 72 + Math.abs(groupOffset),
+    targetY: 424 + groupOffset,
+    size: 1.72,
+    speed,
     color: colors[randomInt(0, colors.length - 1)],
     mode: "leaving",
     alpha: 1,
