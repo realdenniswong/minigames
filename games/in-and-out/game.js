@@ -29,7 +29,7 @@ const roundSettings = {
   inChance: 0.54,
 };
 
-const colors = ["#d95e4f", "#4f8cc9", "#1c8f78", "#d39a21", "#6757c8", "#e28445"];
+const colors = ["#ff8a7a", "#7db7ff", "#4fd3b7", "#f3c85c", "#a99bff", "#ffb16f"];
 const gameMode = "classic";
 const groupLaneGap = 58;
 const doorLaneXGap = 18;
@@ -509,17 +509,29 @@ function playMoveSound(direction) {
   const context = unlockAudio();
   if (!context) return;
   const now = context.currentTime;
+
+  if (direction === "in") {
+    playTone(context, now, 640, 840, 0.07, "sine", 0.035);
+    playTone(context, now + 0.055, 760, 1040, 0.08, "sine", 0.028);
+    return;
+  }
+
+  playTone(context, now, 280, 170, 0.13, "square", 0.026);
+  playTone(context, now + 0.035, 190, 125, 0.12, "triangle", 0.032);
+}
+
+function playTone(context, startAt, startFrequency, endFrequency, duration, type, volume) {
   const oscillator = context.createOscillator();
   const gain = context.createGain();
-  oscillator.type = "triangle";
-  oscillator.frequency.setValueAtTime(direction === "in" ? 460 : 360, now);
-  oscillator.frequency.exponentialRampToValueAtTime(direction === "in" ? 620 : 260, now + 0.08);
-  gain.gain.setValueAtTime(0.035, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(startFrequency, startAt);
+  oscillator.frequency.exponentialRampToValueAtTime(endFrequency, startAt + duration);
+  gain.gain.setValueAtTime(volume, startAt);
+  gain.gain.exponentialRampToValueAtTime(0.001, startAt + duration);
   oscillator.connect(gain);
   gain.connect(context.destination);
-  oscillator.start(now);
-  oscillator.stop(now + 0.11);
+  oscillator.start(startAt);
+  oscillator.stop(startAt + duration + 0.01);
 }
 
 function playResultSound(correct) {
