@@ -13,7 +13,7 @@ const messageEl = document.getElementById("inoutMessage");
 
 const totalRounds = 10;
 const difficultySettings = {
-  easy: { startMin: 1, startMax: 5, wavesMin: 4, wavesMax: 6, groupMax: 2, waveGap: 780, speedMin: 1.1, speedMax: 1.45 },
+  easy: { startMin: 2, startMax: 6, wavesMin: 5, wavesMax: 7, groupMax: 3, waveGap: 720, speedMin: 1.1, speedMax: 1.5 },
   medium: { startMin: 2, startMax: 8, wavesMin: 6, wavesMax: 8, groupMax: 3, waveGap: 540, speedMin: 1.15, speedMax: 1.9 },
   hard: { startMin: 3, startMax: 12, wavesMin: 8, wavesMax: 11, groupMax: 5, waveGap: 360, speedMin: 1.25, speedMax: 2.45 },
 };
@@ -128,13 +128,16 @@ function createRound() {
   state.doorOpenUntil = 0;
 
   let time = 750;
+  let lastDirection = "";
   for (let index = 0; index < waveCount; index += 1) {
     const canExit = inside > 0;
-    const direction = !canExit || Math.random() < 0.56 ? "in" : "out";
+    const repeatDirection = canExit && lastDirection && Math.random() < 0.34;
+    const direction = repeatDirection ? lastDirection : !canExit || Math.random() < 0.54 ? "in" : "out";
     const maxGroup = direction === "out" ? Math.min(settings.groupMax, inside) : settings.groupMax;
     const count = Math.max(1, randomInt(1, maxGroup));
     inside += direction === "in" ? count : -count;
     state.waves.push({ direction, count, time, launched: false });
+    lastDirection = direction;
     time += settings.waveGap + randomInt(-120, 180);
   }
 
@@ -142,7 +145,8 @@ function createRound() {
 }
 
 function runCountdown() {
-  const steps = [`Starting: ${state.startedInside}`, "3", "2", "1"];
+  const startText = `Starting: ${state.startedInside}`;
+  const steps = [startText, `${startText} | 3`, `${startText} | 2`, `${startText} | 1`];
   let index = 0;
   const showStep = () => {
     setMessage(steps[index]);
@@ -212,7 +216,7 @@ function createMovingPersonIn(index, count) {
     y: 424 + lane * 22 + randomInt(-6, 6),
     targetX: 461 + lane * 3,
     targetY: 374 + lane * 2,
-    size: randomFloat(1.22, 1.38),
+    size: randomFloat(1.62, 1.82),
     speed: randomFloat(settings.speedMin, settings.speedMax),
     color: colors[randomInt(0, colors.length - 1)],
     mode: "entering",
@@ -230,7 +234,7 @@ function createMovingPersonOut(index, count) {
     y: 374 + lane * 2,
     targetX: side < 0 ? -58 - randomInt(0, 70) : canvas.width + 58 + randomInt(0, 70),
     targetY: 424 + lane * 24 + randomInt(-6, 6),
-    size: randomFloat(1.22, 1.38),
+    size: randomFloat(1.62, 1.82),
     speed: randomFloat(settings.speedMin, settings.speedMax),
     color: colors[randomInt(0, colors.length - 1)],
     mode: "leaving",
