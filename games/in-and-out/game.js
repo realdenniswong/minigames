@@ -172,7 +172,7 @@ function launchWave(wave) {
   wave.launched = true;
   const count = wave.direction === "out" ? Math.min(wave.count, state.currentInside) : wave.count;
   if (count <= 0) return;
-  state.doorOpenUntil = performance.now() + 680;
+  if (wave.direction === "out") state.doorOpenUntil = performance.now() + 680;
   playMoveSound(wave.direction);
   if (wave.direction === "out") state.currentInside -= count;
   for (let index = 0; index < count; index += 1) {
@@ -346,7 +346,10 @@ function drawCloud(x, y, size) {
 }
 
 function drawHouse() {
-  const nearDoor = state?.people?.some((person) => Math.hypot(person.x - 461, person.y - 374) < 115);
+  const nearDoor = state?.people?.some((person) => {
+    const distance = Math.hypot(person.x - 461, person.y - 374);
+    return person.mode === "leaving" || distance < 82;
+  });
   const doorOpen = (state?.doorOpenUntil && performance.now() < state.doorOpenUntil) || nearDoor;
   ctx.fillStyle = "#f4c56f";
   ctx.fillRect(302, 218, 316, 194);
