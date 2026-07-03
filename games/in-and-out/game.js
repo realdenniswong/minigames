@@ -59,6 +59,9 @@ const difficultySettings = {
 
 const colors = ["#d95e4f", "#4f8cc9", "#1c8f78", "#d39a21", "#6757c8", "#e28445"];
 const gameModes = new Set(["house", "classic"]);
+const groupLaneGap = 58;
+const doorLaneXGap = 18;
+const doorLaneYGap = 12;
 let state;
 let animationFrame = 0;
 let sequenceTimer = 0;
@@ -271,13 +274,12 @@ function launchWave(wave) {
 function createMovingPersonIn(index, count, speed) {
   const lane = index - (count - 1) / 2;
   const side = state.mode === "classic" ? -1 : Math.random() < 0.5 ? -1 : 1;
-  const laneGap = 42;
-  const groupOffset = lane * laneGap;
+  const groupOffset = lane * groupLaneGap;
   return {
     x: side < 0 ? -72 - Math.abs(groupOffset) : canvas.width + 72 + Math.abs(groupOffset),
     y: 424 + groupOffset,
-    targetX: 461 + lane * 12,
-    targetY: 374 + lane * 8,
+    targetX: 461 + lane * doorLaneXGap,
+    targetY: 374 + lane * doorLaneYGap,
     size: 1.72,
     speed,
     color: colors[randomInt(0, colors.length - 1)],
@@ -290,11 +292,10 @@ function createMovingPersonIn(index, count, speed) {
 function createMovingPersonOut(index, count, speed) {
   const lane = index - (count - 1) / 2;
   const side = state.mode === "classic" ? 1 : Math.random() < 0.5 ? -1 : 1;
-  const laneGap = 42;
-  const groupOffset = lane * laneGap;
+  const groupOffset = lane * groupLaneGap;
   return {
-    x: 461 + lane * 12,
-    y: 374 + lane * 8,
+    x: 461 + lane * doorLaneXGap,
+    y: 374 + lane * doorLaneYGap,
     targetX: side < 0 ? -72 - Math.abs(groupOffset) : canvas.width + 72 + Math.abs(groupOffset),
     targetY: 424 + groupOffset,
     size: 1.72,
