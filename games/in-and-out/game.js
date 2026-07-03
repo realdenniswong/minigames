@@ -13,9 +13,42 @@ const messageEl = document.getElementById("inoutMessage");
 
 const totalRounds = 10;
 const difficultySettings = {
-  easy: { startMin: 2, startMax: 6, wavesMin: 5, wavesMax: 7, groupMax: 3, waveGap: 720, speedMin: 1.1, speedMax: 1.5 },
-  medium: { startMin: 2, startMax: 8, wavesMin: 6, wavesMax: 8, groupMax: 3, waveGap: 540, speedMin: 1.15, speedMax: 1.9 },
-  hard: { startMin: 3, startMax: 12, wavesMin: 8, wavesMax: 11, groupMax: 5, waveGap: 360, speedMin: 1.25, speedMax: 2.45 },
+  easy: {
+    startMin: 2,
+    startMax: 6,
+    wavesMin: 5,
+    wavesMax: 7,
+    groupMax: 3,
+    waveGap: 720,
+    speedMin: 1.1,
+    speedMax: 1.5,
+    repeatChance: 0.34,
+    inChance: 0.54,
+  },
+  medium: {
+    startMin: 3,
+    startMax: 10,
+    wavesMin: 7,
+    wavesMax: 10,
+    groupMax: 4,
+    waveGap: 480,
+    speedMin: 1.25,
+    speedMax: 2.05,
+    repeatChance: 0.46,
+    inChance: 0.52,
+  },
+  hard: {
+    startMin: 5,
+    startMax: 15,
+    wavesMin: 10,
+    wavesMax: 14,
+    groupMax: 6,
+    waveGap: 300,
+    speedMin: 1.45,
+    speedMax: 2.75,
+    repeatChance: 0.58,
+    inChance: 0.5,
+  },
 };
 
 const colors = ["#d95e4f", "#4f8cc9", "#1c8f78", "#d39a21", "#6757c8", "#e28445"];
@@ -131,14 +164,14 @@ function createRound() {
   let lastDirection = "";
   for (let index = 0; index < waveCount; index += 1) {
     const canExit = inside > 0;
-    const repeatDirection = canExit && lastDirection && Math.random() < 0.34;
-    const direction = repeatDirection ? lastDirection : !canExit || Math.random() < 0.54 ? "in" : "out";
+    const repeatDirection = canExit && lastDirection && Math.random() < settings.repeatChance;
+    const direction = repeatDirection ? lastDirection : !canExit || Math.random() < settings.inChance ? "in" : "out";
     const maxGroup = direction === "out" ? Math.min(settings.groupMax, inside) : settings.groupMax;
     const count = Math.max(1, randomInt(1, maxGroup));
     inside += direction === "in" ? count : -count;
     state.waves.push({ direction, count, time, launched: false });
     lastDirection = direction;
-    time += settings.waveGap + randomInt(-120, 180);
+    time += settings.waveGap + randomInt(-130, 170);
   }
 
   state.sequenceEnd = time + 1300;
