@@ -50,7 +50,7 @@ function resetGame() {
     input: "",
     people: [],
     waves: [],
-    inside: 0,
+    currentInside: 0,
     target: 0,
     startedInside: 0,
     results: [],
@@ -119,6 +119,7 @@ function createRound() {
   const waveCount = randomInt(settings.wavesMin, settings.wavesMax);
   let inside = randomInt(settings.startMin, settings.startMax);
   state.startedInside = inside;
+  state.currentInside = inside;
   state.target = inside;
   state.people = [];
   state.waves = [];
@@ -169,16 +170,18 @@ function updateRound(delta) {
 
 function launchWave(wave) {
   wave.launched = true;
+  const count = wave.direction === "out" ? Math.min(wave.count, state.currentInside) : wave.count;
+  if (count <= 0) return;
   state.doorOpenUntil = performance.now() + 680;
   playMoveSound(wave.direction);
-  for (let index = 0; index < wave.count; index += 1) {
+  if (wave.direction === "out") state.currentInside -= count;
+  for (let index = 0; index < count; index += 1) {
     if (wave.direction === "out") {
-      state.people.push(createMovingPersonOut(index, wave.count));
+      state.people.push(createMovingPersonOut(index, count));
     } else {
-      state.people.push(createMovingPersonIn(index, wave.count));
+      state.people.push(createMovingPersonIn(index, count));
     }
   }
-  state.target += wave.direction === "in" ? wave.count : -wave.count;
 }
 
 function createMovingPersonIn(index, count) {
@@ -226,6 +229,7 @@ function updatePerson(person, delta) {
   if (distance <= step) {
     person.x = person.targetX;
     person.y = person.targetY;
+    if (person.mode === "entering") state.currentInside += 1;
     person.mode = "gone";
     return;
   }
@@ -237,6 +241,7 @@ function askAnswer() {
   state.answering = true;
   state.running = true;
   state.lastTimeStart = 0;
+  state.target = state.currentInside;
   answerStateEl.textContent = "?";
   showAnswerPanel();
   setMessage("How many are inside?");
