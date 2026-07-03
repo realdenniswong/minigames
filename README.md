@@ -11,6 +11,7 @@ An HTML5 mini-game library that runs as static files. No server is required for 
 - Math Sprint with difficulty levels and numpad answers
 - Word Color focus drill
 - Cowboy Duel with difficulty levels and randomized countdown timing
+- In & Out house-counting memory game with moving groups
 - Simon Said memory sequence drill
 
 ## How To Play
@@ -33,6 +34,7 @@ The project is organized like a small game portal:
 - `games/flappy/`: Flappy Bird game bundle
 - `games/snake/`: Snake game bundle
 - `games/math-sprint/`, `games/word-color/`, `games/cowboy-duel/`, `games/simon-said/`: standalone brain game pages
+- `games/in-and-out/`: house-counting memory game bundle
 - `games/brain/`: shared brain-game engine and legacy combined page
 
 Most game bundles contain their own:

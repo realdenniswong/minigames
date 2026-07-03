@@ -36,6 +36,12 @@ const games = [
     url: "games/cowboy-duel/index.html",
   },
   {
+    title: "In & Out",
+    meta: "Track people entering a house",
+    icon: "IO",
+    url: "games/in-and-out/index.html",
+  },
+  {
     title: "Simon Said",
     meta: "Repeat the memory chain",
     icon: "Si",

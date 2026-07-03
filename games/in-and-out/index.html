@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#1c8f78" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Mini Games" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>In &amp; Out</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="../../icon.svg" />
+    <link rel="stylesheet" href="../shared/shell.css?v=1" />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="panel-heading">
+        <a class="nav-button" href="../../index.html">Library</a>
+        <div class="title-block">
+          <p class="eyebrow">mental tracking</p>
+          <h1>In &amp; Out</h1>
+        </div>
+      </header>
+
+      <section class="game-layout">
+        <div class="game-screen inout-screen">
+          <canvas id="inoutCanvas" width="960" height="560" aria-label="In and Out house counting game"></canvas>
+          <aside class="side-panel">
+            <div class="screen-controls">
+              <label class="select-control">
+                <span>Difficulty</span>
+                <select id="inoutDifficulty">
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </label>
+              <button class="primary-button" type="button" id="startInout">Start</button>
+            </div>
+            <div class="stat-grid">
+              <div><span>Score</span><strong id="inoutScore">0</strong></div>
+              <div><span>Best</span><strong id="inoutBest">0</strong></div>
+              <div><span>Round</span><strong id="inoutRound">0/10</strong></div>
+              <div><span>Answer</span><strong id="inoutAnswerState">-</strong></div>
+            </div>
+            <div class="answer-panel" id="answerPanel" hidden>
+              <div class="answer-entry" id="answerEntry">Answer</div>
+              <div class="answer-edit-row">
+                <button type="button" data-answer-key="clear">Clear</button>
+                <button type="button" data-answer-key="backspace">Back</button>
+              </div>
+              <div class="answer-numpad" aria-label="Answer numpad">
+                <button type="button" data-answer-key="1">1</button>
+                <button type="button" data-answer-key="2">2</button>
+                <button type="button" data-answer-key="3">3</button>
+                <button type="button" data-answer-key="4">4</button>
+                <button type="button" data-answer-key="5">5</button>
+                <button type="button" data-answer-key="6">6</button>
+                <button type="button" data-answer-key="7">7</button>
+                <button type="button" data-answer-key="8">8</button>
+                <button type="button" data-answer-key="9">9</button>
+                <button class="zero-key" type="button" data-answer-key="0">0</button>
+              </div>
+              <button class="primary-button submit-answer" type="button" id="submitAnswer">Submit</button>
+            </div>
+            <p class="game-message" id="inoutMessage">Press Start.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <script src="game.js?v=1"></script>
+    <script src="../shared/share.js?v=3"></script>
+  </body>
+</html>
