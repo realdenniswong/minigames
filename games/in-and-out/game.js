@@ -514,9 +514,11 @@ function playMoveSound(direction, count = 1) {
   for (let index = 0; index < count; index += 1) {
     const startAt = now + index * tickGap;
     if (direction === "in") {
-      playTone(context, startAt, 820, 1120, 0.06, "sine", 0.035);
+      playTone(context, startAt, 880, 1260, 0.055, "sine", 0.033);
+      playTone(context, startAt + 0.012, 1320, 1560, 0.045, "triangle", 0.018);
     } else {
-      playTone(context, startAt, 260, 155, 0.08, "triangle", 0.04);
+      playTone(context, startAt, 190, 92, 0.085, "square", 0.03);
+      playNoiseBurst(context, startAt, 0.045, 0.026);
     }
   }
 }
@@ -533,6 +535,28 @@ function playTone(context, startAt, startFrequency, endFrequency, duration, type
   gain.connect(context.destination);
   oscillator.start(startAt);
   oscillator.stop(startAt + duration + 0.01);
+}
+
+function playNoiseBurst(context, startAt, duration, volume) {
+  const sampleCount = Math.max(1, Math.floor(context.sampleRate * duration));
+  const buffer = context.createBuffer(1, sampleCount, context.sampleRate);
+  const samples = buffer.getChannelData(0);
+  for (let index = 0; index < sampleCount; index += 1) {
+    samples[index] = (Math.random() * 2 - 1) * (1 - index / sampleCount);
+  }
+  const source = context.createBufferSource();
+  const filter = context.createBiquadFilter();
+  const gain = context.createGain();
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(620, startAt);
+  gain.gain.setValueAtTime(volume, startAt);
+  gain.gain.exponentialRampToValueAtTime(0.001, startAt + duration);
+  source.buffer = buffer;
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(context.destination);
+  source.start(startAt);
+  source.stop(startAt + duration);
 }
 
 function playResultSound(correct) {
