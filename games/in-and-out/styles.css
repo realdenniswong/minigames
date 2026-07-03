@@ -20,17 +20,49 @@
 
 .game-screen.inout-screen {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 310px;
-  align-items: start;
-  gap: 12px;
+  grid-template-rows: auto minmax(220px, 1fr) auto;
+  gap: 10px;
   min-height: calc(100dvh - 126px);
 }
 
+.top-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 160px;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.top-controls > * {
+  width: 100%;
+  min-width: 0;
+}
+
+.top-controls .select-control {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.top-controls .select-control select {
+  width: 100%;
+  min-width: 0;
+}
+
+.play-area {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
 #inoutCanvas {
-  justify-self: center;
-  width: min(100%, calc((100dvh - 150px) * 12 / 7));
+  width: min(100%, calc((100dvh - 360px) * 12 / 7));
   max-width: 100%;
   height: auto;
+  max-height: 100%;
   aspect-ratio: 12 / 7;
   border: 1px solid rgba(217, 222, 231, 0.95);
   border-radius: 8px;
@@ -38,97 +70,70 @@
   touch-action: manipulation;
 }
 
-.side-panel {
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  min-width: 0;
-}
-
-.screen-controls {
-  display: grid;
-  gap: 8px;
-}
-
-.screen-controls > * {
-  width: 100%;
-  min-width: 0;
-}
-
-.screen-controls .primary-button {
-  width: 100%;
-  min-width: 0;
-}
-
-.screen-controls .select-control {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.screen-controls .select-control span {
-  min-width: 0;
-}
-
-.screen-controls .select-control select {
-  width: 100%;
-  min-width: 0;
-}
-
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.stat-grid div {
-  min-width: 0;
-  border: 1px solid var(--line);
+.screen-count {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  max-width: min(88%, 520px);
+  border: 1px solid rgba(32, 36, 44, 0.16);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  padding: 10px;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 8px 14px;
+  color: var(--ink);
+  font-size: clamp(1.05rem, 3vw, 1.7rem);
+  font-weight: 950;
+  line-height: 1.05;
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
 }
 
-.stat-grid span {
-  display: block;
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 900;
-  line-height: 1;
-  text-transform: uppercase;
+.screen-count.is-empty {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-6px);
 }
 
-.stat-grid strong {
-  display: block;
-  margin-top: 5px;
-  overflow: hidden;
-  font-size: 1.15rem;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.screen-count.good {
+  border-color: rgba(28, 143, 120, 0.36);
+  background: rgba(236, 255, 250, 0.88);
+  color: #126653;
+}
+
+.screen-count.bad {
+  border-color: rgba(217, 94, 79, 0.32);
+  background: rgba(255, 241, 239, 0.88);
+  color: #8b3329;
+}
+
+.under-panel {
+  display: grid;
+  gap: 8px;
 }
 
 .answer-panel {
   display: grid;
+  grid-template-columns: minmax(132px, 0.8fr) minmax(120px, 0.7fr) minmax(260px, 2fr) minmax(112px, 0.7fr);
   gap: 8px;
+  align-items: stretch;
 }
 
-.answer-panel[hidden] {
-  display: none;
+.answer-panel.is-disabled {
+  opacity: 0.58;
 }
 
 .answer-entry {
   display: grid;
   align-items: center;
-  min-height: 56px;
+  min-height: 50px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
   padding: 8px 12px;
   color: var(--muted);
-  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  font-size: clamp(1.35rem, 3vw, 2.1rem);
   font-weight: 950;
   line-height: 1;
   text-align: right;
@@ -149,7 +154,7 @@
 }
 
 .answer-numpad {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .answer-edit-row button,
@@ -157,8 +162,8 @@
 .submit-answer {
   width: 100%;
   min-width: 0;
-  min-height: 52px;
-  font-size: 1.05rem;
+  min-height: 50px;
+  font-size: 1rem;
   font-weight: 900;
 }
 
@@ -166,18 +171,55 @@
   color: var(--muted);
 }
 
+.answer-panel button:disabled {
+  cursor: default;
+}
+
 .zero-key,
 .submit-answer {
-  grid-column: 1 / -1;
+  grid-column: auto;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stat-grid div {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 9px 10px;
+}
+
+.stat-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.stat-grid strong {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  font-size: 1.05rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .game-message {
   display: -webkit-box;
-  height: calc(2.7em + 24px);
+  height: calc(2.7em + 22px);
   margin: 0;
   border-left: 4px solid var(--gold);
   background: rgba(255, 247, 235, 0.82);
-  padding: 11px 12px;
+  padding: 10px 12px;
   color: #5e4310;
   font-weight: 800;
   line-height: 1.35;
@@ -198,26 +240,38 @@
   color: #8b3329;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 760px) {
   .game-screen.inout-screen {
-    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
   }
 
   #inoutCanvas {
-    width: min(100%, calc((58dvh) * 12 / 7));
+    width: min(100%, calc((42dvh) * 12 / 7));
   }
 
-  .side-panel {
+  .top-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
   }
 
-  .screen-controls,
-  .stat-grid,
-  .answer-panel,
-  .game-message,
-  .share-score-button {
+  .top-controls .primary-button {
     grid-column: 1 / -1;
+  }
+
+  .answer-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .answer-numpad {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .zero-key,
+  .submit-answer {
+    grid-column: 1 / -1;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -230,12 +284,16 @@
     padding: 8px;
   }
 
-  .screen-controls .select-control {
+  .top-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .top-controls .select-control {
     grid-template-columns: 86px minmax(0, 1fr);
   }
 
   #inoutCanvas {
-    width: min(100%, calc((48dvh) * 12 / 7));
+    width: min(100%, calc((36dvh) * 12 / 7));
   }
 
   .answer-edit-row button,
@@ -290,38 +348,87 @@
   }
 
   .game-screen.inout-screen {
-    grid-template-columns: minmax(0, 1fr) minmax(190px, 250px);
-    gap: 6px;
+    grid-template-rows: auto minmax(120px, 1fr) auto;
+    gap: 5px;
     min-height: 0;
-    height: calc(100dvh - 58px);
     padding: 4px;
-    overflow: hidden;
+  }
+
+  .top-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 86px;
+    gap: 5px;
+  }
+
+  .top-controls .primary-button {
+    grid-column: auto;
+  }
+
+  .top-controls .select-control {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  .top-controls .select-control span {
+    font-size: 0.54rem;
+  }
+
+  .top-controls .select-control select {
+    padding-left: 8px;
+    padding-right: 32px;
   }
 
   #inoutCanvas {
     width: auto;
-    max-width: 100%;
-    height: 100%;
+    height: min(100%, calc(100dvh - 252px));
+    max-height: 100%;
   }
 
-  .side-panel {
-    grid-template-columns: 1fr;
+  .screen-count {
+    top: 6px;
+    padding: 5px 9px;
+    font-size: 0.82rem;
+  }
+
+  .under-panel {
     gap: 5px;
-    overflow: auto;
   }
 
-  .screen-controls,
-  .stat-grid,
-  .answer-panel,
-  .game-message,
-  .share-score-button {
+  .answer-panel {
+    grid-template-columns: minmax(70px, 0.8fr) minmax(84px, 0.8fr) minmax(180px, 2fr) minmax(76px, 0.8fr);
+    gap: 5px;
+  }
+
+  .answer-entry {
+    min-height: 32px;
+    padding: 4px 8px;
+    font-size: 1rem;
+  }
+
+  .answer-edit-row,
+  .answer-numpad,
+  .stat-grid {
+    gap: 5px;
+  }
+
+  .answer-numpad {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .zero-key,
+  .submit-answer {
     grid-column: auto;
   }
 
-  .stat-grid,
-  .answer-edit-row,
-  .answer-numpad {
-    gap: 5px;
+  .answer-edit-row button,
+  .answer-numpad button,
+  .submit-answer {
+    min-height: 32px;
+    padding: 0 5px;
+    font-size: 0.74rem;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .stat-grid div {
@@ -337,23 +444,8 @@
     font-size: 0.82rem;
   }
 
-  .answer-entry {
-    min-height: 34px;
-    padding: 4px 8px;
-    font-size: 1.2rem;
-  }
-
-  .answer-edit-row button,
-  .answer-numpad button,
-  .submit-answer {
-    min-height: 32px;
-    padding: 0 6px;
-    font-size: 0.8rem;
-  }
-
-  .game-message {
-    height: calc(2.7em + 12px);
-    padding: 6px 8px;
-    font-size: 0.72rem;
+  .game-message,
+  .share-score-button {
+    display: none;
   }
 }

@@ -11,6 +11,11 @@ const answerPanel = document.getElementById("answerPanel");
 const answerEntry = document.getElementById("answerEntry");
 const submitAnswerButton = document.getElementById("submitAnswer");
 const messageEl = document.getElementById("inoutMessage");
+const screenCountEl = document.getElementById("screenCount");
+const answerButtons = [
+  ...document.querySelectorAll("[data-answer-key]"),
+  submitAnswerButton,
+];
 
 const totalRounds = 10;
 const difficultySettings = {
@@ -109,6 +114,7 @@ function resetGame() {
   startButton.textContent = "Start";
   hideAnswerPanel();
   setMessage("Press Start.");
+  setScreenCount("Press Start");
   window.MiniGameShare?.setResult("");
   drawScene();
 }
@@ -138,6 +144,7 @@ function startGame() {
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
   startButton.textContent = "Restart";
+  setMessage("Watch closely.");
   window.MiniGameShare?.setResult("");
   nextRound();
 }
@@ -156,7 +163,8 @@ function nextRound() {
   hideAnswerPanel();
   roundEl.textContent = `${state.round}/${totalRounds}`;
   createRound();
-  setMessage(`Starting: ${state.startedInside}`);
+  setMessage("Count the people.");
+  setScreenCount(`Starting: ${state.startedInside}`);
   runCountdown();
   drawScene();
 }
@@ -192,17 +200,17 @@ function createRound() {
 
 function runCountdown() {
   const startText = `Starting: ${state.startedInside}`;
-  const steps = [startText, `${startText} | 3`, `${startText} | 2`, `${startText} | 1`];
+  const steps = [startText, `${startText}  3`, `${startText}  2`, `${startText}  1`];
   let index = 0;
   const showStep = () => {
-    setMessage(steps[index]);
+    setScreenCount(steps[index]);
     index += 1;
     if (index < steps.length) {
       countdownTimer = setTimeout(showStep, index === 1 ? 1250 : 720);
       return;
     }
     countdownTimer = setTimeout(() => {
-      setMessage("Watch the door.");
+      setScreenCount("");
       startAnimation();
     }, 720);
   };
@@ -317,7 +325,8 @@ function askAnswer() {
   state.target = state.currentInside;
   answerStateEl.textContent = "?";
   showAnswerPanel();
-  setMessage("How many are inside?");
+  setMessage("Enter the answer.");
+  setScreenCount("How many inside?");
   drawScene();
 }
 
@@ -343,9 +352,11 @@ function submitAnswer() {
     state.score += 1;
     scoreEl.textContent = state.score;
     setMessage("Correct.", "good");
+    setScreenCount("Correct", "good");
     playResultSound(true);
   } else {
     setMessage(`Wrong. It was ${state.target}.`, "bad");
+    setScreenCount(`It was ${state.target}`, "bad");
     playResultSound(false);
   }
   answerStateEl.textContent = String(state.target);
@@ -363,6 +374,7 @@ function finishGame() {
   startButton.textContent = "Start";
   answerStateEl.textContent = "-";
   setMessage(`Finished. Score: ${state.score}/${totalRounds}.`, state.score >= 7 ? "good" : "");
+  setScreenCount(`Score ${state.score}/${totalRounds}`, state.score >= 7 ? "good" : "");
   const modeName = modeSelect.options[modeSelect.selectedIndex].text;
   const difficultyName = difficultySelect.options[difficultySelect.selectedIndex].text;
   window.MiniGameShare?.setResult(
@@ -371,13 +383,19 @@ function finishGame() {
 }
 
 function showAnswerPanel() {
-  answerPanel.hidden = false;
+  answerPanel.classList.remove("is-disabled");
+  answerButtons.forEach((button) => {
+    button.disabled = false;
+  });
   state.input = "";
   renderInput();
 }
 
 function hideAnswerPanel() {
-  answerPanel.hidden = true;
+  answerPanel.classList.add("is-disabled");
+  answerButtons.forEach((button) => {
+    button.disabled = true;
+  });
   state.input = "";
   renderInput();
 }
@@ -386,6 +404,13 @@ function setMessage(text, tone = "") {
   messageEl.textContent = text;
   messageEl.classList.toggle("good", tone === "good");
   messageEl.classList.toggle("bad", tone === "bad");
+}
+
+function setScreenCount(text, tone = "") {
+  screenCountEl.textContent = text;
+  screenCountEl.classList.toggle("is-empty", !text);
+  screenCountEl.classList.toggle("good", tone === "good");
+  screenCountEl.classList.toggle("bad", tone === "bad");
 }
 
 function drawScene() {

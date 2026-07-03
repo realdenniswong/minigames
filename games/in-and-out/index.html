@@ -15,7 +15,7 @@
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icon.svg" />
     <link rel="stylesheet" href="../shared/shell.css?v=1" />
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
     <main class="game-shell">
@@ -29,33 +29,30 @@
 
       <section class="game-layout">
         <div class="game-screen inout-screen">
-          <canvas id="inoutCanvas" width="960" height="560" aria-label="In and Out house counting game"></canvas>
-          <aside class="side-panel">
-            <div class="screen-controls">
-              <label class="select-control">
-                <span>Mode</span>
-                <select id="inoutMode">
-                  <option value="house">House</option>
-                  <option value="classic">Classic</option>
-                </select>
-              </label>
-              <label class="select-control">
-                <span>Difficulty</span>
-                <select id="inoutDifficulty">
-                  <option value="easy">Easy</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
-                </select>
-              </label>
-              <button class="primary-button" type="button" id="startInout">Start</button>
-            </div>
-            <div class="stat-grid">
-              <div><span>Score</span><strong id="inoutScore">0</strong></div>
-              <div><span>Best</span><strong id="inoutBest">0</strong></div>
-              <div><span>Round</span><strong id="inoutRound">0/10</strong></div>
-              <div><span>Answer</span><strong id="inoutAnswerState">-</strong></div>
-            </div>
-            <div class="answer-panel" id="answerPanel" hidden>
+          <div class="screen-controls top-controls">
+            <label class="select-control">
+              <span>Mode</span>
+              <select id="inoutMode">
+                <option value="house">House</option>
+                <option value="classic">Classic</option>
+              </select>
+            </label>
+            <label class="select-control">
+              <span>Difficulty</span>
+              <select id="inoutDifficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+            <button class="primary-button" type="button" id="startInout">Start</button>
+          </div>
+          <div class="play-area">
+            <canvas id="inoutCanvas" width="960" height="560" aria-label="In and Out house counting game"></canvas>
+            <div class="screen-count" id="screenCount" aria-live="polite">Press Start</div>
+          </div>
+          <div class="under-panel">
+            <div class="answer-panel is-disabled" id="answerPanel">
               <div class="answer-entry" id="answerEntry">Answer</div>
               <div class="answer-edit-row">
                 <button type="button" data-answer-key="clear">Clear</button>
@@ -75,12 +72,18 @@
               </div>
               <button class="primary-button submit-answer" type="button" id="submitAnswer">Submit</button>
             </div>
+            <div class="stat-grid">
+              <div><span>Score</span><strong id="inoutScore">0</strong></div>
+              <div><span>Best</span><strong id="inoutBest">0</strong></div>
+              <div><span>Round</span><strong id="inoutRound">0/10</strong></div>
+              <div><span>Answer</span><strong id="inoutAnswerState">-</strong></div>
+            </div>
             <p class="game-message" id="inoutMessage">Press Start.</p>
-          </aside>
+          </div>
         </div>
       </section>
     </main>
-    <script src="game.js?v=9"></script>
+    <script src="game.js?v=10"></script>
     <script src="../shared/share.js?v=3"></script>
   </body>
 </html>
