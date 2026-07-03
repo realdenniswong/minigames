@@ -20,34 +20,9 @@
 
 .game-screen.inout-screen {
   display: grid;
-  grid-template-rows: auto minmax(220px, 1fr) auto;
+  grid-template-rows: minmax(220px, 1fr) auto;
   gap: 10px;
   min-height: calc(100dvh - 126px);
-}
-
-.top-controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px;
-  gap: 8px;
-  align-items: stretch;
-}
-
-.top-controls > * {
-  width: 100%;
-  min-width: 0;
-}
-
-.top-controls .select-control {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.top-controls .select-control select {
-  width: 100%;
-  min-width: 0;
 }
 
 .play-area {
@@ -56,10 +31,11 @@
   place-items: center;
   min-height: 0;
   overflow: hidden;
+  cursor: pointer;
 }
 
 #inoutCanvas {
-  width: min(100%, calc((100dvh - 360px) * 12 / 7));
+  width: min(100%, calc((100dvh - 310px) * 12 / 7));
   max-width: 100%;
   height: auto;
   max-height: 100%;
@@ -244,15 +220,11 @@
 
 @media (max-width: 760px) {
   .game-screen.inout-screen {
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto;
   }
 
   #inoutCanvas {
     width: min(100%, calc((42dvh) * 12 / 7));
-  }
-
-  .top-controls {
-    grid-template-columns: minmax(0, 1fr) 150px;
   }
 
   .answer-panel {
@@ -287,16 +259,8 @@
     padding: 8px;
   }
 
-  .top-controls {
-    grid-template-columns: 1fr;
-  }
-
-  .top-controls .select-control {
-    grid-template-columns: 86px minmax(0, 1fr);
-  }
-
   #inoutCanvas {
-    width: min(100%, calc((36dvh) * 12 / 7));
+    width: min(100%, calc((40dvh) * 12 / 7));
   }
 
   .answer-edit-row button,
@@ -351,34 +315,15 @@
   }
 
   .game-screen.inout-screen {
-    grid-template-rows: auto minmax(120px, 1fr) auto;
+    grid-template-rows: minmax(120px, 1fr) auto;
     gap: 5px;
     min-height: 0;
     padding: 4px;
   }
 
-  .top-controls {
-    grid-template-columns: minmax(0, 1fr) 86px;
-    gap: 5px;
-  }
-
-  .top-controls .select-control {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 5px;
-  }
-
-  .top-controls .select-control span {
-    font-size: 0.54rem;
-  }
-
-  .top-controls .select-control select {
-    padding-left: 8px;
-    padding-right: 32px;
-  }
-
   #inoutCanvas {
     width: auto;
-    height: min(100%, calc(100dvh - 252px));
+    height: min(100%, calc(100dvh - 210px));
     max-height: 100%;
   }
 

@@ -29,19 +29,9 @@
 
       <section class="game-layout">
         <div class="game-screen inout-screen">
-          <div class="screen-controls top-controls">
-            <label class="select-control">
-              <span>Mode</span>
-              <select id="inoutMode">
-                <option value="house">House</option>
-                <option value="classic">Classic</option>
-              </select>
-            </label>
-            <button class="primary-button" type="button" id="startInout">Start</button>
-          </div>
           <div class="play-area">
             <canvas id="inoutCanvas" width="960" height="560" aria-label="In and Out house counting game"></canvas>
-            <div class="screen-count" id="screenCount" aria-live="polite">Press Start</div>
+            <div class="screen-count" id="screenCount" aria-live="polite">Tap to Start</div>
           </div>
           <div class="under-panel">
             <div class="answer-panel is-disabled" id="answerPanel">
@@ -70,12 +60,12 @@
               <div><span>Round</span><strong id="inoutRound">0/10</strong></div>
               <div><span>Answer</span><strong id="inoutAnswerState">-</strong></div>
             </div>
-            <p class="game-message" id="inoutMessage">Press Start.</p>
+            <p class="game-message" id="inoutMessage">Tap the game screen to start.</p>
           </div>
         </div>
       </section>
     </main>
-    <script src="game.js?v=11"></script>
+    <script src="game.js?v=12"></script>
     <script src="../shared/share.js?v=3"></script>
   </body>
 </html>

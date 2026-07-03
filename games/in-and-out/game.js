@@ -1,7 +1,6 @@
 const canvas = document.getElementById("inoutCanvas");
 const ctx = canvas.getContext("2d");
-const modeSelect = document.getElementById("inoutMode");
-const startButton = document.getElementById("startInout");
+const playArea = document.querySelector(".play-area");
 const scoreEl = document.getElementById("inoutScore");
 const bestEl = document.getElementById("inoutBest");
 const roundEl = document.getElementById("inoutRound");
@@ -31,7 +30,7 @@ const roundSettings = {
 };
 
 const colors = ["#d95e4f", "#4f8cc9", "#1c8f78", "#d39a21", "#6757c8", "#e28445"];
-const gameModes = new Set(["house", "classic"]);
+const gameMode = "classic";
 const groupLaneGap = 58;
 const doorLaneXGap = 18;
 const doorLaneYGap = 12;
@@ -41,9 +40,6 @@ let sequenceTimer = 0;
 let countdownTimer = 0;
 let audioContext;
 
-const savedMode = localStorage.getItem("offlineMiniGames.inout.mode");
-if (gameModes.has(savedMode)) modeSelect.value = savedMode;
-
 function randomInt(min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
 }
@@ -52,11 +48,11 @@ function randomFloat(min, max) {
   return min + Math.random() * (max - min);
 }
 
-function bestKey(mode = modeSelect.value) {
+function bestKey(mode = gameMode) {
   return `offlineMiniGames.inout.best.${mode}`;
 }
 
-function readBest(mode = modeSelect.value) {
+function readBest(mode = gameMode) {
   return Math.max(
     Number(localStorage.getItem(bestKey(mode)) || 0),
     Number(localStorage.getItem(`offlineMiniGames.inout.best.${mode}.easy`) || 0)
@@ -67,15 +63,14 @@ function resetGame() {
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
   clearTimeout(countdownTimer);
-  const mode = modeSelect.value;
   state = {
     running: false,
     answering: false,
     finished: false,
-    mode,
+    mode: gameMode,
     score: 0,
     round: 0,
-    best: readBest(mode),
+    best: readBest(),
     input: "",
     people: [],
     waves: [],
@@ -90,10 +85,9 @@ function resetGame() {
   bestEl.textContent = state.best;
   roundEl.textContent = `0/${totalRounds}`;
   answerStateEl.textContent = "-";
-  startButton.textContent = "Start";
   hideAnswerPanel();
-  setMessage("Press Start.");
-  setScreenCount("Press Start");
+  setMessage("Tap the game screen to start.");
+  setScreenCount("Tap to Start");
   window.MiniGameShare?.setResult("");
   drawScene();
 }
@@ -103,23 +97,20 @@ function startGame() {
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
   clearTimeout(countdownTimer);
-  const mode = modeSelect.value;
   state = {
     ...state,
     running: true,
     answering: false,
     finished: false,
-    mode,
+    mode: gameMode,
     score: 0,
     round: 0,
-    best: readBest(mode),
+    best: readBest(),
     input: "",
     results: [],
   };
-  localStorage.setItem("offlineMiniGames.inout.mode", mode);
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
-  startButton.textContent = "Restart";
   setMessage("Watch closely.");
   window.MiniGameShare?.setResult("");
   nextRound();
@@ -246,7 +237,7 @@ function launchWave(wave) {
 
 function createMovingPersonIn(index, count, speed) {
   const lane = index - (count - 1) / 2;
-  const side = state.mode === "classic" ? -1 : Math.random() < 0.5 ? -1 : 1;
+  const side = -1;
   const groupOffset = lane * groupLaneGap;
   return {
     x: side < 0 ? -72 - Math.abs(groupOffset) : canvas.width + 72 + Math.abs(groupOffset),
@@ -264,7 +255,7 @@ function createMovingPersonIn(index, count, speed) {
 
 function createMovingPersonOut(index, count, speed) {
   const lane = index - (count - 1) / 2;
-  const side = state.mode === "classic" ? 1 : Math.random() < 0.5 ? -1 : 1;
+  const side = 1;
   const groupOffset = lane * groupLaneGap;
   return {
     x: 461 + lane * doorLaneXGap,
@@ -348,15 +339,13 @@ function finishGame() {
   state.running = false;
   state.finished = true;
   state.best = Math.max(state.best, state.score);
-  localStorage.setItem(bestKey(state.mode), String(state.best));
+  localStorage.setItem(bestKey(), String(state.best));
   bestEl.textContent = state.best;
-  startButton.textContent = "Start";
   answerStateEl.textContent = "-";
-  setMessage(`Finished. Score: ${state.score}/${totalRounds}.`, state.score >= 7 ? "good" : "");
-  setScreenCount(`Score ${state.score}/${totalRounds}`, state.score >= 7 ? "good" : "");
-  const modeName = modeSelect.options[modeSelect.selectedIndex].text;
+  setMessage(`Finished. Tap screen to play again.`, state.score >= 7 ? "good" : "");
+  setScreenCount(`Score ${state.score}/${totalRounds}\nTap to play again`, state.score >= 7 ? "good" : "");
   window.MiniGameShare?.setResult(
-    `Score ${state.score}/${totalRounds} on ${modeName}.`
+    `Score ${state.score}/${totalRounds} on In & Out.`
   );
 }
 
@@ -557,8 +546,9 @@ function handleKeyboard(event) {
   }
 }
 
-startButton.addEventListener("click", startGame);
-modeSelect.addEventListener("change", resetGame);
+playArea.addEventListener("click", () => {
+  if (!state.running || state.finished) startGame();
+});
 document.querySelectorAll("[data-answer-key]").forEach((button) => {
   button.addEventListener("click", () => handleAnswerKey(button.dataset.answerKey));
 });
