@@ -27,7 +27,7 @@
 
 .top-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 160px;
+  grid-template-columns: minmax(0, 1fr) 160px;
   gap: 8px;
   align-items: stretch;
 }
@@ -252,11 +252,7 @@
   }
 
   .top-controls {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .top-controls .primary-button {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) 150px;
   }
 
   .answer-panel {
@@ -362,12 +358,8 @@
   }
 
   .top-controls {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 86px;
+    grid-template-columns: minmax(0, 1fr) 86px;
     gap: 5px;
-  }
-
-  .top-controls .primary-button {
-    grid-column: auto;
   }
 
   .top-controls .select-control {

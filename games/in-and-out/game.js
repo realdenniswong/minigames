@@ -1,7 +1,6 @@
 const canvas = document.getElementById("inoutCanvas");
 const ctx = canvas.getContext("2d");
 const modeSelect = document.getElementById("inoutMode");
-const difficultySelect = document.getElementById("inoutDifficulty");
 const startButton = document.getElementById("startInout");
 const scoreEl = document.getElementById("inoutScore");
 const bestEl = document.getElementById("inoutBest");
@@ -18,43 +17,17 @@ const answerButtons = [
 ];
 
 const totalRounds = 10;
-const difficultySettings = {
-  easy: {
-    startMin: 2,
-    startMax: 6,
-    wavesMin: 5,
-    wavesMax: 7,
-    groupMax: 3,
-    waveGap: 720,
-    speedMin: 1.1,
-    speedMax: 1.5,
-    repeatChance: 0.34,
-    inChance: 0.54,
-  },
-  medium: {
-    startMin: 3,
-    startMax: 10,
-    wavesMin: 7,
-    wavesMax: 10,
-    groupMax: 4,
-    waveGap: 480,
-    speedMin: 1.25,
-    speedMax: 2.05,
-    repeatChance: 0.46,
-    inChance: 0.52,
-  },
-  hard: {
-    startMin: 5,
-    startMax: 15,
-    wavesMin: 10,
-    wavesMax: 14,
-    groupMax: 6,
-    waveGap: 300,
-    speedMin: 1.45,
-    speedMax: 2.75,
-    repeatChance: 0.58,
-    inChance: 0.5,
-  },
+const roundSettings = {
+  startMin: 2,
+  startMax: 6,
+  wavesMin: 5,
+  wavesMax: 7,
+  groupMax: 3,
+  waveGap: 720,
+  speedMin: 1.1,
+  speedMax: 1.5,
+  repeatChance: 0.34,
+  inChance: 0.54,
 };
 
 const colors = ["#d95e4f", "#4f8cc9", "#1c8f78", "#d39a21", "#6757c8", "#e28445"];
@@ -68,8 +41,6 @@ let sequenceTimer = 0;
 let countdownTimer = 0;
 let audioContext;
 
-const savedDifficulty = localStorage.getItem("offlineMiniGames.inout.difficulty");
-if (difficultySettings[savedDifficulty]) difficultySelect.value = savedDifficulty;
 const savedMode = localStorage.getItem("offlineMiniGames.inout.mode");
 if (gameModes.has(savedMode)) modeSelect.value = savedMode;
 
@@ -81,25 +52,30 @@ function randomFloat(min, max) {
   return min + Math.random() * (max - min);
 }
 
-function bestKey(mode = modeSelect.value, difficulty = difficultySelect.value) {
-  return `offlineMiniGames.inout.best.${mode}.${difficulty}`;
+function bestKey(mode = modeSelect.value) {
+  return `offlineMiniGames.inout.best.${mode}`;
+}
+
+function readBest(mode = modeSelect.value) {
+  return Math.max(
+    Number(localStorage.getItem(bestKey(mode)) || 0),
+    Number(localStorage.getItem(`offlineMiniGames.inout.best.${mode}.easy`) || 0)
+  );
 }
 
 function resetGame() {
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
   clearTimeout(countdownTimer);
-  const difficulty = difficultySelect.value;
   const mode = modeSelect.value;
   state = {
     running: false,
     answering: false,
     finished: false,
-    difficulty,
     mode,
     score: 0,
     round: 0,
-    best: Number(localStorage.getItem(bestKey(mode, difficulty)) || 0),
+    best: readBest(mode),
     input: "",
     people: [],
     waves: [],
@@ -127,22 +103,19 @@ function startGame() {
   cancelAnimationFrame(animationFrame);
   clearTimeout(sequenceTimer);
   clearTimeout(countdownTimer);
-  const difficulty = difficultySelect.value;
   const mode = modeSelect.value;
   state = {
     ...state,
     running: true,
     answering: false,
     finished: false,
-    difficulty,
     mode,
     score: 0,
     round: 0,
-    best: Number(localStorage.getItem(bestKey(mode, difficulty)) || 0),
+    best: readBest(mode),
     input: "",
     results: [],
   };
-  localStorage.setItem("offlineMiniGames.inout.difficulty", difficulty);
   localStorage.setItem("offlineMiniGames.inout.mode", mode);
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
@@ -173,7 +146,7 @@ function nextRound() {
 }
 
 function createRound() {
-  const settings = difficultySettings[state.difficulty];
+  const settings = roundSettings;
   const waveCount = randomInt(settings.wavesMin, settings.wavesMax);
   let inside = state.round === 1 ? randomInt(settings.startMin, settings.startMax) : state.currentInside;
   state.startedInside = inside;
@@ -257,7 +230,7 @@ function launchWave(wave) {
   wave.launched = true;
   const count = wave.direction === "out" ? Math.min(wave.count, state.currentInside) : wave.count;
   if (count <= 0) return;
-  const settings = difficultySettings[state.difficulty];
+  const settings = roundSettings;
   const waveSpeed = randomFloat(settings.speedMin, settings.speedMax);
   if (wave.direction === "out") state.doorOpenUntil = performance.now() + 680;
   playMoveSound(wave.direction);
@@ -375,16 +348,15 @@ function finishGame() {
   state.running = false;
   state.finished = true;
   state.best = Math.max(state.best, state.score);
-  localStorage.setItem(bestKey(state.mode, state.difficulty), String(state.best));
+  localStorage.setItem(bestKey(state.mode), String(state.best));
   bestEl.textContent = state.best;
   startButton.textContent = "Start";
   answerStateEl.textContent = "-";
   setMessage(`Finished. Score: ${state.score}/${totalRounds}.`, state.score >= 7 ? "good" : "");
   setScreenCount(`Score ${state.score}/${totalRounds}`, state.score >= 7 ? "good" : "");
   const modeName = modeSelect.options[modeSelect.selectedIndex].text;
-  const difficultyName = difficultySelect.options[difficultySelect.selectedIndex].text;
   window.MiniGameShare?.setResult(
-    `Score ${state.score}/${totalRounds} on ${modeName} ${difficultyName}.`
+    `Score ${state.score}/${totalRounds} on ${modeName}.`
   );
 }
 
@@ -586,7 +558,6 @@ function handleKeyboard(event) {
 }
 
 startButton.addEventListener("click", startGame);
-difficultySelect.addEventListener("change", resetGame);
 modeSelect.addEventListener("change", resetGame);
 document.querySelectorAll("[data-answer-key]").forEach((button) => {
   button.addEventListener("click", () => handleAnswerKey(button.dataset.answerKey));
