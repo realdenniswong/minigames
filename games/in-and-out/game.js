@@ -55,6 +55,7 @@ function resetGame() {
     startedInside: 0,
     results: [],
     lastTime: 0,
+    doorOpenUntil: 0,
   };
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
@@ -118,15 +119,11 @@ function createRound() {
   const waveCount = randomInt(settings.wavesMin, settings.wavesMax);
   let inside = randomInt(settings.startMin, settings.startMax);
   state.startedInside = inside;
-  state.inside = inside;
   state.target = inside;
   state.people = [];
   state.waves = [];
   state.lastTimeStart = 0;
-
-  for (let index = 0; index < inside; index += 1) {
-    state.people.push(createStaticPerson(index, inside));
-  }
+  state.doorOpenUntil = 0;
 
   let time = 750;
   for (let index = 0; index < waveCount; index += 1) {
@@ -140,20 +137,6 @@ function createRound() {
   }
 
   state.sequenceEnd = time + 1300;
-}
-
-function createStaticPerson(index, total) {
-  const cols = Math.ceil(Math.sqrt(total));
-  const row = Math.floor(index / cols);
-  const col = index % cols;
-  return {
-    x: 435 + (col - (cols - 1) / 2) * 18,
-    y: 274 + row * 18,
-    size: 1,
-    color: colors[index % colors.length],
-    mode: "inside",
-    alpha: 0.85,
-  };
 }
 
 function startAnimation() {
@@ -179,38 +162,35 @@ function updateRound(delta) {
   });
   state.people.forEach((person) => updatePerson(person, delta));
   state.people = state.people.filter((person) => person.mode !== "gone");
-  if (roundElapsed >= state.sequenceEnd && state.people.every((person) => person.mode === "inside")) {
+  if (roundElapsed >= state.sequenceEnd && state.people.length === 0) {
     askAnswer();
   }
 }
 
 function launchWave(wave) {
   wave.launched = true;
+  state.doorOpenUntil = performance.now() + 680;
   playMoveSound(wave.direction);
-  let moved = 0;
   for (let index = 0; index < wave.count; index += 1) {
     if (wave.direction === "out") {
-      const person = state.people.find((candidate) => candidate.mode === "inside");
-      if (person) {
-        sendPersonOut(person, index, wave.count);
-        moved += 1;
-      }
+      state.people.push(createMovingPersonOut(index, wave.count));
     } else {
       state.people.push(createMovingPersonIn(index, wave.count));
-      moved += 1;
     }
   }
-  state.target += wave.direction === "in" ? moved : -moved;
+  state.target += wave.direction === "in" ? wave.count : -wave.count;
 }
 
 function createMovingPersonIn(index, count) {
   const settings = difficultySettings[state.difficulty];
   const lane = index - (count - 1) / 2;
+  const side = Math.random() < 0.5 ? -1 : 1;
   return {
-    x: -48 - randomInt(0, 60),
-    y: 397 + lane * 20 + randomInt(-4, 4),
-    targetX: 456 + lane * 8,
-    targetY: 308 + lane * 6,
+    x: side < 0 ? -52 - randomInt(0, 80) : canvas.width + 52 + randomInt(0, 80),
+    y: 424 + lane * 22 + randomInt(-6, 6),
+    targetX: 461 + lane * 3,
+    targetY: 374 + lane * 2,
+    size: randomFloat(1.22, 1.38),
     speed: randomFloat(settings.speedMin, settings.speedMax),
     color: colors[randomInt(0, colors.length - 1)],
     mode: "entering",
@@ -219,19 +199,25 @@ function createMovingPersonIn(index, count) {
   };
 }
 
-function sendPersonOut(person, index, count) {
+function createMovingPersonOut(index, count) {
   const settings = difficultySettings[state.difficulty];
   const lane = index - (count - 1) / 2;
-  person.mode = "leaving";
-  person.targetX = canvas.width + 58 + randomInt(0, 50);
-  person.targetY = 397 + lane * 22 + randomInt(-4, 4);
-  person.speed = randomFloat(settings.speedMin, settings.speedMax);
-  person.bob = Math.random() * Math.PI * 2;
-  person.alpha = 1;
+  const side = Math.random() < 0.5 ? -1 : 1;
+  return {
+    x: 461 + lane * 5,
+    y: 374 + lane * 2,
+    targetX: side < 0 ? -58 - randomInt(0, 70) : canvas.width + 58 + randomInt(0, 70),
+    targetY: 424 + lane * 24 + randomInt(-6, 6),
+    size: randomFloat(1.22, 1.38),
+    speed: randomFloat(settings.speedMin, settings.speedMax),
+    color: colors[randomInt(0, colors.length - 1)],
+    mode: "leaving",
+    alpha: 1,
+    bob: Math.random() * Math.PI * 2,
+  };
 }
 
 function updatePerson(person, delta) {
-  if (person.mode === "inside") return;
   const dx = person.targetX - person.x;
   const dy = person.targetY - person.y;
   const distance = Math.hypot(dx, dy);
@@ -240,12 +226,7 @@ function updatePerson(person, delta) {
   if (distance <= step) {
     person.x = person.targetX;
     person.y = person.targetY;
-    if (person.mode === "entering") {
-      person.mode = "inside";
-      person.alpha = 0.82;
-    } else {
-      person.mode = "gone";
-    }
+    person.mode = "gone";
     return;
   }
   person.x += (dx / distance) * step;
@@ -343,8 +324,8 @@ function drawScene() {
   ctx.fillStyle = "rgba(255,255,255,0.76)";
   drawCloud(150, 86, 34);
   drawCloud(760, 122, 28);
-  drawHouse();
   drawPath();
+  drawHouse();
   state?.people.forEach(drawPerson);
 }
 
@@ -360,6 +341,8 @@ function drawCloud(x, y, size) {
 }
 
 function drawHouse() {
+  const nearDoor = state?.people?.some((person) => Math.hypot(person.x - 461, person.y - 374) < 115);
+  const doorOpen = (state?.doorOpenUntil && performance.now() < state.doorOpenUntil) || nearDoor;
   ctx.fillStyle = "#f4c56f";
   ctx.fillRect(302, 218, 316, 194);
   ctx.fillStyle = "#9b4b35";
@@ -369,18 +352,33 @@ function drawHouse() {
   ctx.lineTo(650, 226);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = "#653324";
+  ctx.fillStyle = "#251713";
   ctx.fillRect(432, 304, 58, 108);
+  if (doorOpen) {
+    ctx.fillStyle = "#74422e";
+    ctx.beginPath();
+    ctx.moveTo(490, 308);
+    ctx.lineTo(526, 320);
+    ctx.lineTo(526, 412);
+    ctx.lineTo(490, 412);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    ctx.fillStyle = "#653324";
+    ctx.fillRect(432, 304, 58, 108);
+  }
   ctx.fillStyle = "#2f5f89";
   ctx.fillRect(340, 258, 56, 46);
   ctx.fillRect(524, 258, 56, 46);
   ctx.fillStyle = "rgba(255,255,255,0.45)";
   ctx.fillRect(348, 266, 16, 30);
   ctx.fillRect(532, 266, 16, 30);
-  ctx.fillStyle = "#f4df9c";
-  ctx.beginPath();
-  ctx.arc(478, 360, 4, 0, Math.PI * 2);
-  ctx.fill();
+  if (!doorOpen) {
+    ctx.fillStyle = "#f4df9c";
+    ctx.beginPath();
+    ctx.arc(478, 360, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function drawPath() {
@@ -395,7 +393,7 @@ function drawPath() {
 }
 
 function drawPerson(person) {
-  const bob = person.mode === "inside" ? 0 : Math.sin(person.bob) * 3;
+  const bob = Math.sin(person.bob) * 3;
   ctx.save();
   ctx.globalAlpha = person.alpha ?? 1;
   ctx.translate(person.x, person.y + bob);
