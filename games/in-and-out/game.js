@@ -4,6 +4,7 @@ const playArea = document.querySelector(".play-area");
 const scoreEl = document.getElementById("inoutScore");
 const bestEl = document.getElementById("inoutBest");
 const roundEl = document.getElementById("inoutRound");
+const livesEl = document.getElementById("inoutLives");
 const answerStateEl = document.getElementById("inoutAnswerState");
 const answerPanel = document.getElementById("answerPanel");
 const answerEntry = document.getElementById("answerEntry");
@@ -15,19 +16,63 @@ const answerButtons = [
   submitAnswerButton,
 ];
 
-const totalRounds = 10;
-const roundSettings = {
+const maxLives = 3;
+const levelsPerTier = 5;
+const easyLevelSettings = {
   startMin: 2,
-  startMax: 6,
-  wavesMin: 5,
-  wavesMax: 7,
-  groupMax: 3,
-  waveGap: 720,
-  speedMin: 1.1,
-  speedMax: 1.5,
-  repeatChance: 0.34,
-  inChance: 0.54,
+  startMax: 4,
+  wavesMin: 2,
+  wavesMax: 3,
+  groupMax: 2,
+  waveGap: 930,
+  speedMin: 0.95,
+  speedMax: 1.18,
+  repeatChance: 0.12,
+  inChance: 0.56,
+  comboChance: 0,
 };
+const difficultyTiers = [
+  easyLevelSettings,
+  {
+    startMin: 2,
+    startMax: 5,
+    wavesMin: 3,
+    wavesMax: 4,
+    groupMax: 2,
+    waveGap: 840,
+    speedMin: 1.02,
+    speedMax: 1.28,
+    repeatChance: 0.2,
+    inChance: 0.55,
+    comboChance: 0.1,
+  },
+  {
+    startMin: 3,
+    startMax: 6,
+    wavesMin: 4,
+    wavesMax: 5,
+    groupMax: 3,
+    waveGap: 760,
+    speedMin: 1.1,
+    speedMax: 1.42,
+    repeatChance: 0.28,
+    inChance: 0.54,
+    comboChance: 0.18,
+  },
+  {
+    startMin: 3,
+    startMax: 7,
+    wavesMin: 5,
+    wavesMax: 6,
+    groupMax: 3,
+    waveGap: 690,
+    speedMin: 1.18,
+    speedMax: 1.56,
+    repeatChance: 0.34,
+    inChance: 0.53,
+    comboChance: 0.28,
+  },
+];
 
 const colors = ["#ff8a7a", "#7db7ff", "#4fd3b7", "#f3c85c", "#a99bff", "#ffb16f"];
 const gameMode = "classic";
@@ -46,6 +91,27 @@ function randomInt(min, max) {
 
 function randomFloat(min, max) {
   return min + Math.random() * (max - min);
+}
+
+function getLevelSettings(level) {
+  const tier = Math.floor((level - 1) / levelsPerTier);
+  const preset = difficultyTiers[tier];
+  if (preset) return preset;
+
+  const extraTier = tier - difficultyTiers.length + 1;
+  return {
+    startMin: 4,
+    startMax: 8,
+    wavesMin: Math.min(8, 5 + extraTier),
+    wavesMax: Math.min(10, 7 + extraTier),
+    groupMax: Math.min(5, 3 + Math.floor(extraTier / 2)),
+    waveGap: Math.max(540, 650 - extraTier * 32),
+    speedMin: Math.min(1.55, 1.24 + extraTier * 0.06),
+    speedMax: Math.min(1.95, 1.62 + extraTier * 0.07),
+    repeatChance: Math.min(0.5, 0.36 + extraTier * 0.03),
+    inChance: 0.52,
+    comboChance: Math.min(0.52, 0.32 + extraTier * 0.04),
+  };
 }
 
 function bestKey(mode = gameMode) {
@@ -70,6 +136,7 @@ function resetGame() {
     mode: gameMode,
     score: 0,
     round: 0,
+    lives: maxLives,
     best: readBest(),
     input: "",
     people: [],
@@ -83,7 +150,8 @@ function resetGame() {
   };
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
-  roundEl.textContent = `0/${totalRounds}`;
+  roundEl.textContent = "0";
+  livesEl.textContent = String(maxLives);
   answerStateEl.textContent = "-";
   hideAnswerPanel();
   setMessage("Tap the game screen to start.");
@@ -105,12 +173,14 @@ function startGame() {
     mode: gameMode,
     score: 0,
     round: 0,
+    lives: maxLives,
     best: readBest(),
     input: "",
     results: [],
   };
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
+  livesEl.textContent = String(state.lives);
   setMessage("Watch closely.");
   window.MiniGameShare?.setResult("");
   nextRound();
@@ -120,24 +190,20 @@ function nextRound() {
   clearTimeout(sequenceTimer);
   clearTimeout(countdownTimer);
   state.round += 1;
-  if (state.round > totalRounds) {
-    finishGame();
-    return;
-  }
   state.answering = false;
   state.input = "";
   answerStateEl.textContent = "-";
   hideAnswerPanel();
-  roundEl.textContent = `${state.round}/${totalRounds}`;
+  roundEl.textContent = String(state.round);
   createRound();
-  setMessage("Count the people.");
+  setMessage("Add and subtract every wave.");
   setScreenCount(`Starting: ${state.startedInside}`);
   runCountdown();
   drawScene();
 }
 
 function createRound() {
-  const settings = roundSettings;
+  const settings = getLevelSettings(state.round);
   const waveCount = randomInt(settings.wavesMin, settings.wavesMax);
   let inside = state.round === 1 ? randomInt(settings.startMin, settings.startMax) : state.currentInside;
   state.startedInside = inside;
@@ -151,18 +217,37 @@ function createRound() {
   let time = 750;
   let lastDirection = "";
   for (let index = 0; index < waveCount; index += 1) {
-    const canExit = inside > 0;
-    const repeatDirection = canExit && lastDirection && Math.random() < settings.repeatChance;
-    const direction = repeatDirection ? lastDirection : !canExit || Math.random() < settings.inChance ? "in" : "out";
-    const maxGroup = direction === "out" ? Math.min(settings.groupMax, inside) : settings.groupMax;
-    const count = Math.max(1, randomInt(1, maxGroup));
-    inside += direction === "in" ? count : -count;
-    state.waves.push({ direction, count, time, launched: false });
-    lastDirection = direction;
+    const moves = createWaveMoves(inside, lastDirection, settings);
+    inside += moves.reduce((total, move) => {
+      return total + (move.direction === "in" ? move.count : -move.count);
+    }, 0);
+    state.waves.push({ moves, time, launched: false });
+    lastDirection = moves[moves.length - 1].direction;
     time += settings.waveGap + randomInt(-130, 170);
   }
 
   state.sequenceEnd = time + 1300;
+}
+
+function createWaveMoves(inside, lastDirection, settings) {
+  const canExit = inside > 0;
+
+  if (canExit && settings.groupMax >= 2 && Math.random() < settings.comboChance) {
+    const totalCount = randomInt(2, settings.groupMax);
+    const outCount = randomInt(1, Math.min(totalCount - 1, inside));
+    const inCount = totalCount - outCount;
+    const moves = [
+      { direction: "out", count: outCount },
+      { direction: "in", count: inCount },
+    ];
+    return Math.random() < 0.5 ? moves : moves.reverse();
+  }
+
+  const repeatDirection = canExit && lastDirection && Math.random() < settings.repeatChance;
+  const direction =
+    repeatDirection ? lastDirection : !canExit || Math.random() < settings.inChance ? "in" : "out";
+  const maxGroup = direction === "out" ? Math.min(settings.groupMax, inside) : settings.groupMax;
+  return [{ direction, count: randomInt(1, maxGroup) }];
 }
 
 function runCountdown() {
@@ -219,15 +304,22 @@ function updateRound(delta) {
 
 function launchWave(wave) {
   wave.launched = true;
-  const count = wave.direction === "out" ? Math.min(wave.count, state.currentInside) : wave.count;
+  const moves = wave.moves || [{ direction: wave.direction, count: wave.count }];
+  if (moves.some((move) => move.direction === "out")) {
+    state.doorOpenUntil = performance.now() + 680;
+  }
+  moves.forEach((move) => launchMove(move));
+}
+
+function launchMove(move) {
+  const count = move.direction === "out" ? Math.min(move.count, state.currentInside) : move.count;
   if (count <= 0) return;
-  const settings = roundSettings;
+  const settings = getLevelSettings(state.round);
   const waveSpeed = randomFloat(settings.speedMin, settings.speedMax);
-  if (wave.direction === "out") state.doorOpenUntil = performance.now() + 680;
-  playMoveSound(wave.direction, count);
-  if (wave.direction === "out") state.currentInside -= count;
+  playMoveSound(move.direction, count);
+  state.currentInside += move.direction === "in" ? count : -count;
   for (let index = 0; index < count; index += 1) {
-    if (wave.direction === "out") {
+    if (move.direction === "out") {
       state.people.push(createMovingPersonOut(index, count, waveSpeed));
     } else {
       state.people.push(createMovingPersonIn(index, count, waveSpeed));
@@ -280,7 +372,6 @@ function updatePerson(person, delta) {
   if (distance <= step) {
     person.x = person.targetX;
     person.y = person.targetY;
-    if (person.mode === "entering") state.currentInside += 1;
     person.mode = "gone";
     return;
   }
@@ -304,7 +395,7 @@ function handleAnswerKey(key) {
   if (!state.answering) return;
   if (key === "clear") state.input = "";
   if (key === "backspace") state.input = state.input.slice(0, -1);
-  if (/^\d$/.test(key) && state.input.length < 2) state.input += key;
+  if (/^\d$/.test(key) && state.input.length < 3) state.input += key;
   renderInput();
 }
 
@@ -321,18 +412,28 @@ function submitAnswer() {
   if (correct) {
     state.score += 1;
     scoreEl.textContent = state.score;
+    if (state.score > state.best) {
+      state.best = state.score;
+      bestEl.textContent = state.best;
+    }
     setMessage("Correct.", "good");
     setScreenCount("Correct", "good");
     playResultSound(true);
   } else {
-    setMessage(`Wrong. It was ${state.target}.`, "bad");
-    setScreenCount(`It was ${state.target}`, "bad");
+    state.lives = Math.max(0, state.lives - 1);
+    livesEl.textContent = String(state.lives);
+    setMessage(`Wrong. It was ${state.target}. ${state.lives} lives left.`, "bad");
+    setScreenCount(`It was ${state.target}\nLives ${state.lives}`, "bad");
     playResultSound(false);
   }
   answerStateEl.textContent = String(state.target);
   state.answering = false;
   hideAnswerPanel();
-  sequenceTimer = setTimeout(nextRound, 900);
+  if (state.lives <= 0) {
+    sequenceTimer = setTimeout(finishGame, 1100);
+    return;
+  }
+  sequenceTimer = setTimeout(nextRound, correct ? 820 : 1100);
 }
 
 function finishGame() {
@@ -341,11 +442,12 @@ function finishGame() {
   state.best = Math.max(state.best, state.score);
   localStorage.setItem(bestKey(), String(state.best));
   bestEl.textContent = state.best;
+  livesEl.textContent = String(state.lives);
   answerStateEl.textContent = "-";
-  setMessage(`Finished. Tap screen to play again.`, state.score >= 7 ? "good" : "");
-  setScreenCount(`Score ${state.score}/${totalRounds}\nTap to play again`, state.score >= 7 ? "good" : "");
+  setMessage("Game over. Tap screen to play again.", state.score >= 10 ? "good" : "");
+  setScreenCount(`Score ${state.score}\nLevel ${state.round}`, state.score >= 10 ? "good" : "");
   window.MiniGameShare?.setResult(
-    `Score ${state.score}/${totalRounds} on In & Out.`
+    `Score ${state.score}, reached Level ${state.round} on In & Out.`
   );
 }
 
