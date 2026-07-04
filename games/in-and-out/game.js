@@ -19,58 +19,62 @@ const answerButtons = [
 const maxLives = 3;
 const levelsPerTier = 5;
 const easyLevelSettings = {
-  startMin: 2,
-  startMax: 4,
-  wavesMin: 2,
-  wavesMax: 3,
-  groupMax: 2,
-  waveGap: 930,
-  speedMin: 0.95,
-  speedMax: 1.18,
-  repeatChance: 0.12,
-  inChance: 0.56,
+  startMin: 4,
+  startMax: 6,
+  wavesMin: 4,
+  wavesMax: 5,
+  groupMax: 3,
+  minInside: 2,
+  waveGap: 1240,
+  speedMin: 3.4,
+  speedMax: 4.2,
+  repeatChance: 0.08,
+  inChance: 0.52,
   comboChance: 0,
 };
 const difficultyTiers = [
   easyLevelSettings,
   {
-    startMin: 2,
-    startMax: 5,
-    wavesMin: 3,
-    wavesMax: 4,
-    groupMax: 2,
-    waveGap: 840,
-    speedMin: 1.02,
-    speedMax: 1.28,
-    repeatChance: 0.2,
-    inChance: 0.55,
-    comboChance: 0.1,
-  },
-  {
-    startMin: 3,
-    startMax: 6,
-    wavesMin: 4,
-    wavesMax: 5,
-    groupMax: 3,
-    waveGap: 760,
-    speedMin: 1.1,
-    speedMax: 1.42,
-    repeatChance: 0.28,
-    inChance: 0.54,
-    comboChance: 0.18,
-  },
-  {
-    startMin: 3,
+    startMin: 5,
     startMax: 7,
     wavesMin: 5,
     wavesMax: 6,
-    groupMax: 3,
-    waveGap: 690,
-    speedMin: 1.18,
-    speedMax: 1.56,
-    repeatChance: 0.34,
-    inChance: 0.53,
-    comboChance: 0.28,
+    groupMax: 5,
+    minInside: 2,
+    waveGap: 1120,
+    speedMin: 3.8,
+    speedMax: 4.7,
+    repeatChance: 0.12,
+    inChance: 0.51,
+    comboChance: 0.1,
+  },
+  {
+    startMin: 5,
+    startMax: 8,
+    wavesMin: 6,
+    wavesMax: 7,
+    groupMax: 10,
+    minInside: 2,
+    waveGap: 1000,
+    speedMin: 4.3,
+    speedMax: 5.2,
+    repeatChance: 0.16,
+    inChance: 0.5,
+    comboChance: 0.2,
+  },
+  {
+    startMin: 6,
+    startMax: 9,
+    wavesMin: 7,
+    wavesMax: 8,
+    groupMax: 10,
+    minInside: 2,
+    waveGap: 900,
+    speedMin: 4.8,
+    speedMax: 5.8,
+    repeatChance: 0.2,
+    inChance: 0.5,
+    comboChance: 0.32,
   },
 ];
 
@@ -79,6 +83,7 @@ const gameMode = "classic";
 const groupLaneGap = 58;
 const doorLaneXGap = 18;
 const doorLaneYGap = 12;
+const doorwayCountDistance = 72;
 let state;
 let animationFrame = 0;
 let sequenceTimer = 0;
@@ -101,16 +106,17 @@ function getLevelSettings(level) {
   const extraTier = tier - difficultyTiers.length + 1;
   return {
     startMin: 4,
-    startMax: 8,
-    wavesMin: Math.min(8, 5 + extraTier),
-    wavesMax: Math.min(10, 7 + extraTier),
-    groupMax: Math.min(5, 3 + Math.floor(extraTier / 2)),
-    waveGap: Math.max(540, 650 - extraTier * 32),
-    speedMin: Math.min(1.55, 1.24 + extraTier * 0.06),
-    speedMax: Math.min(1.95, 1.62 + extraTier * 0.07),
-    repeatChance: Math.min(0.5, 0.36 + extraTier * 0.03),
-    inChance: 0.52,
-    comboChance: Math.min(0.52, 0.32 + extraTier * 0.04),
+    startMax: 10,
+    wavesMin: Math.min(9, 7 + extraTier),
+    wavesMax: Math.min(11, 8 + extraTier),
+    groupMax: 15,
+    minInside: 2,
+    waveGap: Math.max(680, 840 - extraTier * 24),
+    speedMin: Math.min(6.4, 5.2 + extraTier * 0.18),
+    speedMax: Math.min(7.2, 6.2 + extraTier * 0.18),
+    repeatChance: Math.min(0.32, 0.22 + extraTier * 0.025),
+    inChance: 0.5,
+    comboChance: Math.min(0.56, 0.36 + extraTier * 0.04),
   };
 }
 
@@ -206,6 +212,7 @@ function createRound() {
   const settings = getLevelSettings(state.round);
   const waveCount = randomInt(settings.wavesMin, settings.wavesMax);
   let inside = state.round === 1 ? randomInt(settings.startMin, settings.startMax) : state.currentInside;
+  let target = inside;
   state.startedInside = inside;
   state.currentInside = inside;
   state.target = inside;
@@ -215,26 +222,31 @@ function createRound() {
   state.doorOpenUntil = 0;
 
   let time = 750;
+  let sequenceEndTime = time;
   let lastDirection = "";
   for (let index = 0; index < waveCount; index += 1) {
     const moves = createWaveMoves(inside, lastDirection, settings);
-    inside += moves.reduce((total, move) => {
-      return total + (move.direction === "in" ? move.count : -move.count);
-    }, 0);
+    moves.forEach((move) => {
+      inside += move.direction === "in" ? move.count : -move.count;
+      target += move.direction === "in" ? move.count : -move.count;
+    });
     state.waves.push({ moves, time, launched: false });
+    sequenceEndTime = Math.max(sequenceEndTime, time);
     lastDirection = moves[moves.length - 1].direction;
-    time += settings.waveGap + randomInt(-130, 170);
+    time += settings.waveGap + randomInt(-110, 160);
   }
 
-  state.sequenceEnd = time + 1300;
+  state.target = target;
+  state.sequenceEnd = sequenceEndTime + 1300;
 }
 
 function createWaveMoves(inside, lastDirection, settings) {
-  const canExit = inside > 0;
+  const maxOut = Math.max(0, inside - settings.minInside);
+  const canExit = maxOut > 0;
 
   if (canExit && settings.groupMax >= 2 && Math.random() < settings.comboChance) {
     const totalCount = randomInt(2, settings.groupMax);
-    const outCount = randomInt(1, Math.min(totalCount - 1, inside));
+    const outCount = randomInt(1, Math.min(totalCount - 1, maxOut));
     const inCount = totalCount - outCount;
     const moves = [
       { direction: "out", count: outCount },
@@ -243,11 +255,18 @@ function createWaveMoves(inside, lastDirection, settings) {
     return Math.random() < 0.5 ? moves : moves.reverse();
   }
 
-  const repeatDirection = canExit && lastDirection && Math.random() < settings.repeatChance;
-  const direction =
-    repeatDirection ? lastDirection : !canExit || Math.random() < settings.inChance ? "in" : "out";
-  const maxGroup = direction === "out" ? Math.min(settings.groupMax, inside) : settings.groupMax;
+  let direction = !canExit || Math.random() < settings.inChance ? "in" : "out";
+  if (lastDirection) {
+    direction = canExit && Math.random() < settings.repeatChance ? lastDirection : oppositeDirection(lastDirection);
+  }
+  if (direction === "out" && !canExit) direction = "in";
+
+  const maxGroup = direction === "out" ? Math.min(settings.groupMax, maxOut) : settings.groupMax;
   return [{ direction, count: randomInt(1, maxGroup) }];
+}
+
+function oppositeDirection(direction) {
+  return direction === "in" ? "out" : "in";
 }
 
 function runCountdown() {
@@ -292,11 +311,11 @@ function loop(time) {
 function updateRound(delta) {
   if (!state.lastTimeStart) state.lastTimeStart = performance.now();
   const roundElapsed = performance.now() - state.lastTimeStart;
+  state.people.forEach((person) => updatePerson(person, delta));
+  state.people = state.people.filter((person) => person.mode !== "gone");
   state.waves.forEach((wave) => {
     if (!wave.launched && roundElapsed >= wave.time) launchWave(wave);
   });
-  state.people.forEach((person) => updatePerson(person, delta));
-  state.people = state.people.filter((person) => person.mode !== "gone");
   if (roundElapsed >= state.sequenceEnd && state.people.length === 0) {
     askAnswer();
   }
@@ -312,17 +331,19 @@ function launchWave(wave) {
 }
 
 function launchMove(move) {
-  const count = move.direction === "out" ? Math.min(move.count, state.currentInside) : move.count;
-  if (count <= 0) return;
   const settings = getLevelSettings(state.round);
+  const maxOut = Math.max(0, state.currentInside - settings.minInside);
+  const count = move.direction === "out" ? Math.min(move.count, maxOut) : move.count;
+  if (count <= 0) return;
   const waveSpeed = randomFloat(settings.speedMin, settings.speedMax);
   playMoveSound(move.direction, count);
-  state.currentInside += move.direction === "in" ? count : -count;
+  if (move.direction === "out") state.currentInside -= count;
   for (let index = 0; index < count; index += 1) {
+    const personSpeed = waveSpeed * randomFloat(0.84, 1.18);
     if (move.direction === "out") {
-      state.people.push(createMovingPersonOut(index, count, waveSpeed));
+      state.people.push(createMovingPersonOut(index, count, personSpeed));
     } else {
-      state.people.push(createMovingPersonIn(index, count, waveSpeed));
+      state.people.push(createMovingPersonIn(index, count, personSpeed));
     }
   }
 }
@@ -340,6 +361,7 @@ function createMovingPersonIn(index, count, speed) {
     speed,
     color: colors[randomInt(0, colors.length - 1)],
     mode: "entering",
+    countedInside: false,
     alpha: 1,
     bob: Math.random() * Math.PI * 2,
   };
@@ -369,9 +391,14 @@ function updatePerson(person, delta) {
   const distance = Math.hypot(dx, dy);
   const step = person.speed * delta * 0.12;
   person.bob += delta * 0.015;
+  if (person.mode === "entering" && !person.countedInside && distance <= doorwayCountDistance) {
+    state.currentInside += 1;
+    person.countedInside = true;
+  }
   if (distance <= step) {
     person.x = person.targetX;
     person.y = person.targetY;
+    if (person.mode === "entering" && !person.countedInside) state.currentInside += 1;
     person.mode = "gone";
     return;
   }
