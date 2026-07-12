@@ -78,12 +78,13 @@ const difficultyTiers = [
   },
 ];
 
-const colors = ["#ff8a7a", "#7db7ff", "#4fd3b7", "#f3c85c", "#a99bff", "#ffb16f"];
 const gameMode = "classic";
-const groupLaneGap = 58;
-const doorLaneXGap = 18;
-const doorLaneYGap = 12;
-const doorwayCountDistance = 72;
+const leftDoorwayX = 334;
+const rightDoorwayX = 666;
+const walkwayY = 438;
+const doorwayCountDistance = 42;
+const betweenWavesDelay = 720;
+const groupStagger = 145;
 let state;
 let animationFrame = 0;
 let sequenceTimer = 0;
@@ -146,13 +147,16 @@ function resetGame() {
     best: readBest(),
     input: "",
     people: [],
-    waves: [],
+    events: [],
     currentInside: 0,
     target: 0,
     startedInside: 0,
     results: [],
     lastTime: 0,
     doorOpenUntil: 0,
+    activeEvent: null,
+    nextEventAt: 0,
+    roundCompleteAt: 0,
   };
   scoreEl.textContent = "0";
   bestEl.textContent = state.best;
@@ -202,8 +206,14 @@ function nextRound() {
   hideAnswerPanel();
   roundEl.textContent = String(state.round);
   createRound();
-  setMessage("Add and subtract every wave.");
-  setScreenCount(`Starting: ${state.startedInside}`);
+  setMessage(
+    state.round === 1
+      ? "Count each person who goes in or comes out."
+      : "Continue counting from the previous total."
+  );
+  setScreenCount(
+    state.round === 1 ? "Get ready" : "Keep counting from the last round"
+  );
   runCountdown();
   drawScene();
 }
@@ -211,18 +221,30 @@ function nextRound() {
 function createRound() {
   const settings = getLevelSettings(state.round);
   const waveCount = randomInt(settings.wavesMin, settings.wavesMax);
-  let inside = state.round === 1 ? randomInt(settings.startMin, settings.startMax) : state.currentInside;
-  let target = inside;
-  state.startedInside = inside;
-  state.currentInside = inside;
-  state.target = inside;
+  const startingCount =
+    state.round === 1
+      ? randomInt(settings.startMin, settings.startMax)
+      : state.currentInside;
+  let inside = startingCount;
+  let target = startingCount;
+  state.startedInside = startingCount;
+  state.currentInside = state.round === 1 ? 0 : startingCount;
+  state.target = startingCount;
   state.people = [];
-  state.waves = [];
+  state.events = [];
   state.lastTimeStart = 0;
   state.doorOpenUntil = 0;
+  state.activeEvent = null;
+  state.nextEventAt = 0;
+  state.roundCompleteAt = 0;
 
-  let time = 750;
-  let sequenceEndTime = time;
+  if (state.round === 1) {
+    state.events.push({
+      moves: [{ direction: "in", count: startingCount }],
+      pauseAfter: betweenWavesDelay,
+    });
+  }
+
   let lastDirection = "";
   for (let index = 0; index < waveCount; index += 1) {
     const moves = createWaveMoves(inside, lastDirection, settings);
@@ -230,21 +252,24 @@ function createRound() {
       inside += move.direction === "in" ? move.count : -move.count;
       target += move.direction === "in" ? move.count : -move.count;
     });
-    state.waves.push({ moves, time, launched: false });
-    sequenceEndTime = Math.max(sequenceEndTime, time);
+    state.events.push({ moves, pauseAfter: betweenWavesDelay });
     lastDirection = moves[moves.length - 1].direction;
-    time += settings.waveGap + randomInt(-110, 160);
   }
 
   state.target = target;
-  state.sequenceEnd = sequenceEndTime + 1300;
 }
 
 function createWaveMoves(inside, lastDirection, settings) {
   const maxOut = Math.max(0, inside - settings.minInside);
   const canExit = maxOut > 0;
+  const simultaneousChance =
+    state.round < 3 ? 0 : Math.min(0.6, 0.24 + (state.round - 3) * 0.045);
 
-  if (canExit && settings.groupMax >= 2 && Math.random() < settings.comboChance) {
+  if (
+    canExit &&
+    settings.groupMax >= 2 &&
+    Math.random() < Math.max(settings.comboChance, simultaneousChance)
+  ) {
     const totalCount = randomInt(2, settings.groupMax);
     const outCount = randomInt(1, Math.min(totalCount - 1, maxOut));
     const inCount = totalCount - outCount;
@@ -270,25 +295,21 @@ function oppositeDirection(direction) {
 }
 
 function runCountdown() {
-  const startText = `Starting: ${state.startedInside}`;
-  const steps = [
-    startText,
-    `${startText}\n3`,
-    `${startText}\n3...2`,
-    `${startText}\n3...2...1`,
-  ];
+  const reminder =
+    state.round === 1 ? "Get ready" : "Keep counting from the last round";
+  const steps = [reminder, "3", "2", "1"];
   let index = 0;
   const showStep = () => {
     setScreenCount(steps[index]);
     index += 1;
     if (index < steps.length) {
-      countdownTimer = setTimeout(showStep, index === 1 ? 1250 : 720);
+      countdownTimer = setTimeout(showStep, index === 1 ? 900 : 620);
       return;
     }
     countdownTimer = setTimeout(() => {
       setScreenCount("");
       startAnimation();
-    }, 720);
+    }, 620);
   };
   showStep();
 }
@@ -310,56 +331,57 @@ function loop(time) {
 
 function updateRound(delta) {
   if (!state.lastTimeStart) state.lastTimeStart = performance.now();
-  const roundElapsed = performance.now() - state.lastTimeStart;
+  const now = performance.now();
+  const hadPerson = state.people.length > 0;
   state.people.forEach((person) => updatePerson(person, delta));
   state.people = state.people.filter((person) => person.mode !== "gone");
-  state.waves.forEach((wave) => {
-    if (!wave.launched && roundElapsed >= wave.time) launchWave(wave);
-  });
-  if (roundElapsed >= state.sequenceEnd && state.people.length === 0) {
+  if (hadPerson && state.people.length === 0 && state.activeEvent) {
+    state.nextEventAt = now + state.activeEvent.pauseAfter;
+    state.activeEvent = null;
+  }
+  if (!state.people.length && !state.activeEvent && state.events.length && now >= state.nextEventAt) {
+    launchNextEvent();
+  }
+  if (!state.events.length && !state.people.length && !state.activeEvent) {
+    state.roundCompleteAt ||= now + 700;
+  }
+  if (state.roundCompleteAt && now >= state.roundCompleteAt) {
     askAnswer();
   }
 }
 
-function launchWave(wave) {
-  wave.launched = true;
-  const moves = wave.moves || [{ direction: wave.direction, count: wave.count }];
-  if (moves.some((move) => move.direction === "out")) {
-    state.doorOpenUntil = performance.now() + 680;
-  }
-  moves.forEach((move) => launchMove(move));
-}
-
-function launchMove(move) {
+function launchNextEvent() {
+  const event = state.events.shift();
+  if (!event) return;
   const settings = getLevelSettings(state.round);
-  const maxOut = Math.max(0, state.currentInside - settings.minInside);
-  const count = move.direction === "out" ? Math.min(move.count, maxOut) : move.count;
-  if (count <= 0) return;
-  const waveSpeed = randomFloat(settings.speedMin, settings.speedMax);
-  playMoveSound(move.direction, count);
-  if (move.direction === "out") state.currentInside -= count;
-  for (let index = 0; index < count; index += 1) {
-    const personSpeed = waveSpeed * randomFloat(0.84, 1.18);
+  const roundSpeedBoost = 1 + Math.min(0.5, Math.max(0, state.round - 1) * 0.1);
+  const speed = randomFloat(settings.speedMin, settings.speedMax) * 1.18 * roundSpeedBoost;
+  state.activeEvent = event;
+  event.moves.forEach((move) => {
+    playMoveSound(move.direction, move.count);
     if (move.direction === "out") {
-      state.people.push(createMovingPersonOut(index, count, personSpeed));
+      state.currentInside -= move.count;
+      state.doorOpenUntil = performance.now() + 520;
+      for (let index = 0; index < move.count; index += 1) {
+        state.people.push(createMovingPersonOut(speed, index));
+      }
     } else {
-      state.people.push(createMovingPersonIn(index, count, personSpeed));
+      for (let index = 0; index < move.count; index += 1) {
+        state.people.push(createMovingPersonIn(speed, index));
+      }
     }
-  }
+  });
 }
 
-function createMovingPersonIn(index, count, speed) {
-  const lane = index - (count - 1) / 2;
-  const side = -1;
-  const groupOffset = lane * groupLaneGap;
+function createMovingPersonIn(speed, index) {
   return {
-    x: side < 0 ? -72 - Math.abs(groupOffset) : canvas.width + 72 + Math.abs(groupOffset),
-    y: 424 + groupOffset,
-    targetX: 461 + lane * doorLaneXGap,
-    targetY: 374 + lane * doorLaneYGap,
-    size: 1.72,
+    x: -62,
+    y: walkwayY,
+    targetX: leftDoorwayX,
+    targetY: walkwayY,
+    size: 1.7,
     speed,
-    color: colors[randomInt(0, colors.length - 1)],
+    delay: index * groupStagger,
     mode: "entering",
     countedInside: false,
     alpha: 1,
@@ -367,18 +389,15 @@ function createMovingPersonIn(index, count, speed) {
   };
 }
 
-function createMovingPersonOut(index, count, speed) {
-  const lane = index - (count - 1) / 2;
-  const side = 1;
-  const groupOffset = lane * groupLaneGap;
+function createMovingPersonOut(speed, index) {
   return {
-    x: 461 + lane * doorLaneXGap,
-    y: 374 + lane * doorLaneYGap,
-    targetX: side < 0 ? -72 - Math.abs(groupOffset) : canvas.width + 72 + Math.abs(groupOffset),
-    targetY: 424 + groupOffset,
-    size: 1.72,
+    x: rightDoorwayX,
+    y: walkwayY,
+    targetX: canvas.width + 62,
+    targetY: walkwayY,
+    size: 1.7,
     speed,
-    color: colors[randomInt(0, colors.length - 1)],
+    delay: index * groupStagger,
     mode: "leaving",
     alpha: 1,
     bob: Math.random() * Math.PI * 2,
@@ -386,6 +405,10 @@ function createMovingPersonOut(index, count, speed) {
 }
 
 function updatePerson(person, delta) {
+  if (person.delay > 0) {
+    person.delay -= delta;
+    return;
+  }
   const dx = person.targetX - person.x;
   const dy = person.targetY - person.y;
   const distance = Math.hypot(dx, dy);
@@ -513,115 +536,79 @@ function drawScene() {
   const width = canvas.width;
   const height = canvas.height;
   ctx.clearRect(0, 0, width, height);
-
-  const sky = ctx.createLinearGradient(0, 0, 0, height);
-  sky.addColorStop(0, "#a7dce9");
-  sky.addColorStop(1, "#e7f5e4");
-  ctx.fillStyle = sky;
+  ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, width, height);
-
-  ctx.fillStyle = "#7cbf73";
-  ctx.fillRect(0, 412, width, height - 412);
-  ctx.fillStyle = "rgba(255,255,255,0.76)";
-  drawCloud(150, 86, 34);
-  drawCloud(760, 122, 28);
-  drawPath();
   drawHouse();
   state?.people.forEach(drawPerson);
 }
 
-function drawCloud(x, y, size) {
-  ctx.beginPath();
-  ctx.arc(x, y, size * 0.55, Math.PI, 0);
-  ctx.arc(x + size * 0.52, y - size * 0.15, size * 0.7, Math.PI, 0);
-  ctx.arc(x + size * 1.15, y, size * 0.55, Math.PI, 0);
-  ctx.lineTo(x + size * 1.7, y + size * 0.42);
-  ctx.lineTo(x - size * 0.55, y + size * 0.42);
-  ctx.closePath();
-  ctx.fill();
-}
-
 function drawHouse() {
-  const nearDoor = state?.people?.some((person) => {
-    const distance = Math.hypot(person.x - 461, person.y - 374);
-    return person.mode === "leaving" || distance < 82;
-  });
-  const doorOpen = (state?.doorOpenUntil && performance.now() < state.doorOpenUntil) || nearDoor;
-  ctx.fillStyle = "#f4c56f";
-  ctx.fillRect(302, 218, 316, 194);
-  ctx.fillStyle = "#9b4b35";
-  ctx.beginPath();
-  ctx.moveTo(270, 226);
-  ctx.lineTo(460, 94);
-  ctx.lineTo(650, 226);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = "#251713";
-  ctx.fillRect(432, 304, 58, 108);
-  if (doorOpen) {
-    ctx.fillStyle = "#74422e";
-    ctx.beginPath();
-    ctx.moveTo(490, 308);
-    ctx.lineTo(526, 320);
-    ctx.lineTo(526, 412);
-    ctx.lineTo(490, 412);
-    ctx.closePath();
-    ctx.fill();
-  } else {
-    ctx.fillStyle = "#653324";
-    ctx.fillRect(432, 304, 58, 108);
-  }
-  ctx.fillStyle = "#2f5f89";
-  ctx.fillRect(340, 258, 56, 46);
-  ctx.fillRect(524, 258, 56, 46);
-  ctx.fillStyle = "rgba(255,255,255,0.45)";
-  ctx.fillRect(348, 266, 16, 30);
-  ctx.fillRect(532, 266, 16, 30);
-  if (!doorOpen) {
-    ctx.fillStyle = "#f4df9c";
-    ctx.beginPath();
-    ctx.arc(478, 360, 4, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
+  const leftDoorOpen = state?.people?.some(
+    (person) => person.mode === "entering" && Math.abs(person.x - leftDoorwayX) < 68
+  );
+  const rightDoorOpen = state?.people?.some(
+    (person) => person.mode === "leaving" && Math.abs(person.x - rightDoorwayX) < 68
+  );
 
-function drawPath() {
-  ctx.fillStyle = "#d9b475";
+  ctx.fillStyle = "#000";
+  ctx.fillRect(334, 270, 332, 234);
   ctx.beginPath();
-  ctx.moveTo(432, 412);
-  ctx.lineTo(490, 412);
-  ctx.lineTo(570, 560);
-  ctx.lineTo(350, 560);
+  ctx.moveTo(300, 276);
+  ctx.lineTo(500, 104);
+  ctx.lineTo(704, 276);
   ctx.closePath();
   ctx.fill();
+
+  ctx.fillRect(574, 126, 72, 110);
+  ctx.fillRect(564, 116, 92, 18);
+
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 6;
+  ctx.lineCap = "square";
+  ctx.beginPath();
+  ctx.moveTo(315, 273);
+  ctx.lineTo(500, 118);
+  ctx.lineTo(689, 273);
+  ctx.stroke();
+
+  ctx.fillStyle = "#fff";
+  if (leftDoorOpen) {
+    ctx.fillRect(328, 378, 27, 126);
+  }
+  if (rightDoorOpen) {
+    ctx.fillRect(645, 378, 27, 126);
+  }
+
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(526, 310, 66, 66);
+  ctx.fillStyle = "#000";
+  ctx.fillRect(555, 310, 8, 66);
+  ctx.fillRect(526, 339, 66, 8);
 }
 
 function drawPerson(person) {
-  const bob = Math.sin(person.bob) * 3;
+  const bob = Math.sin(person.bob) * 2;
   ctx.save();
   ctx.globalAlpha = person.alpha ?? 1;
   ctx.translate(person.x, person.y + bob);
   ctx.scale(person.size || 1, person.size || 1);
-  ctx.lineJoin = "round";
-  ctx.strokeStyle = "rgba(32, 36, 44, 0.82)";
-  ctx.lineWidth = 3.2;
   ctx.lineCap = "round";
-  ctx.strokeRect(-8, -10, 16, 24);
+  ctx.fillStyle = "#000";
   ctx.beginPath();
-  ctx.arc(0, -18, 8.6, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.fillStyle = person.color;
-  ctx.fillRect(-7, -9, 14, 22);
-  ctx.beginPath();
-  ctx.arc(0, -18, 8, 0, Math.PI * 2);
+  ctx.arc(0, -22, 9, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "rgba(32, 36, 44, 0.9)";
-  ctx.lineWidth = 3;
+  ctx.fillRect(-10, -10, 20, 30);
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 6;
   ctx.beginPath();
-  ctx.moveTo(-5, 13);
-  ctx.lineTo(-10, 27);
-  ctx.moveTo(5, 13);
-  ctx.lineTo(10, 27);
+  ctx.moveTo(-9, -6);
+  ctx.lineTo(-14, 15);
+  ctx.moveTo(9, -6);
+  ctx.lineTo(14, 15);
+  ctx.moveTo(-5, 18);
+  ctx.lineTo(-7, 39);
+  ctx.moveTo(5, 18);
+  ctx.lineTo(7, 39);
   ctx.stroke();
   ctx.restore();
 }

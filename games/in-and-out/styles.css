@@ -35,14 +35,14 @@
 }
 
 #inoutCanvas {
-  width: min(100%, calc((100dvh - 310px) * 12 / 7));
+  width: min(100%, calc((100dvh - 310px) * 3 / 2));
   max-width: 100%;
   height: auto;
   max-height: 100%;
-  aspect-ratio: 12 / 7;
-  border: 1px solid rgba(217, 222, 231, 0.95);
-  border-radius: 8px;
-  background: #ccebf0;
+  aspect-ratio: 3 / 2;
+  border: 1px solid #d9dee7;
+  border-radius: 0;
+  background: #fff;
   touch-action: manipulation;
 }
 
@@ -228,7 +228,7 @@
   }
 
   #inoutCanvas {
-    width: min(100%, calc((42dvh) * 12 / 7));
+    width: min(100%, calc((42dvh) * 3 / 2));
   }
 
   .answer-panel {
@@ -268,7 +268,7 @@
   }
 
   #inoutCanvas {
-    width: min(100%, calc((40dvh) * 12 / 7));
+    width: min(100%, calc((40dvh) * 3 / 2));
   }
 
   .answer-edit-row button,
