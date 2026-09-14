@@ -4,6 +4,8 @@ const minePresets = {
   hard: { rows: 16, cols: 16, mines: 45 },
 };
 
+const MINE_SAVE_KEY = "offlineMiniGames.minesweeper.save.v1";
+
 const mineBoardEl = document.getElementById("mineBoard");
 const mineBoardWrapEl = mineBoardEl.parentElement;
 const mineDifficulty = document.getElementById("mineDifficulty");
@@ -11,8 +13,150 @@ const mineCountEl = document.getElementById("mineCount");
 const flagCountEl = document.getElementById("flagCount");
 const mineTimerEl = document.getElementById("mineTimer");
 const mineMessage = document.getElementById("mineMessage");
+const loadMineGameButton = document.getElementById("loadMineGame");
 let mineMode = "reveal";
 let mineState;
+
+function readMineSave() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(MINE_SAVE_KEY));
+    if (isValidMineSave(saved)) return saved;
+    localStorage.removeItem(MINE_SAVE_KEY);
+  } catch (error) {
+    try {
+      localStorage.removeItem(MINE_SAVE_KEY);
+    } catch (storageError) {
+      // Storage may be unavailable in privacy-restricted browsers.
+    }
+  }
+  return null;
+}
+
+function isValidMineSave(saved) {
+  if (
+    !saved ||
+    saved.version !== 1 ||
+    !Object.prototype.hasOwnProperty.call(minePresets, saved.difficulty) ||
+    !["reveal", "flag"].includes(saved.mode) ||
+    saved.generated !== Boolean(saved.generated) ||
+    saved.started !== true ||
+    saved.finished !== false ||
+    !Number.isInteger(saved.seconds) ||
+    saved.seconds < 0 ||
+    !Array.isArray(saved.cells)
+  ) {
+    return false;
+  }
+  const preset = minePresets[saved.difficulty];
+  if (
+    saved.rows !== preset.rows ||
+    saved.cols !== preset.cols ||
+    saved.mines !== preset.mines ||
+    saved.cells.length !== preset.rows * preset.cols
+  ) {
+    return false;
+  }
+  const validCells = saved.cells.every(
+    (cell, index) =>
+      cell &&
+      cell.index === index &&
+      typeof cell.mine === "boolean" &&
+      typeof cell.revealed === "boolean" &&
+      typeof cell.flagged === "boolean" &&
+      Number.isInteger(cell.count) &&
+      cell.count >= 0 &&
+      cell.count <= 8 &&
+      !(cell.revealed && cell.flagged) &&
+      !(cell.revealed && cell.mine)
+  );
+  if (!validCells) return false;
+  const mineTotal = saved.cells.filter((cell) => cell.mine).length;
+  const flagTotal = saved.cells.filter((cell) => cell.flagged).length;
+  const revealedTotal = saved.cells.filter((cell) => cell.revealed).length;
+  return (
+    mineTotal === (saved.generated ? preset.mines : 0) &&
+    saved.flags === flagTotal &&
+    saved.revealed === revealedTotal
+  );
+}
+
+function saveMineState() {
+  if (!mineState?.started) return;
+  if (mineState.finished) {
+    clearMineSave();
+    return;
+  }
+  const saved = {
+    version: 1,
+    difficulty: mineDifficulty.value,
+    mode: mineMode,
+    rows: mineState.rows,
+    cols: mineState.cols,
+    mines: mineState.mines,
+    generated: mineState.generated,
+    started: true,
+    finished: false,
+    flags: mineState.flags,
+    revealed: mineState.revealed,
+    seconds: mineState.seconds,
+    cells: mineState.cells.map((cell) => ({ ...cell })),
+  };
+  try {
+    localStorage.setItem(MINE_SAVE_KEY, JSON.stringify(saved));
+    loadMineGameButton.disabled = false;
+  } catch (error) {
+    // The game remains playable when local storage is unavailable.
+  }
+}
+
+function clearMineSave() {
+  try {
+    localStorage.removeItem(MINE_SAVE_KEY);
+  } catch (error) {
+    // The game remains playable when local storage is unavailable.
+  }
+  loadMineGameButton.disabled = true;
+}
+
+function updateMineLoadButton() {
+  loadMineGameButton.disabled = !readMineSave();
+}
+
+function loadMineGame() {
+  const saved = readMineSave();
+  if (!saved) {
+    updateMineLoadButton();
+    mineMessage.textContent = "There is no saved game to load yet.";
+    return;
+  }
+  pauseMineTimer();
+  mineDifficulty.value = saved.difficulty;
+  mineMode = saved.mode;
+  mineState = {
+    rows: saved.rows,
+    cols: saved.cols,
+    mines: saved.mines,
+    generated: saved.generated,
+    started: true,
+    finished: false,
+    flags: saved.flags,
+    revealed: saved.revealed,
+    seconds: saved.seconds,
+    timer: null,
+    cells: saved.cells.map((cell) => ({ ...cell })),
+  };
+  mineCountEl.textContent = mineState.mines;
+  flagCountEl.textContent = mineState.flags;
+  mineTimerEl.textContent = mineState.seconds;
+  document.querySelectorAll("[data-mine-mode]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.mineMode === mineMode);
+  });
+  mineMessage.textContent = mineState.generated
+    ? "Progress loaded. Continue where you left off."
+    : "Progress loaded. Pick a tile. First move is safe.";
+  renderMineBoard();
+  startMineTimer();
+}
 
 function newMineGame(startNow = false) {
   pauseMineTimer();
@@ -101,6 +245,7 @@ function handleMineClick(index) {
   revealMineCell(index);
   renderMineBoard();
   checkMineWin();
+  saveMineState();
 }
 
 function toggleMineFlag(index) {
@@ -115,6 +260,7 @@ function toggleMineFlag(index) {
   mineState.flags += cell.flagged ? 1 : -1;
   flagCountEl.textContent = mineState.flags;
   renderMineBoard();
+  saveMineState();
 }
 
 function generateMines(firstIndex) {
@@ -178,6 +324,7 @@ function finishMineGame(won) {
     ? `Cleared in ${mineState.seconds} seconds. Nicely done.`
     : "Boom. Start a new game and take revenge.";
   renderMineBoard();
+  clearMineSave();
 }
 
 function startMineTimer() {
@@ -187,7 +334,9 @@ function startMineTimer() {
   mineState.timer = setInterval(() => {
     mineState.seconds += 1;
     mineTimerEl.textContent = mineState.seconds;
+    if (mineState.seconds % 5 === 0) saveMineState();
   }, 1000);
+  saveMineState();
 }
 
 function pauseMineTimer() {
@@ -206,6 +355,7 @@ function shuffle(items) {
 }
 
 document.getElementById("newMineGame").addEventListener("click", () => newMineGame(true));
+loadMineGameButton.addEventListener("click", loadMineGame);
 mineDifficulty.addEventListener("change", () => newMineGame(false));
 document.querySelectorAll("[data-mine-mode]").forEach((button) => {
   button.addEventListener("click", () => {
@@ -213,7 +363,18 @@ document.querySelectorAll("[data-mine-mode]").forEach((button) => {
     document.querySelectorAll("[data-mine-mode]").forEach((modeButton) => {
       modeButton.classList.toggle("active", modeButton === button);
     });
+    saveMineState();
   });
 });
-window.addEventListener("pagehide", pauseMineTimer);
+window.addEventListener("pagehide", () => {
+  saveMineState();
+  pauseMineTimer();
+});
+window.addEventListener("pageshow", () => {
+  if (mineState.started && !mineState.finished && !mineState.timer) startMineTimer();
+});
 newMineGame();
+updateMineLoadButton();
+if (!loadMineGameButton.disabled) {
+  mineMessage.textContent = "Saved progress is available. Press Load to continue.";
+}

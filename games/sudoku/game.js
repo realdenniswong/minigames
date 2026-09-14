@@ -23,13 +23,129 @@ const sudokuPuzzleBank = {
   ],
 };
 
+const SUDOKU_SAVE_KEY = "offlineMiniGames.sudoku.save.v1";
+
 const sudokuBoardEl = document.getElementById("sudokuBoard");
 const numberPad = document.getElementById("numberPad");
 const sudokuDifficulty = document.getElementById("sudokuDifficulty");
 const sudokuMessage = document.getElementById("sudokuMessage");
 const sudokuTimerEl = document.getElementById("sudokuTimer");
 const noteSudokuButton = document.getElementById("noteSudoku");
+const loadSudokuButton = document.getElementById("loadSudoku");
 let sudokuState;
+
+function readSudokuSave() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SUDOKU_SAVE_KEY));
+    if (isValidSudokuSave(saved)) return saved;
+    localStorage.removeItem(SUDOKU_SAVE_KEY);
+  } catch (error) {
+    try {
+      localStorage.removeItem(SUDOKU_SAVE_KEY);
+    } catch (storageError) {
+      // Storage may be unavailable in privacy-restricted browsers.
+    }
+  }
+  return null;
+}
+
+function isValidSudokuSave(saved) {
+  const isGrid = (value, pattern) => typeof value === "string" && pattern.test(value);
+  return Boolean(
+    saved &&
+      saved.version === 1 &&
+      Object.prototype.hasOwnProperty.call(sudokuPuzzleBank, saved.difficulty) &&
+      isGrid(saved.puzzle, /^[0-9]{81}$/) &&
+      isGrid(saved.solution, /^[1-9]{81}$/) &&
+      Array.isArray(saved.values) &&
+      saved.values.length === 81 &&
+      saved.values.every((value) => /^[0-9]$/.test(value)) &&
+      saved.values.every((value, index) => saved.puzzle[index] === "0" || value === saved.puzzle[index]) &&
+      Array.isArray(saved.notes) &&
+      saved.notes.length === 81 &&
+      saved.notes.every(
+        (notes) =>
+          Array.isArray(notes) &&
+          notes.every((value) => typeof value === "string" && /^[1-9]$/.test(value))
+      ) &&
+      (saved.selected === null ||
+        (Number.isInteger(saved.selected) && saved.selected >= 0 && saved.selected < 81)) &&
+      typeof saved.noteMode === "boolean" &&
+      Number.isInteger(saved.seconds) &&
+      saved.seconds >= 0 &&
+      saved.started === true &&
+      saved.finished === false
+  );
+}
+
+function saveSudokuState() {
+  if (!sudokuState?.started) return;
+  if (sudokuState.finished) {
+    clearSudokuSave();
+    return;
+  }
+  const saved = {
+    version: 1,
+    difficulty: sudokuDifficulty.value,
+    puzzle: sudokuState.puzzle,
+    solution: sudokuState.solution,
+    values: sudokuState.values,
+    notes: sudokuState.notes.map((notes) => [...notes]),
+    selected: sudokuState.selected,
+    noteMode: sudokuState.noteMode,
+    seconds: sudokuState.seconds,
+    started: true,
+    finished: false,
+  };
+  try {
+    localStorage.setItem(SUDOKU_SAVE_KEY, JSON.stringify(saved));
+    loadSudokuButton.disabled = false;
+  } catch (error) {
+    // The game remains playable when local storage is unavailable.
+  }
+}
+
+function clearSudokuSave() {
+  try {
+    localStorage.removeItem(SUDOKU_SAVE_KEY);
+  } catch (error) {
+    // The game remains playable when local storage is unavailable.
+  }
+  loadSudokuButton.disabled = true;
+}
+
+function updateSudokuLoadButton() {
+  loadSudokuButton.disabled = !readSudokuSave();
+}
+
+function loadSudoku() {
+  const saved = readSudokuSave();
+  if (!saved) {
+    updateSudokuLoadButton();
+    sudokuMessage.textContent = "There is no saved puzzle to load yet.";
+    return;
+  }
+  pauseSudokuTimer();
+  sudokuDifficulty.value = saved.difficulty;
+  sudokuState = {
+    puzzle: saved.puzzle,
+    solution: saved.solution,
+    values: [...saved.values],
+    notes: saved.notes.map((notes) => new Set(notes)),
+    selected: saved.selected,
+    noteMode: saved.noteMode,
+    seconds: saved.seconds,
+    started: true,
+    finished: false,
+    timer: null,
+  };
+  sudokuTimerEl.textContent = sudokuState.seconds;
+  noteSudokuButton.classList.toggle("active", sudokuState.noteMode);
+  noteSudokuButton.setAttribute("aria-pressed", String(sudokuState.noteMode));
+  sudokuMessage.textContent = "Progress loaded. Continue where you left off.";
+  renderSudoku();
+  startSudokuTimer();
+}
 
 function newSudoku(startNow = false) {
   pauseSudokuTimer();
@@ -91,6 +207,7 @@ function renderSudoku() {
     button.addEventListener("click", () => {
       sudokuState.selected = index;
       renderSudoku();
+      saveSudokuState();
     });
     sudokuBoardEl.appendChild(button);
   });
@@ -147,6 +264,7 @@ function setSudokuValue(value) {
   } else {
     sudokuMessage.textContent = "Good placement.";
   }
+  saveSudokuState();
 }
 
 function toggleSudokuNote(value) {
@@ -168,6 +286,7 @@ function toggleSudokuNote(value) {
     sudokuMessage.textContent = `Added ${value} to notes.`;
   }
   renderSudoku();
+  saveSudokuState();
 }
 
 function toggleSudokuNoteMode() {
@@ -177,6 +296,7 @@ function toggleSudokuNoteMode() {
   sudokuMessage.textContent = sudokuState.noteMode
     ? "Notes on. Add possible numbers inside a cell."
     : "Notes off. Numbers will fill the cell.";
+  saveSudokuState();
 }
 
 function eraseSudokuCell() {
@@ -197,6 +317,7 @@ function eraseSudokuCell() {
   sudokuState.notes[selected].clear();
   sudokuMessage.textContent = "Cell cleared.";
   renderSudoku();
+  saveSudokuState();
 }
 
 function buildNumberPad() {
@@ -217,7 +338,9 @@ function startSudokuTimer() {
   sudokuState.timer = setInterval(() => {
     sudokuState.seconds += 1;
     sudokuTimerEl.textContent = sudokuState.seconds;
+    if (sudokuState.seconds % 5 === 0) saveSudokuState();
   }, 1000);
+  saveSudokuState();
 }
 
 function pauseSudokuTimer() {
@@ -231,9 +354,11 @@ function finishSudokuTimer() {
   if (!sudokuState) return;
   sudokuState.finished = true;
   pauseSudokuTimer();
+  clearSudokuSave();
 }
 
 document.getElementById("newSudoku").addEventListener("click", () => newSudoku(true));
+loadSudokuButton.addEventListener("click", loadSudoku);
 sudokuDifficulty.addEventListener("change", () => newSudoku(false));
 noteSudokuButton.addEventListener("click", toggleSudokuNoteMode);
 document.getElementById("eraseSudoku").addEventListener("click", eraseSudokuCell);
@@ -242,6 +367,16 @@ window.addEventListener("keydown", (event) => {
   if (event.key === "Backspace" || event.key === "Delete") eraseSudokuCell();
   if (event.key.toLowerCase() === "n") toggleSudokuNoteMode();
 });
-window.addEventListener("pagehide", pauseSudokuTimer);
+window.addEventListener("pagehide", () => {
+  saveSudokuState();
+  pauseSudokuTimer();
+});
+window.addEventListener("pageshow", () => {
+  if (sudokuState.started && !sudokuState.finished && !sudokuState.timer) startSudokuTimer();
+});
 buildNumberPad();
 newSudoku();
+updateSudokuLoadButton();
+if (!loadSudokuButton.disabled) {
+  sudokuMessage.textContent = "Saved progress is available. Press Load to continue.";
+}

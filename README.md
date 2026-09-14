@@ -4,8 +4,8 @@ An HTML5 mini-game library that runs as static files. No server is required for 
 
 ## Games
 
-- Minesweeper with easy, medium, and hard board sizes
-- Sudoku with timer, notes mode, row/column highlighting, and same-number highlighting
+- Minesweeper with easy, medium, and hard board sizes, plus autosave and progress loading
+- Sudoku with timer, notes mode, highlighting, autosave, and progress loading
 - Flappy Bird with touch-friendly controls
 - Snake with touch controls and generated maps
 - Math Sprint with difficulty levels and numpad answers
