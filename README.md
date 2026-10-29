@@ -18,7 +18,25 @@ An HTML5 mini-game library that runs as static files. No server is required for 
 
 Open `index.html` to launch the game library, then choose a game.
 
-On GitHub Pages, open the site URL and choose a game from the library. The app includes home-screen metadata so it can be added to an iPhone home screen and opened more like a standalone app.
+On GitHub Pages, open the site URL and choose a game from the library. The library automatically downloads every game for offline play, including games you haven't opened yet.
+
+## Offline Play on Android and iPhone
+
+1. Open the published HTTPS website while connected to the internet.
+2. Leave the library open until the status says **Ready offline**. If the download fails, reconnect and tap **Retry download**.
+3. Add the library to your home screen:
+   - **Android:** In Chrome, open the three-dot menu and select **Add to Home screen** or **Install app**.
+   - **iPhone:** In Safari, tap **Share**, then **Add to Home Screen**.
+4. Open the home-screen icon while still online and wait for **Ready offline** there too. This ensures the installed app has its own offline download if the browser keeps its storage separate.
+5. You can now disconnect and launch any game, return to the library, and reload pages without internet.
+
+Offline play also works in a regular browser tab after the download finishes; installation is optional. A direct link to any game starts downloading the full library too.
+
+Downloads are saved in this browser on this device. Clearing website data or browser storage cleanup can remove them; reopen the app online to download again. Scores and puzzle saves continue to use local device storage.
+
+Offline downloads require HTTPS (as provided by GitHub Pages) or localhost for development. Opening the folder's `index.html` directly on a computer still works without a server or internet.
+
+Updates download automatically when you visit online. Close all tabs and home-screen windows for the game, then reopen it to use an update; an update won't interrupt a game in progress.
 
 If the iPhone home-screen version opens game pages with Safari buttons, delete the old home-screen icon and add it again from Safari after the latest site update loads.
 
@@ -27,7 +45,8 @@ If the iPhone home-screen version opens game pages with Safari buttons, delete t
 The project is organized like a small game portal:
 
 - `index.html`, `styles.css`, `app.js`: the library screen
-- `manifest.webmanifest`, `icon.svg`: home-screen app metadata
+- `offline.js`, `service-worker.js`: automatic full-library offline download and status
+- `manifest.webmanifest`, `icon.svg`, `icons/`: Android and iPhone home-screen app metadata and icons
 - `games/shared/shell.css`: shared game-page shell styles
 - `games/minesweeper/`: Minesweeper game bundle
 - `games/sudoku/`: Sudoku game bundle
@@ -45,4 +64,8 @@ Most game bundles contain their own:
 
 The standalone brain game pages reuse the shared styles and script from `games/brain/` so the four games stay consistent without copying the same code four times.
 
-To add another game, create a new folder under `games/` and add it to the game list in `app.js`.
+To add another game, create a new folder under `games/` and add it to the game list in `app.js`. Include `../../offline.js` on its page and add its HTML, CSS, scripts, and any other assets to `APP_FILES` in `service-worker.js`.
+
+Whenever a cached file changes, bump `CACHE_VERSION` in `service-worker.js` before publishing. Each release downloads a complete new cache before replacing the previous version. Cache names include the app's scope so cleanup doesn't affect other sites on the same GitHub Pages origin.
+
+To verify a release, open it online until **Ready offline** appears, switch the browser to offline (or enable airplane mode), then reload the library and open every game. Test both the site root and a nested hosting path such as `/minigames/`, including links with version queries.

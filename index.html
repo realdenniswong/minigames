@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Dennis Mini Games</title>
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="icon.svg" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -23,7 +23,11 @@
           <p class="eyebrow">HTML5 offline arcade</p>
           <h1>Dennis Mini Games</h1>
         </div>
-        <div class="status-pill">Bundle library</div>
+        <div class="offline-info">
+          <div class="status-pill" id="offlineStatus" role="status" aria-live="polite">Online play</div>
+          <p class="offline-hint" id="offlineHint">Open online once to save all games for offline play.</p>
+          <button type="button" id="offlineRetry" hidden>Retry download</button>
+        </div>
       </header>
 
       <section class="game-menu" id="gameMenu" aria-labelledby="library-title">
@@ -34,9 +38,17 @@
           </div>
         </div>
         <div class="game-list" id="gameList"></div>
+        <details class="offline-help">
+          <summary>Play offline on your phone</summary>
+          <p>Wait for “Ready offline” above, then add the game library to your Home Screen.</p>
+          <p><strong>Android:</strong> In Chrome, open the ⋮ menu and choose “Add to Home screen” or “Install app”.</p>
+          <p><strong>iPhone:</strong> In Safari, tap Share, then “Add to Home Screen”. Open the new icon while online and wait for “Ready offline” there too.</p>
+          <p>You can then open any game without internet, even if you haven't played it before.</p>
+        </details>
       </section>
     </main>
 
     <script src="app.js"></script>
+    <script src="offline.js"></script>
   </body>
 </html>

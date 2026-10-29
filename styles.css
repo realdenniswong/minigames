@@ -109,6 +109,49 @@ h2 {
   white-space: nowrap;
 }
 
+.offline-info {
+  flex: 0 0 auto;
+  max-width: 300px;
+}
+
+.offline-hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.status-pill[data-state="downloading"],
+.status-pill[data-state="error"],
+.status-pill[data-state="unavailable"] {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+#offlineRetry {
+  margin-top: 10px;
+}
+
+.offline-help {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.offline-help summary {
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.offline-help p:last-child {
+  margin-bottom: 0;
+}
+
 .game-menu {
   border: 1px solid rgba(217, 222, 231, 0.9);
   border-radius: 8px;
