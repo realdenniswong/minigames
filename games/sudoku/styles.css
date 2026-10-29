@@ -398,6 +398,12 @@ label {
   font-weight: 900;
 }
 
+.number-pad button:disabled {
+  background: #e8edf4;
+  color: var(--muted);
+  opacity: 1;
+}
+
 .game-message {
   display: -webkit-box;
   height: calc(2.7em + 24px);

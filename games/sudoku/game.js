@@ -211,6 +211,7 @@ function renderSudoku() {
     });
     sudokuBoardEl.appendChild(button);
   });
+  updateSudokuNumberPad();
 }
 
 function isSudokuAxisMatch(index) {
@@ -249,12 +250,17 @@ function setSudokuValue(value) {
     sudokuMessage.textContent = "That number is part of the puzzle.";
     return;
   }
+  if (value !== "0" && isSudokuNumberComplete(value)) {
+    sudokuMessage.textContent = `${value} is already in every 3×3 box. Erase one to use it again.`;
+    return;
+  }
   if (sudokuState.noteMode && value !== "0") {
     toggleSudokuNote(value);
     return;
   }
   sudokuState.values[selected] = value;
   sudokuState.notes[selected].clear();
+  if (value !== "0") removeSudokuPeerNotes(selected, value);
   renderSudoku();
   if (sudokuState.values.join("") === sudokuState.solution) {
     finishSudokuTimer();
@@ -265,6 +271,19 @@ function setSudokuValue(value) {
     sudokuMessage.textContent = "Good placement.";
   }
   saveSudokuState();
+}
+
+function removeSudokuPeerNotes(index, value) {
+  const row = Math.floor(index / 9);
+  const col = index % 9;
+  sudokuState.notes.forEach((notes, peerIndex) => {
+    const peerRow = Math.floor(peerIndex / 9);
+    const peerCol = peerIndex % 9;
+    const sameBox =
+      Math.floor(peerRow / 3) === Math.floor(row / 3) &&
+      Math.floor(peerCol / 3) === Math.floor(col / 3);
+    if (peerRow === row || peerCol === col || sameBox) notes.delete(value);
+  });
 }
 
 function toggleSudokuNote(value) {
@@ -328,6 +347,27 @@ function buildNumberPad() {
     button.textContent = value;
     button.addEventListener("click", () => setSudokuValue(String(value)));
     numberPad.appendChild(button);
+  }
+}
+
+function isSudokuNumberComplete(value) {
+  const boxes = new Set();
+  sudokuState.values.forEach((cellValue, index) => {
+    if (cellValue !== value) return;
+    const boxRow = Math.floor(index / 27);
+    const boxCol = Math.floor((index % 9) / 3);
+    boxes.add(boxRow * 3 + boxCol);
+  });
+  return boxes.size === 9;
+}
+
+function updateSudokuNumberPad() {
+  for (const button of numberPad.children) {
+    const value = button.textContent;
+    button.disabled = isSudokuNumberComplete(value);
+    button.title = button.disabled
+      ? `${value} is in every 3×3 box. Erase one to use it again.`
+      : "";
   }
 }
 
