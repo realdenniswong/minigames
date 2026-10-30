@@ -14,7 +14,7 @@
     <title>Sudoku</title>
     <link rel="manifest" href="../../manifest.webmanifest" />
     <link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png" />
-    <link rel="stylesheet" href="styles.css?v=15" />
+    <link rel="stylesheet" href="styles.css?v=16" />
     <link rel="stylesheet" href="../shared/shell.css?v=1" />
   </head>
   <body>
@@ -53,6 +53,8 @@
             </div>
             <div class="number-pad" id="numberPad" aria-label="Number pad"></div>
             <div class="control-row compact">
+              <button type="button" id="undoSudoku" title="Undo (Ctrl/Cmd+Z)" disabled>Undo</button>
+              <button type="button" id="redoSudoku" title="Redo (Ctrl/Cmd+Shift+Z)" disabled>Redo</button>
               <button type="button" id="noteSudoku" aria-pressed="false">Notes</button>
               <button type="button" id="eraseSudoku">Erase</button>
             </div>
@@ -61,7 +63,7 @@
         </div>
       </section>
     </main>
-    <script src="game.js?v=5"></script>
+    <script src="game.js?v=6"></script>
     <script src="../shared/share.js?v=3"></script>
     <script src="../../offline.js"></script>
   </body>

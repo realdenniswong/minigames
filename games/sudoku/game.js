@@ -24,6 +24,7 @@ const sudokuPuzzleBank = {
 };
 
 const SUDOKU_SAVE_KEY = "offlineMiniGames.sudoku.save.v1";
+const SUDOKU_HISTORY_LIMIT = 100;
 
 const sudokuBoardEl = document.getElementById("sudokuBoard");
 const numberPad = document.getElementById("numberPad");
@@ -32,6 +33,8 @@ const sudokuMessage = document.getElementById("sudokuMessage");
 const sudokuTimerEl = document.getElementById("sudokuTimer");
 const noteSudokuButton = document.getElementById("noteSudoku");
 const loadSudokuButton = document.getElementById("loadSudoku");
+const undoSudokuButton = document.getElementById("undoSudoku");
+const redoSudokuButton = document.getElementById("redoSudoku");
 let sudokuState;
 
 function readSudokuSave() {
@@ -57,25 +60,43 @@ function isValidSudokuSave(saved) {
       Object.prototype.hasOwnProperty.call(sudokuPuzzleBank, saved.difficulty) &&
       isGrid(saved.puzzle, /^[0-9]{81}$/) &&
       isGrid(saved.solution, /^[1-9]{81}$/) &&
-      Array.isArray(saved.values) &&
-      saved.values.length === 81 &&
-      saved.values.every((value) => /^[0-9]$/.test(value)) &&
-      saved.values.every((value, index) => saved.puzzle[index] === "0" || value === saved.puzzle[index]) &&
-      Array.isArray(saved.notes) &&
-      saved.notes.length === 81 &&
-      saved.notes.every(
-        (notes) =>
-          Array.isArray(notes) &&
-          notes.every((value) => typeof value === "string" && /^[1-9]$/.test(value))
-      ) &&
-      (saved.selected === null ||
-        (Number.isInteger(saved.selected) && saved.selected >= 0 && saved.selected < 81)) &&
-      typeof saved.noteMode === "boolean" &&
+      isValidSudokuSnapshot(saved, saved.puzzle) &&
       Number.isInteger(saved.seconds) &&
       saved.seconds >= 0 &&
       saved.started === true &&
       saved.finished === false
   );
+}
+
+function isValidSudokuSnapshot(snapshot, puzzle) {
+  return Boolean(
+    snapshot &&
+      Array.isArray(snapshot.values) &&
+      snapshot.values.length === 81 &&
+      snapshot.values.every((value) => typeof value === "string" && /^[0-9]$/.test(value)) &&
+      snapshot.values.every((value, index) => puzzle[index] === "0" || value === puzzle[index]) &&
+      Array.isArray(snapshot.notes) &&
+      snapshot.notes.length === 81 &&
+      snapshot.notes.every(
+        (notes) =>
+          Array.isArray(notes) &&
+          notes.every((value) => typeof value === "string" && /^[1-9]$/.test(value))
+      ) &&
+      (snapshot.selected === null ||
+        (Number.isInteger(snapshot.selected) && snapshot.selected >= 0 && snapshot.selected < 81)) &&
+      typeof snapshot.noteMode === "boolean"
+  );
+}
+
+function readSudokuHistory(history, puzzle) {
+  if (
+    !Array.isArray(history) ||
+    history.length > SUDOKU_HISTORY_LIMIT ||
+    !history.every((snapshot) => isValidSudokuSnapshot(snapshot, puzzle))
+  ) {
+    return [];
+  }
+  return history;
 }
 
 function saveSudokuState() {
@@ -93,6 +114,8 @@ function saveSudokuState() {
     notes: sudokuState.notes.map((notes) => [...notes]),
     selected: sudokuState.selected,
     noteMode: sudokuState.noteMode,
+    undoStack: sudokuState.undoStack,
+    redoStack: sudokuState.redoStack,
     seconds: sudokuState.seconds,
     started: true,
     finished: false,
@@ -134,6 +157,8 @@ function loadSudoku() {
     notes: saved.notes.map((notes) => new Set(notes)),
     selected: saved.selected,
     noteMode: saved.noteMode,
+    undoStack: readSudokuHistory(saved.undoStack, saved.puzzle),
+    redoStack: readSudokuHistory(saved.redoStack, saved.puzzle),
     seconds: saved.seconds,
     started: true,
     finished: false,
@@ -164,6 +189,8 @@ function newSudoku(startNow = false) {
     notes: Array.from({ length: 81 }, () => new Set()),
     selected: null,
     noteMode: false,
+    undoStack: [],
+    redoStack: [],
     seconds: 0,
     started: false,
     finished: false,
@@ -212,6 +239,8 @@ function renderSudoku() {
     sudokuBoardEl.appendChild(button);
   });
   updateSudokuNumberPad();
+  undoSudokuButton.disabled = !sudokuState.undoStack.length;
+  redoSudokuButton.disabled = !sudokuState.redoStack.length;
 }
 
 function isSudokuAxisMatch(index) {
@@ -258,12 +287,13 @@ function setSudokuValue(value) {
     toggleSudokuNote(value);
     return;
   }
+  const previous = captureSudokuSnapshot();
   sudokuState.values[selected] = value;
   sudokuState.notes[selected].clear();
   if (value !== "0") removeSudokuPeerNotes(selected, value);
+  recordSudokuEdit(previous);
   renderSudoku();
-  if (sudokuState.values.join("") === sudokuState.solution) {
-    finishSudokuTimer();
+  if (updateSudokuCompletion()) {
     sudokuMessage.textContent = "Solved. That grid is singing.";
   } else if (value !== "0" && value !== sudokuState.solution[selected]) {
     sudokuMessage.textContent = "That one does not fit here.";
@@ -297,6 +327,7 @@ function toggleSudokuNote(value) {
     return;
   }
   const notes = sudokuState.notes[selected];
+  const previous = captureSudokuSnapshot();
   if (notes.has(value)) {
     notes.delete(value);
     sudokuMessage.textContent = `Removed ${value} from notes.`;
@@ -304,6 +335,7 @@ function toggleSudokuNote(value) {
     notes.add(value);
     sudokuMessage.textContent = `Added ${value} to notes.`;
   }
+  recordSudokuEdit(previous);
   renderSudoku();
   saveSudokuState();
 }
@@ -332,11 +364,74 @@ function eraseSudokuCell() {
     sudokuMessage.textContent = "That number is part of the puzzle.";
     return;
   }
+  const previous = captureSudokuSnapshot();
   sudokuState.values[selected] = "0";
   sudokuState.notes[selected].clear();
+  recordSudokuEdit(previous);
+  updateSudokuCompletion();
   sudokuMessage.textContent = "Cell cleared.";
   renderSudoku();
   saveSudokuState();
+}
+
+function captureSudokuSnapshot() {
+  return {
+    values: [...sudokuState.values],
+    notes: sudokuState.notes.map((notes) => [...notes]),
+    selected: sudokuState.selected,
+    noteMode: sudokuState.noteMode,
+  };
+}
+
+function recordSudokuEdit(previous) {
+  const changed =
+    previous.values.some((value, index) => value !== sudokuState.values[index]) ||
+    previous.notes.some((notes, index) =>
+      notes.length !== sudokuState.notes[index].size ||
+      notes.some((value) => !sudokuState.notes[index].has(value))
+    );
+  if (!changed) return;
+  sudokuState.undoStack.push(previous);
+  if (sudokuState.undoStack.length > SUDOKU_HISTORY_LIMIT) sudokuState.undoStack.shift();
+  sudokuState.redoStack = [];
+}
+
+function undoSudoku() {
+  stepSudokuHistory(sudokuState.undoStack, sudokuState.redoStack, "Move undone.");
+}
+
+function redoSudoku() {
+  stepSudokuHistory(sudokuState.redoStack, sudokuState.undoStack, "Move redone.");
+}
+
+function stepSudokuHistory(source, destination, message) {
+  if (!sudokuState.started || !source.length) return;
+  const snapshot = source.pop();
+  const current = captureSudokuSnapshot();
+  current.selected = snapshot.selected;
+  current.noteMode = snapshot.noteMode;
+  destination.push(current);
+  sudokuState.values = [...snapshot.values];
+  sudokuState.notes = snapshot.notes.map((notes) => new Set(notes));
+  sudokuState.selected = snapshot.selected;
+  sudokuState.noteMode = snapshot.noteMode;
+  noteSudokuButton.classList.toggle("active", sudokuState.noteMode);
+  noteSudokuButton.setAttribute("aria-pressed", String(sudokuState.noteMode));
+  const solved = updateSudokuCompletion();
+  sudokuMessage.textContent = solved ? `${message} Puzzle solved.` : message;
+  renderSudoku();
+  saveSudokuState();
+}
+
+function updateSudokuCompletion() {
+  const solved = sudokuState.values.join("") === sudokuState.solution;
+  if (solved) {
+    finishSudokuTimer();
+  } else if (sudokuState.finished) {
+    sudokuState.finished = false;
+    startSudokuTimer();
+  }
+  return solved;
 }
 
 function buildNumberPad() {
@@ -402,7 +497,21 @@ loadSudokuButton.addEventListener("click", loadSudoku);
 sudokuDifficulty.addEventListener("change", () => newSudoku(false));
 noteSudokuButton.addEventListener("click", toggleSudokuNoteMode);
 document.getElementById("eraseSudoku").addEventListener("click", eraseSudokuCell);
+undoSudokuButton.addEventListener("click", undoSudoku);
+redoSudokuButton.addEventListener("click", redoSudoku);
 window.addEventListener("keydown", (event) => {
+  if (event.ctrlKey || event.metaKey) {
+    if (event.key.toLowerCase() === "z") {
+      event.preventDefault();
+      if (event.shiftKey) redoSudoku();
+      else undoSudoku();
+    } else if (event.key.toLowerCase() === "y") {
+      event.preventDefault();
+      redoSudoku();
+    }
+    return;
+  }
+  if (event.altKey) return;
   if (/^[1-9]$/.test(event.key)) setSudokuValue(event.key);
   if (event.key === "Backspace" || event.key === "Delete") eraseSudokuCell();
   if (event.key.toLowerCase() === "n") toggleSudokuNoteMode();

@@ -5,7 +5,7 @@ An HTML5 mini-game library that runs as static files. No server is required for 
 ## Games
 
 - Minesweeper with easy, medium, and hard board sizes, plus autosave and progress loading
-- Sudoku with timer, notes mode, automatic removal of matching notes in the same row, column, and 3×3 box, completed numbers grayed out on the number pad, highlighting, autosave, and progress loading
+- Sudoku with timer, notes mode, automatic removal of matching notes in the same row, column, and 3×3 box, completed numbers grayed out on the number pad, undo/redo, highlighting, autosave, and progress loading
 - Flappy Bird with touch-friendly controls
 - Snake with touch controls and generated maps
 - Math Sprint with difficulty levels and numpad answers
@@ -17,6 +17,8 @@ An HTML5 mini-game library that runs as static files. No server is required for 
 ## How To Play
 
 Open `index.html` to launch the game library, then choose a game.
+
+In Sudoku, Undo and Redo restore number changes, note changes, and erased cells, including any notes automatically removed by a placement. Use the buttons or Ctrl/Cmd+Z to undo and Ctrl/Cmd+Shift+Z (or Ctrl/Cmd+Y) to redo. The last 100 edits are kept with your saved puzzle; starting a new puzzle clears its history.
 
 On GitHub Pages, open the site URL and choose a game from the library. The library automatically downloads every game for offline play, including games you haven't opened yet.
 

@@ -114,11 +114,13 @@ h1 {
 }
 
 .control-row.compact {
-  justify-content: stretch;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .control-row.compact button {
-  flex: 1;
+  min-width: 0;
+  padding: 0 6px;
 }
 
 label {
